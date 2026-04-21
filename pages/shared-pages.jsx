@@ -1,16 +1,15 @@
-// Subpáginas comunes: Header, Footer reutilizables + Páginas (Tours, TourDetail, About, Contact, Blog, BlogPost, FAQ, Checkout)
+// Subpáginas comunes: Header, Footer reutilizables + Páginas (Tours, TourDetail)
 
 const Header = ({ lang, setLang, page, setPage }) => {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const t = window.COPY[lang];
   const accent = '#1FA84A';
   const links = [
-    { id: 'home', label: t.nav.inicio },
-    { id: 'tours', label: t.nav.tours },
-    { id: 'about', label: t.nav.nosotros },
-    { id: 'blog', label: t.nav.blog },
-    { id: 'faq', label: 'FAQ' },
-    { id: 'contact', label: t.nav.contacto },
+    { id: 'home',    label: lang === 'es' ? 'Inicio' : 'Home' },
+    { id: 'tours',   label: lang === 'es' ? 'Tours y Actividades' : 'Tours' },
+    { id: 'about',   label: lang === 'es' ? 'Nosotros' : 'About' },
+    { id: 'blog',    label: 'Blog' },
+    { id: 'contact', label: lang === 'es' ? 'Contacto' : 'Contact' },
   ];
   return (
     <>
@@ -38,10 +37,7 @@ const Header = ({ lang, setLang, page, setPage }) => {
           ))}
         </div>
         <div className="hide-on-mobile" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(10,10,10,0.12)', background: 'transparent', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-            {lang === 'es' ? 'Mi reserva' : 'My booking'}
-          </button>
-          <button onClick={() => setPage('home')} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+          <button onClick={() => setPage('contact')} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
             {t.hero.cta}
           </button>
         </div>
@@ -54,7 +50,7 @@ const Header = ({ lang, setLang, page, setPage }) => {
         <div className="mobile-menu-overlay show-on-mobile-flex">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ cursor: 'pointer' }} onClick={() => { setPage('home'); setMenuOpen(false); }}><window.OnrouteLogo size={28} /></div>
-            <button onClick={() => setMenuOpen(false)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}><window.Icon name="check" size={24} /></button>
+            <button onClick={() => setMenuOpen(false)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}><window.Icon name="menu" size={24} /></button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, fontSize: 22, fontWeight: 700, marginTop: 20 }}>
             {links.map(l => (
@@ -78,8 +74,8 @@ const Footer = ({ lang, setPage }) => {
         </div>
         {[
           { t: t.nav.servicios, l: t.services.list.map(s => ({ label: s.t, page: 'home' })) },
-          { t: t.nav.destinos, l: t.destinos.list.slice(0, 4).map(d => ({ label: d.n, page: 'tours' })) },
-          { t: t.nav.tours, l: t.tours.list.slice(0, 4).map(x => ({ label: x.loc, page: 'tours' })) },
+          { t: t.nav.destinos,  l: t.destinos.list.slice(0, 4).map(d => ({ label: d.n, page: 'tours' })) },
+          { t: t.nav.tours,     l: t.tours.list.slice(0, 4).map(x => ({ label: x.loc, page: 'tours' })) },
           { t: lang === 'es' ? 'Empresa' : 'Company', l: [{ label: t.nav.nosotros, page: 'about' }, { label: t.nav.blog, page: 'blog' }, { label: t.nav.contacto, page: 'contact' }, { label: 'FAQ', page: 'faq' }] },
         ].map((col, i) => (
           <div key={i}>
@@ -97,12 +93,16 @@ const Footer = ({ lang, setPage }) => {
 };
 
 // Breadcrumb hero para subpáginas
-const PageHero = ({ kicker, title, sub, crumbs, imgKey }) => {
+const PageHero = ({ kicker, title, sub, crumbs, imgKey, imgURL }) => {
   const accent = '#1FA84A';
   return (
     <section className="section-pad" style={{ padding: '32px 40px 0' }}>
       <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', minHeight: 320 }}>
-        <window.ImagePlaceholder paletteKey={imgKey || 'tulum'} label="" aspect="16/5" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto', minHeight: 320 }}/>
+        {imgURL ? (
+          <img src={imgURL} alt={title} style={{ width: '100%', height: 320, objectFit: 'cover', display: 'block' }} />
+        ) : (
+          <window.ImagePlaceholder paletteKey={imgKey || 'tulum'} label="" aspect="16/5" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto', minHeight: 320 }}/>
+        )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,31,18,0.45) 0%, rgba(10,31,18,0.75) 100%)' }}/>
         <div style={{ position: 'absolute', inset: 0, padding: '32px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', color: '#fff' }}>
           {crumbs && <div style={{ fontSize: 11, marginBottom: 12, opacity: 0.75, display: 'flex', gap: 6 }}>{crumbs.map((c, i) => <React.Fragment key={i}>{i > 0 && <span>/</span>}<span>{c}</span></React.Fragment>)}</div>}
@@ -115,28 +115,68 @@ const PageHero = ({ kicker, title, sub, crumbs, imgKey }) => {
   );
 };
 
-// PÁGINA: Tours (listing con filtros)
+// Card de Tour reutilizable
+const TourCard = ({ tour, onClick, accentDark = '#0F6B2E', accent = '#1FA84A', lang = 'es' }) => (
+  <div onClick={onClick} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'transform .2s' }}
+    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
+    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+    <div style={{ position: 'relative' }}>
+      {tour.isURL && tour.img ? (
+        <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
+          <img src={tour.img} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+      ) : (
+        <window.ImagePlaceholder paletteKey={tour.img || 'tulum-tour'} label="" aspect="4/3" rounded={0} showLabel={false}/>
+      )}
+      <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.95)', padding: '3px 8px', borderRadius: 4, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
+        <window.Icon name="star" size={9} color="#F5B700" stroke={0}/> {tour.rating} <span style={{ opacity: 0.6 }}>({tour.rev})</span>
+      </div>
+      <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(10,10,10,0.6)', backdropFilter: 'blur(8px)', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: 9, fontWeight: 600 }}>{tour.dur}</div>
+    </div>
+    <div style={{ padding: 12, display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)', letterSpacing: 0.4, marginBottom: 4, textTransform: 'uppercase', fontWeight: 700 }}>{tour.loc}</div>
+      <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }}>{tour.t}</h3>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 10, flexWrap: 'wrap' }}>
+        {(Array.isArray(tour.tags) ? tour.tags : []).slice(0, 3).map((tag, j) => <span key={j} style={{ fontSize: 9, background: '#f0f7f2', padding: '2px 6px', borderRadius: 3, color: accentDark, fontWeight: 600 }}>{tag}</span>)}
+      </div>
+      <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 8, borderTop: '1px solid rgba(10,10,10,0.06)' }}>
+        <div>
+          <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)' }}>Desde</div>
+          <div style={{ fontSize: 15, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.3 }}>{tour.price}</div>
+        </div>
+        <button style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: accent, color: '#fff', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>{lang === 'es' ? 'Ver más' : 'See more'}</button>
+      </div>
+    </div>
+  </div>
+);
+
+// PÁGINA: Tours y Actividades (listing con datos vivos de WP)
 const ToursPage = ({ lang, setPage, setTourIdx }) => {
   const t = window.COPY[lang];
   const accent = '#1FA84A';
+  const accentDark = '#0F6B2E';
   const [filter, setFilter] = React.useState('all');
   const [sort, setSort] = React.useState('featured');
+
+  const { tours: wpTours, loading } = window.useWPTours ? window.useWPTours() : { tours: [], loading: false };
+  const fallback = t.tours.list;
+  const allTours = wpTours.length > 0 ? wpTours : fallback;
+
   const filters = [
-    { id: 'all', label: lang === 'es' ? 'Todos' : 'All' },
-    { id: 'cenotes', label: lang === 'es' ? 'Cenotes' : 'Cenotes' },
-    { id: 'ruins', label: lang === 'es' ? 'Ruinas' : 'Ruins' },
+    { id: 'all',     label: lang === 'es' ? 'Todos' : 'All' },
+    { id: 'cenotes', label: 'Cenotes' },
+    { id: 'ruins',   label: lang === 'es' ? 'Ruinas' : 'Ruins' },
     { id: 'islands', label: lang === 'es' ? 'Islas' : 'Islands' },
-    { id: 'food', label: lang === 'es' ? 'Gastro' : 'Food' },
+    { id: 'food',    label: lang === 'es' ? 'Gastro' : 'Food' },
   ];
-  // Duplicar tours para que se vea un catálogo más lleno
-  const all = [...t.tours.list, ...t.tours.list.map(x => ({ ...x, t: x.t.replace('Tulum','Mérida').replace('Holbox','Bacalar'), price: '$' + (parseInt(x.price.replace(/[$,]/g,''))+200).toLocaleString('en-US',{minimumFractionDigits:2}) }))];
+
   return (
     <>
       <PageHero
         kicker={lang === 'es' ? 'Tours & Experiencias' : 'Tours & Experiences'}
         title={lang === 'es' ? 'Tours que se quedan en la memoria' : 'Tours that stay with you'}
         sub={lang === 'es' ? 'Explora cenotes, ruinas mayas, islas y experiencias culinarias con guías locales certificados.' : 'Explore cenotes, Mayan ruins, islands and culinary experiences with certified local guides.'}
-        crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Tours' : 'Tours']}
+        crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Tours y Actividades' : 'Tours']}
         imgKey="tulum-tour"
       />
       <section className="section-pad" style={{ padding: '32px 40px' }}>
@@ -149,7 +189,7 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
             ))}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <span style={{ color: 'rgba(10,10,10,0.5)' }}>{all.length} {lang === 'es' ? 'tours' : 'tours'}</span>
+            <span style={{ color: 'rgba(10,10,10,0.5)' }}>{allTours.length} {lang === 'es' ? 'tours' : 'tours'}</span>
             <span style={{ color: 'rgba(10,10,10,0.2)' }}>·</span>
             <select value={sort} onChange={e => setSort(e.target.value)} style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid rgba(10,10,10,0.12)', fontSize: 12, fontFamily: 'Inter, sans-serif', background: '#fff', fontWeight: 600 }}>
               <option value="featured">{lang === 'es' ? 'Destacados' : 'Featured'}</option>
@@ -159,33 +199,29 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
           </div>
         </div>
 
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(10,10,10,0.4)', fontSize: 14 }}>
+            <div style={{ width: 32, height: 32, border: `3px solid ${accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+            {lang === 'es' ? 'Cargando tours...' : 'Loading tours...'}
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
         <div className="resp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
-          {all.map((tour, i) => (
-            <div key={i} onClick={() => { setTourIdx(i % t.tours.list.length); setPage('tour-detail'); }} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'transform .2s' }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-              <div style={{ position: 'relative' }}>
-                <window.ImagePlaceholder paletteKey={tour.img} label="" aspect="4/3" rounded={0} showLabel={false}/>
-                <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.95)', padding: '3px 8px', borderRadius: 4, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <window.Icon name="star" size={9} color="#F5B700" stroke={0}/> {tour.rating} <span style={{ opacity: 0.6 }}>({tour.rev})</span>
-                </div>
-                <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(10,10,10,0.6)', backdropFilter: 'blur(8px)', color: '#fff', padding: '3px 8px', borderRadius: 4, fontSize: 9, fontWeight: 600 }}>{tour.dur}</div>
-              </div>
-              <div style={{ padding: 12, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)', letterSpacing: 0.4, marginBottom: 4, textTransform: 'uppercase', fontWeight: 700 }}>{tour.loc}</div>
-                <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }}>{tour.t}</h3>
-                <div style={{ display: 'flex', gap: 4, marginBottom: 10, flexWrap: 'wrap' }}>
-                  {tour.tags.map((tag, j) => <span key={j} style={{ fontSize: 9, background: '#f0f7f2', padding: '2px 6px', borderRadius: 3, color: '#0F6B2E', fontWeight: 600 }}>{tag}</span>)}
-                </div>
-                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 8, borderTop: '1px solid rgba(10,10,10,0.06)' }}>
-                  <div>
-                    <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)' }}>{t.booker.price}</div>
-                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.3 }}>{tour.price}</div>
-                  </div>
-                  <button style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: accent, color: '#fff', fontSize: 10, fontWeight: 700, cursor: 'pointer' }}>{lang === 'es' ? 'Reservar' : 'Book'}</button>
-                </div>
-              </div>
-            </div>
+          {!loading && allTours.map((tour, i) => (
+            <TourCard
+              key={tour.id || i}
+              tour={tour}
+              lang={lang}
+              accent={accent}
+              accentDark={accentDark}
+              onClick={() => {
+                if (setTourIdx) setTourIdx(i);
+                // Guardar tour seleccionado en window para que TourDetailPage lo lea
+                window._selectedTour = tour;
+                setPage('tour-detail');
+              }}
+            />
           ))}
         </div>
       </section>
@@ -193,14 +229,19 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
   );
 };
 
-// PÁGINA: Tour detail
+// PÁGINA: Tour detail — lee el tour seleccionado desde window._selectedTour o fallback
 const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
   const t = window.COPY[lang];
   const accent = '#1FA84A';
-  const tour = t.tours.list[tourIdx] || t.tours.list[0];
+  const accentDark = '#0F6B2E';
+
+  // Usar el tour que se pasó al navegar, o el primero estático como fallback
+  const tour = window._selectedTour || t.tours.list[tourIdx] || t.tours.list[0];
+
   const [pax, setPax] = React.useState(2);
   const [date, setDate] = React.useState('');
   const [tab, setTab] = React.useState('itinerary');
+
   const itinerary = [
     { time: '09:00', t: lang === 'es' ? 'Pick-up en tu hotel' : 'Pick-up at your hotel', d: lang === 'es' ? 'Recogida puntual en la recepción de tu hotel o Airbnb.' : 'On-time pick-up at your hotel or Airbnb reception.' },
     { time: '10:30', t: lang === 'es' ? 'Llegada a la zona arqueológica' : 'Arrival at the archaeological site', d: lang === 'es' ? 'Guía certificado te acompaña durante el recorrido.' : 'Certified guide joins you for the tour.' },
@@ -208,6 +249,8 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
     { time: '15:00', t: lang === 'es' ? 'Baño en cenote' : 'Swim at cenote', d: lang === 'es' ? 'Nada en aguas cristalinas con equipo incluido.' : 'Swim in crystal waters, gear included.' },
     { time: '18:00', t: lang === 'es' ? 'Regreso' : 'Return', d: lang === 'es' ? 'Te dejamos de vuelta en tu hotel.' : 'Drop-off back at your hotel.' },
   ];
+
+  const priceNum = parseFloat(String(tour.price).replace(/[$,]/g, '')) || 0;
 
   return (
     <>
@@ -219,17 +262,13 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
       </section>
 
       <section className="section-pad" style={{ padding: '16px 40px' }}>
-        {/* Image gallery */}
-        <div className="tour-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8, marginBottom: 24, height: 380 }}>
-          <window.ImagePlaceholder paletteKey={tour.img} label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
-          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 8 }}>
-            <window.ImagePlaceholder paletteKey="cenotes-tour" label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
-            <window.ImagePlaceholder paletteKey="tulum" label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
-          </div>
-          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 8 }}>
-            <window.ImagePlaceholder paletteKey="chichen" label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
-            <window.ImagePlaceholder paletteKey="holbox" label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
-          </div>
+        {/* Image hero */}
+        <div style={{ borderRadius: 16, overflow: 'hidden', height: 380, marginBottom: 24, position: 'relative' }}>
+          {tour.isURL && tour.img ? (
+            <img src={tour.img} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          ) : (
+            <window.ImagePlaceholder paletteKey={tour.img || 'tulum-tour'} label="" aspect="auto" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
+          )}
         </div>
 
         <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 40 }}>
@@ -240,21 +279,20 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
             <div style={{ display: 'flex', gap: 20, marginTop: 14, fontSize: 12, color: 'rgba(10,10,10,0.7)', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="star" size={12} color="#F5B700" stroke={0}/> <strong>{tour.rating}</strong> ({tour.rev} {lang === 'es' ? 'reseñas' : 'reviews'})</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="clock" size={12} stroke={2}/> {tour.dur}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="users" size={12} stroke={2}/> {lang === 'es' ? 'Hasta 12 personas' : 'Up to 12 people'}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="globe" size={12} stroke={2}/> ES / EN</span>
             </div>
 
             {/* Tags */}
             <div style={{ display: 'flex', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
-              {tour.tags.map((tag, j) => <span key={j} style={{ fontSize: 11, background: '#f0f7f2', padding: '5px 10px', borderRadius: 6, color: '#0F6B2E', fontWeight: 600 }}>{tag}</span>)}
+              {(Array.isArray(tour.tags) ? tour.tags : []).map((tag, j) => <span key={j} style={{ fontSize: 11, background: '#f0f7f2', padding: '5px 10px', borderRadius: 6, color: accentDark, fontWeight: 600 }}>{tag}</span>)}
             </div>
 
             {/* Tabs */}
             <div style={{ marginTop: 32, borderBottom: '1px solid rgba(10,10,10,0.1)', display: 'flex', gap: 24 }}>
               {[
                 { id: 'itinerary', label: lang === 'es' ? 'Itinerario' : 'Itinerary' },
-                { id: 'includes', label: lang === 'es' ? 'Incluye' : 'Includes' },
-                { id: 'reviews', label: lang === 'es' ? 'Reseñas' : 'Reviews' },
+                { id: 'includes',  label: lang === 'es' ? 'Incluye' : 'Includes' },
+                { id: 'reviews',   label: lang === 'es' ? 'Reseñas' : 'Reviews' },
               ].map(x => (
                 <button key={x.id} onClick={() => setTab(x.id)} style={{ padding: '10px 0', border: 'none', background: 'transparent', fontSize: 13, fontWeight: 700, cursor: 'pointer', color: tab === x.id ? '#0a0a0a' : 'rgba(10,10,10,0.5)', borderBottom: '2px solid ' + (tab === x.id ? accent : 'transparent'), marginBottom: -1, fontFamily: 'Inter, sans-serif' }}>{x.label}</button>
               ))}
@@ -281,8 +319,8 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
               {tab === 'includes' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                   <div>
-                    <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 10px 0', fontFamily: 'Archivo, sans-serif', color: '#0F6B2E' }}>✓ {lang === 'es' ? 'Incluido' : 'Included'}</h4>
-                    {[lang==='es'?'Transporte privado aire acondicionado':'Private A/C transport', lang==='es'?'Guía certificado bilingüe':'Certified bilingual guide', lang==='es'?'Entradas a la zona arqueológica':'Site entry fees', lang==='es'?'Comida buffet':'Buffet lunch', lang==='es'?'Equipo de snorkel':'Snorkel gear', lang==='es'?'Seguro de viaje':'Travel insurance'].map((x, i) => (
+                    <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 10px 0', fontFamily: 'Archivo, sans-serif', color: accentDark }}>✓ {lang === 'es' ? 'Incluido' : 'Included'}</h4>
+                    {[lang==='es'?'Transporte privado':'Private transport', lang==='es'?'Guía certificado bilingüe':'Certified bilingual guide', lang==='es'?'Entradas incluidas':'Entry fees included', lang==='es'?'Seguro de viaje':'Travel insurance'].map((x, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 12, color: 'rgba(10,10,10,0.75)' }}>
                         <window.Icon name="check" size={14} color={accent} stroke={3}/> {x}
                       </div>
@@ -301,14 +339,14 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
               {tab === 'reviews' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {[
-                    { n: 'Sarah K.', c: '🇺🇸', d: 'Oct 2025', r: 5, text: lang === 'es' ? 'Experiencia increíble. El guía sabía muchísimo de historia maya y el cenote fue un sueño.' : 'Incredible experience. The guide knew so much about Mayan history and the cenote was a dream.' },
-                    { n: 'Thomas B.', c: '🇩🇪', d: 'Sep 2025', r: 5, text: lang === 'es' ? 'Puntualidad impecable. El precio justo por todo lo que incluye.' : 'Flawless punctuality. Fair price for everything it includes.' },
-                    { n: 'Camille L.', c: '🇫🇷', d: 'Aug 2025', r: 4, text: lang === 'es' ? 'Muy buen tour, solo habría preferido menos tiempo en el restaurante y más en las ruinas.' : 'Very good tour, would have preferred less time at the restaurant, more at the ruins.' },
+                    { n: 'Sarah K.', c: '🇺🇸', d: 'Oct 2025', r: 5, text: lang === 'es' ? 'Experiencia increíble. El guía sabía muchísimo y el cenote fue un sueño.' : 'Incredible experience. The guide was amazing and the cenote was a dream.' },
+                    { n: 'Thomas B.', c: '🇩🇪', d: 'Sep 2025', r: 5, text: lang === 'es' ? 'Puntualidad impecable. El precio justo por todo lo que incluye.' : 'Flawless punctuality. Fair price for everything included.' },
+                    { n: 'Camille L.', c: '🇫🇷', d: 'Aug 2025', r: 4, text: lang === 'es' ? 'Muy buen tour, lo recomiendo totalmente.' : 'Very good tour, totally recommended.' },
                   ].map((r, i) => (
                     <div key={i} style={{ background: '#fff', padding: 16, borderRadius: 10, border: '1px solid rgba(10,10,10,0.06)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <div style={{ fontSize: 13, fontWeight: 700 }}>{r.c} {r.n} <span style={{ fontWeight: 400, color: 'rgba(10,10,10,0.5)', fontSize: 11, marginLeft: 8 }}>{r.d}</span></div>
-                        <div style={{ display: 'flex', gap: 1 }}>{Array.from({ length: r.r }).map((_, j) => <window.Icon key={j} name="star" size={12} color="#F5B700" stroke={0}/>)}{Array.from({ length: 5 - r.r }).map((_, j) => <window.Icon key={j} name="star" size={12} color="rgba(10,10,10,0.15)" stroke={0}/>)}</div>
+                        <div style={{ display: 'flex', gap: 1 }}>{Array.from({ length: r.r }).map((_, j) => <window.Icon key={j} name="star" size={12} color="#F5B700" stroke={0}/>)}</div>
                       </div>
                       <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.75)', margin: 0, lineHeight: 1.55 }}>{r.text}</p>
                     </div>
@@ -321,9 +359,7 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
           {/* Right: sticky booker */}
           <div style={{ position: 'relative' }}>
             <div style={{ position: 'sticky', top: 80, background: '#fff', borderRadius: 14, padding: 22, border: '1px solid rgba(10,10,10,0.06)', boxShadow: '0 8px 32px rgba(0,0,0,0.06)' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 4 }}>
-                <span style={{ fontSize: 11, color: 'rgba(10,10,10,0.5)', fontWeight: 600 }}>{t.booker.price}</span>
-              </div>
+              <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.5)', fontWeight: 600, marginBottom: 4 }}>Desde</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 16 }}>
                 <span style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -1 }}>{tour.price}</span>
                 <span style={{ fontSize: 12, color: 'rgba(10,10,10,0.5)', fontWeight: 600 }}>MXN / {lang === 'es' ? 'persona' : 'pp'}</span>
@@ -343,13 +379,9 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
               </div>
 
               <div style={{ padding: '12px 0', borderTop: '1px dashed rgba(10,10,10,0.1)', borderBottom: '1px dashed rgba(10,10,10,0.1)', marginBottom: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(10,10,10,0.7)', marginBottom: 4 }}>
-                  <span>{tour.price} × {pax} {lang === 'es' ? 'pax' : 'pax'}</span>
-                  <span style={{ fontWeight: 600 }}>${(parseFloat(tour.price.replace(/[$,]/g,'')) * pax).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 800, marginTop: 6, fontFamily: 'Archivo, sans-serif' }}>
-                  <span>{lang === 'es' ? 'Total' : 'Total'}</span>
-                  <span>${(parseFloat(tour.price.replace(/[$,]/g,'')) * pax).toLocaleString('en-US', { minimumFractionDigits: 2 })} MXN</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 800, fontFamily: 'Archivo, sans-serif' }}>
+                  <span>Total</span>
+                  <span>${(priceNum * pax).toLocaleString('en-US', { minimumFractionDigits: 2 })} MXN</span>
                 </div>
               </div>
 
@@ -365,4 +397,4 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
   );
 };
 
-Object.assign(window, { Header, Footer, PageHero, ToursPage, TourDetailPage });
+Object.assign(window, { Header, Footer, PageHero, TourCard, ToursPage, TourDetailPage });
