@@ -1,0 +1,9 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=../../public_html
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp -R assets $DEPLOYPATH
+    - /bin/cp -R shared $DEPLOYPATH
+    - /bin/cp -R variations $DEPLOYPATH
+    - /bin/cp -R pages $DEPLOYPATH
