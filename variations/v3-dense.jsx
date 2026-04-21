@@ -2,7 +2,7 @@
 // Dashboard-style. Densa en datos: comparador de traslados con tarifas visibles,
 // filtros, mapa conceptual de rutas, testimonios, FAQ, blog preview, reviews reales.
 
-const V3Dense = ({ lang, setLang }) => {
+const V3Dense = ({ lang, setLang, onNavigate }) => {
   const t = window.COPY[lang];
   const accent = '#1FA84A';
   const accentDark = '#0F6B2E';
@@ -17,21 +17,24 @@ const V3Dense = ({ lang, setLang }) => {
   // Blog dinámico desde WordPress
   const { posts: wpPosts, loading: postsLoading } = window.useWPPosts ? window.useWPPosts(3) : { posts: [], loading: false };
 
+  const navigate = onNavigate || (() => {});
 
   const scrollTo = (id) => {
     const el = scrollRef.current?.querySelector(`[data-sec="${id}"]`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const tabs = [
-    { id: 'traslado', label: lang === 'es' ? 'Traslado' : 'Transfer', icon: 'car' },
-    { id: 'tour', label: lang === 'es' ? 'Tour' : 'Tour', icon: 'leaf' },
-    { id: 'paquete', label: lang === 'es' ? 'Paquete' : 'Package', icon: 'heart' },
+  const navItems = [
+    { label: lang === 'es' ? 'Inicio' : 'Home',               action: () => scrollTo('cotizar') },
+    { label: lang === 'es' ? 'Tours y Actividades' : 'Tours', action: () => navigate('tours') },
+    { label: lang === 'es' ? 'Nosotros' : 'About',            action: () => navigate('about') },
+    { label: 'Blog',                                           action: () => navigate('blog') },
+    { label: lang === 'es' ? 'Contacto' : 'Contact',          action: () => navigate('contact') },
   ];
 
   return (
     <div ref={scrollRef} style={{
-      width: '100%', height: '100%', overflow: 'auto', position: 'relative',
+      width: '100%', minHeight: '100vh', position: 'relative',
       background: '#f4f5f2', color: '#0a0a0a', fontFamily: 'Inter, sans-serif',
     }}>
       {/* Top bar con contacto */}
@@ -59,19 +62,12 @@ const V3Dense = ({ lang, setLang }) => {
       }}>
         <window.OnrouteLogo size={28} />
         <div className="hide-on-mobile" style={{ display: 'flex', gap: 22, fontSize: 13, fontWeight: 500 }}>
-          <a onClick={() => scrollTo('cotizar')} style={navLink3}>{t.nav.inicio}</a>
-          <a onClick={() => scrollTo('servicios')} style={navLink3}>{t.nav.servicios}</a>
-          <a onClick={() => scrollTo('destinos')} style={navLink3}>{t.nav.destinos}</a>
-          <a onClick={() => scrollTo('tours')} style={navLink3}>{t.nav.tours}</a>
-          <a onClick={() => scrollTo('why')} style={navLink3}>{t.nav.nosotros}</a>
-          <a onClick={() => scrollTo('blog')} style={navLink3}>{t.nav.blog}</a>
-          <a onClick={() => scrollTo('contacto')} style={navLink3}>{t.nav.contacto}</a>
+          {navItems.map((item, i) => (
+            <a key={i} onClick={item.action} style={{ ...navLink3, cursor: 'pointer' }}>{item.label}</a>
+          ))}
         </div>
         <div className="hide-on-mobile" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(10,10,10,0.12)', background: 'transparent', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-            {lang === 'es' ? 'Mi reserva' : 'My booking'}
-          </button>
-          <button style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+          <button onClick={() => navigate('contact')} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
             {t.hero.cta}
           </button>
         </div>
@@ -84,14 +80,12 @@ const V3Dense = ({ lang, setLang }) => {
         <div className="mobile-menu-overlay show-on-mobile-flex">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <window.OnrouteLogo size={28} />
-            <button onClick={() => setMenuOpen(false)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}><window.Icon name="check" size={24} /></button>
+            <button onClick={() => setMenuOpen(false)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}><window.Icon name="menu" size={24} /></button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, fontSize: 22, fontWeight: 700, marginTop: 20 }}>
-            <a onClick={() => { scrollTo('cotizar'); setMenuOpen(false); }} style={navLink3}>{t.nav.inicio}</a>
-            <a onClick={() => { scrollTo('servicios'); setMenuOpen(false); }} style={navLink3}>{t.nav.servicios}</a>
-            <a onClick={() => { scrollTo('destinos'); setMenuOpen(false); }} style={navLink3}>{t.nav.destinos}</a>
-            <a onClick={() => { scrollTo('tours'); setMenuOpen(false); }} style={navLink3}>{t.nav.tours}</a>
-            <a onClick={() => { scrollTo('contacto'); setMenuOpen(false); }} style={navLink3}>{t.nav.contacto}</a>
+            {navItems.map((item, i) => (
+              <a key={i} onClick={() => { item.action(); setMenuOpen(false); }} style={{ ...navLink3, cursor: 'pointer' }}>{item.label}</a>
+            ))}
           </div>
         </div>
       )}
