@@ -18,10 +18,24 @@ const OnrouteLogo = ({ size = 28, color = '#0a0a0a', accent = '#1FA84A', showTex
   </div>
 );
 
-// Placeholder de imagen con gradientes tonales (evoca el ambiente sin ser slop SVG)
-const ImagePlaceholder = ({ paletteKey, label, aspect = '4/3', rounded = 8, style = {}, showLabel = true }) => {
+// Placeholder de imagen con gradientes tonales o imagen real de WP
+const ImagePlaceholder = ({ paletteKey, label, aspect = '4/3', rounded = 8, style = {}, showLabel = true, isURL = false }) => {
   const [a, b, c] = window.paletteFor(paletteKey);
   const id = `g-${paletteKey}-${Math.random().toString(36).slice(2, 7)}`;
+  
+  if (isURL && paletteKey.startsWith('http')) {
+    return (
+      <div style={{ position: 'relative', aspectRatio: aspect, width: '100%', borderRadius: rounded, overflow: 'hidden', ...style }}>
+        <img src={paletteKey} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        {showLabel && label && (
+          <div style={{ position: 'absolute', bottom: 10, left: 12, fontFamily: 'ui-monospace, monospace', fontSize: 10, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 2px rgba(0,0,0,0.3)', letterSpacing: 0.4 }}>
+            [ {label} ]
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'relative', aspectRatio: aspect, width: '100%', borderRadius: rounded, overflow: 'hidden', ...style }}>
       <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 400 300" style={{ display: 'block' }}>
@@ -275,4 +289,45 @@ const Booker = ({ t, variant = 'card', accent = '#1FA84A' }) => {
   );
 };
 
-Object.assign(window, { OnrouteLogo, ImagePlaceholder, Icon, WhatsappFAB, LangToggle, Booker });
+// Hook dinámico para cargar tours desde WordPress REST API
+const useWPTours = () => {
+  const [tours, setTours] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // wp/v2/tours-y-actividades con _embed para traer la imagen destacada
+    fetch('https://onroutemx.com/wp-json/wp/v2/tours-y-actividades?_embed=true&per_page=100')
+      .then(res => res.json())
+      .then(data => {
+        const mapped = data.map(post => {
+          const meta = post.mis_datos || {};
+          let priceStr = meta.precio && meta.precio[0] ? `$${meta.precio[0]}` : 'Por cotizar';
+          let imgKey = post._embedded && post._embedded['wp:featuredmedia'] ? post._embedded['wp:featuredmedia'][0].source_url : 'tulum-tour';
+          // Validar si imgKey no es una key local sino una URL, ImagePlaceholder lo manejará diferente luego, o de momento dejar el fallback
+          
+          return {
+            id: post.id,
+            t: post.title.rendered,
+            loc: meta.ubicacion ? meta.ubicacion[0] : 'Riviera Maya',
+            price: priceStr,
+            dur: meta['duracion-del-recorrido'] ? meta['duracion-del-recorrido'][0] : 'Varía',
+            rating: 5.0, // Hardcoded rating temporal
+            rev: Math.floor(Math.random() * 200) + 50, // Temporal random reviews count
+            tags: meta['tipo-de-actividad'] || [],
+            img: imgKey,
+            isURL: imgKey.startsWith('http')
+          };
+        });
+        setTours(mapped);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error cargando tours:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  return { tours, loading };
+};
+
+Object.assign(window, { OnrouteLogo, ImagePlaceholder, Icon, WhatsappFAB, LangToggle, Booker, useWPTours });

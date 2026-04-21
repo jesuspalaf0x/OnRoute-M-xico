@@ -10,6 +10,10 @@ const V3Dense = ({ lang, setLang }) => {
   const [activeTab, setActiveTab] = React.useState('traslado');
   const [menuOpen, setMenuOpen] = React.useState(false);
 
+  // Tours dinámicos desde WordPress (fallback a estáticos mientras carga)
+  const { tours: wpTours, loading: toursLoading } = window.useWPTours ? window.useWPTours() : { tours: [], loading: false };
+  const toursList = wpTours.length > 0 ? wpTours : t.tours.list;
+
   const scrollTo = (id) => {
     const el = scrollRef.current?.querySelector(`[data-sec="${id}"]`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -269,11 +273,18 @@ const V3Dense = ({ lang, setLang }) => {
             ))}
           </div>
         </div>
+        {toursLoading && (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'rgba(10,10,10,0.4)', fontSize: 13, fontWeight: 600 }}>
+            <div style={{ width: 28, height: 28, border: `3px solid ${accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+            {lang === 'es' ? 'Cargando experiencias...' : 'Loading experiences...'}
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
         <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {t.tours.list.map((tour, i) => (
-            <div key={i} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
+          {!toursLoading && toursList.map((tour, i) => (
+            <div key={tour.id || i} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
               <div style={{ position: 'relative' }}>
-                <window.ImagePlaceholder paletteKey={tour.img} label="" aspect="4/3" rounded={0} showLabel={false}/>
+                <window.ImagePlaceholder paletteKey={tour.img} isURL={!!tour.isURL} label="" aspect="4/3" rounded={0} showLabel={false}/>
                 <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.95)', padding: '3px 8px', borderRadius: 4, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
                   <window.Icon name="star" size={9} color="#F5B700" stroke={0}/> {tour.rating} <span style={{ opacity: 0.6 }}>({tour.rev})</span>
                 </div>
@@ -285,7 +296,7 @@ const V3Dense = ({ lang, setLang }) => {
                 <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)', letterSpacing: 0.4, marginBottom: 4, textTransform: 'uppercase', fontWeight: 700 }}>{tour.loc}</div>
                 <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }}>{tour.t}</h3>
                 <div style={{ display: 'flex', gap: 4, marginBottom: 10, flexWrap: 'wrap' }}>
-                  {tour.tags.map((tag, j) => <span key={j} style={{ fontSize: 9, background: '#f0f7f2', padding: '2px 6px', borderRadius: 3, color: accentDark, fontWeight: 600 }}>{tag}</span>)}
+                  {(Array.isArray(tour.tags) ? tour.tags : []).map((tag, j) => <span key={j} style={{ fontSize: 9, background: '#f0f7f2', padding: '2px 6px', borderRadius: 3, color: accentDark, fontWeight: 600 }}>{tag}</span>)}
                 </div>
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: 8, borderTop: '1px solid rgba(10,10,10,0.06)' }}>
                   <div>
