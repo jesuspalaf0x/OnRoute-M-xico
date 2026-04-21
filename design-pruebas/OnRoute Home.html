@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>OnRoute México · Home rediseño</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #f0eee9; font-family: 'Inter', sans-serif; }
+    * { box-sizing: border-box; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="../shared/data.jsx"></script>
+  <script type="text/babel" src="../shared/components.jsx"></script>
+  <script type="text/babel" src="../variations/v1-minimal.jsx"></script>
+  <script type="text/babel" src="../variations/v2-balanced.jsx"></script>
+  <script type="text/babel" src="../variations/v3-dense.jsx"></script>
+
+  <script type="text/babel">
+    function Home() {
+      // Shared lang across all three artboards so it's easy to compare ES/EN side by side
+      const [lang, setLang] = React.useState(() => localStorage.getItem('onroute-lang') || 'es');
+      React.useEffect(() => localStorage.setItem('onroute-lang', lang), [lang]);
+
+      return (
+        <window.DesignCanvas>
+          <window.DCSection id="homes" title="OnRoute México · Home" subtitle="3 variaciones de densidad · mismo sistema de color, tipografía e imagen. Click en el título de cada artboard para ampliarlo a pantalla completa. El idioma (ES/EN) se sincroniza entre las 3.">
+            <window.DCArtboard id="v1" label="V1 · Minimalista — editorial, mucho aire" width={1280} height={2600}>
+              <window.V1Minimal lang={lang} setLang={setLang} />
+            </window.DCArtboard>
+            <window.DCArtboard id="v2" label="V2 · Balanceada — hero inmersivo + info" width={1280} height={3100}>
+              <window.V2Balanced lang={lang} setLang={setLang} />
+            </window.DCArtboard>
+            <window.DCArtboard id="v3" label="V3 · Densa — tipo dashboard, rica en info" width={1280} height={3700}>
+              <window.V3Dense lang={lang} setLang={setLang} />
+            </window.DCArtboard>
+          </window.DCSection>
+        </window.DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Home />);
+  </script>
+</body>
+</html>

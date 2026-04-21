@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>OnRoute México · Full Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #f4f5f2; font-family: 'Inter', sans-serif; color: #0a0a0a; }
+    * { box-sizing: border-box; }
+    #root { min-height: 100vh; }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
+    input, select, textarea { font-family: inherit; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: #1FA84A !important; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel" src="shared/data.jsx"></script>
+  <script type="text/babel" src="shared/components.jsx"></script>
+  <script type="text/babel" src="variations/v3-dense.jsx"></script>
+  <script type="text/babel" src="pages/shared-pages.jsx"></script>
+  <script type="text/babel" src="pages/other-pages.jsx"></script>
+  <script type="text/babel">
+    function App() {
+      const [lang, setLang] = React.useState(() => localStorage.getItem('onroute-lang') || 'es');
+      const [page, setPage] = React.useState(() => localStorage.getItem('onroute-page') || 'home');
+      const [tourIdx, setTourIdx] = React.useState(0);
+
+      React.useEffect(() => { localStorage.setItem('onroute-lang', lang); }, [lang]);
+      React.useEffect(() => {
+        localStorage.setItem('onroute-page', page);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }, [page]);
+
+      // Home uses the V3 variation (which has its own navbar + footer)
+      // Subpages use shared Header/Footer
+      const isHome = page === 'home';
+
+      const pageProps = { lang, setLang, page, setPage, tourIdx, setTourIdx };
+
+      let content;
+      if (isHome) {
+        content = <window.V3Dense lang={lang} setLang={setLang} onNavigate={setPage} />;
+      } else if (page === 'tours') content = <window.ToursPage {...pageProps} />;
+      else if (page === 'tour-detail') content = <window.TourDetailPage {...pageProps} />;
+      else if (page === 'about') content = <window.AboutPage {...pageProps} />;
+      else if (page === 'contact') content = <window.ContactPage {...pageProps} />;
+      else if (page === 'blog') content = <window.BlogPage {...pageProps} />;
+      else if (page === 'blog-post') content = <window.BlogPostPage {...pageProps} />;
+      else if (page === 'faq') content = <window.FAQPage {...pageProps} />;
+      else if (page === 'checkout') content = <window.CheckoutPage {...pageProps} />;
+      else content = <div style={{ padding: 40 }}>Page not found: {page}</div>;
+
+      return (
+        <>
+          {/* Floating page nav (always available to jump around) */}
+          <PageNav lang={lang} setLang={setLang} page={page} setPage={setPage}/>
+
+          {isHome ? (
+            <div style={{ height: '100vh', overflow: 'hidden' }}>{content}</div>
+          ) : (
+            <>
+              <window.Header lang={lang} setLang={setLang} page={page} setPage={setPage}/>
+              {content}
+              <window.Footer lang={lang} setPage={setPage}/>
+            </>
+          )}
+        </>
+      );
+    }
+
+    // Floating "dev" nav so it's easy to jump between pages during review
+    function PageNav({ lang, setLang, page, setPage }) {
+      const [open, setOpen] = React.useState(false);
+      const pages = [
+        ['home', lang === 'es' ? 'Home (V3)' : 'Home (V3)'],
+        ['tours', lang === 'es' ? 'Catálogo tours' : 'Tours catalog'],
+        ['tour-detail', lang === 'es' ? 'Detalle tour' : 'Tour detail'],
+        ['about', lang === 'es' ? 'Nosotros' : 'About'],
+        ['contact', lang === 'es' ? 'Contacto' : 'Contact'],
+        ['blog', 'Blog'],
+        ['blog-post', lang === 'es' ? 'Artículo' : 'Blog post'],
+        ['faq', 'FAQ'],
+        ['checkout', 'Checkout'],
+      ];
+      return (
+        <div style={{ position: 'fixed', bottom: 18, left: 18, zIndex: 200, fontSize: 11, fontFamily: 'Inter, sans-serif' }}>
+          {open && (
+            <div style={{ background: '#0a0a0a', color: '#fff', borderRadius: 12, padding: 8, boxShadow: '0 20px 60px rgba(0,0,0,0.35)', marginBottom: 8, minWidth: 180 }}>
+              <div style={{ padding: '6px 10px', fontSize: 9, letterSpacing: 1.2, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', fontWeight: 700 }}>Pages</div>
+              {pages.map(([id, label]) => (
+                <div key={id} onClick={() => { setPage(id); setOpen(false); }} style={{ padding: '7px 10px', borderRadius: 6, cursor: 'pointer', background: page === id ? '#1FA84A' : 'transparent', fontWeight: page === id ? 700 : 500, fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>{label}</span>
+                  {page === id && <span style={{ fontSize: 9 }}>●</span>}
+                </div>
+              ))}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.12)', marginTop: 6, paddingTop: 8, padding: '8px 10px 4px', display: 'flex', gap: 4 }}>
+                {['es', 'en'].map(l => (
+                  <button key={l} onClick={() => setLang(l)} style={{ flex: 1, padding: '5px 0', borderRadius: 5, border: 'none', background: lang === l ? '#fff' : 'transparent', color: lang === l ? '#0a0a0a' : 'rgba(255,255,255,0.7)', fontWeight: 700, fontSize: 10, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: 0.5 }}>{l}</button>
+                ))}
+              </div>
+            </div>
+          )}
+          <button onClick={() => setOpen(!open)} style={{ padding: '10px 14px', borderRadius: 999, border: 'none', background: '#0a0a0a', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 8px 28px rgba(0,0,0,0.22)' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#1FA84A' }}/>
+            {pages.find(p => p[0] === page)?.[1] || page}
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
