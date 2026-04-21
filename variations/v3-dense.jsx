@@ -24,6 +24,13 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // Pestañas del cotizador (Traslado / Tour / Paquete)
+  const tabs = [
+    { id: 'traslado', label: lang === 'es' ? 'Traslado' : 'Transfer', icon: 'car' },
+    { id: 'tour',     label: lang === 'es' ? 'Tour'     : 'Tour',     icon: 'leaf' },
+    { id: 'paquete',  label: lang === 'es' ? 'Paquete'  : 'Package',  icon: 'heart' },
+  ];
+
   const navItems = [
     { label: lang === 'es' ? 'Inicio' : 'Home',               action: () => scrollTo('cotizar') },
     { label: lang === 'es' ? 'Tours y Actividades' : 'Tours', action: () => navigate('tours') },
