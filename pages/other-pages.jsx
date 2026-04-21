@@ -12,8 +12,8 @@ const AboutPage = ({ lang }) => {
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Nosotros' : 'About']}
         imgKey="pdc"
       />
-      <section style={{ padding: '60px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
+      <section className="section-pad" style={{ padding: '60px 40px' }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
           <div>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: accent, textTransform: 'uppercase', marginBottom: 10 }}>{lang === 'es' ? 'Nuestra historia' : 'Our story'}</div>
             <h2 style={{ fontSize: 36, fontWeight: 800, margin: 0, letterSpacing: -1, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance' }}>
@@ -30,7 +30,7 @@ const AboutPage = ({ lang }) => {
         </div>
 
         {/* Valores */}
-        <div style={{ marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="resp-grid-3" style={{ marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {[
             { icon: 'leaf', t: lang === 'es' ? 'Locales de raíz' : 'Rooted local', d: lang === 'es' ? 'Todo el equipo vive y creció en la Riviera Maya. Te llevamos a lugares que solo conocemos quienes somos de aquí.' : 'Every team member lives and grew up in the Riviera Maya. We take you places only locals know.' },
             { icon: 'shield', t: lang === 'es' ? 'Transparencia total' : 'Total transparency', d: lang === 'es' ? 'Tarifa fija publicada. Sin cargos ocultos. Sin comisiones sorpresa. Si algo falla, respondemos.' : 'Published flat rate. No hidden fees. No surprise commissions. If something fails, we respond.' },
@@ -47,7 +47,7 @@ const AboutPage = ({ lang }) => {
         </div>
 
         {/* Números */}
-        <div style={{ marginTop: 60, background: '#0a1f12', color: '#fff', borderRadius: 16, padding: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+        <div className="resp-grid-2" style={{ marginTop: 60, background: '#0a1f12', color: '#fff', borderRadius: 16, padding: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
           {[['12K+', lang === 'es' ? 'Traslados' : 'Transfers'], ['48', lang === 'es' ? 'Destinos' : 'Destinations'], ['24', lang === 'es' ? 'Conductores' : 'Drivers'], ['4.9', lang === 'es' ? 'Rating Google' : 'Google rating']].map((n, i) => (
             <div key={i} style={{ borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none', paddingLeft: i > 0 ? 28 : 0 }}>
               <div style={{ fontSize: 52, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -1.6, lineHeight: 1 }}>{n[0]}</div>
@@ -73,8 +73,8 @@ const ContactPage = ({ lang }) => {
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Contacto' : 'Contact']}
         imgKey="bacalar"
       />
-      <section style={{ padding: '40px 40px 60px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           {/* Métodos directos */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
@@ -112,7 +112,7 @@ const ContactPage = ({ lang }) => {
               </div>
             ) : (
               <>
-                <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div className="resp-split" style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={lang === 'es' ? 'Tu nombre' : 'Your name'} style={formInput}/>
                   <input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" style={formInput}/>
                 </div>
@@ -157,9 +157,9 @@ const BlogPage = ({ lang, setPage }) => {
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', 'Blog']}
         imgKey="valladolid"
       />
-      <section style={{ padding: '40px 40px 60px' }}>
+      <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
         {/* Featured */}
-        <div onClick={() => setPage('blog-post')} style={{ cursor: 'pointer', background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', display: 'grid', gridTemplateColumns: '1.3fr 1fr', marginBottom: 32 }}>
+        <div className="resp-split" onClick={() => setPage('blog-post')} style={{ cursor: 'pointer', background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', display: 'grid', gridTemplateColumns: '1.3fr 1fr', marginBottom: 32 }}>
           <window.ImagePlaceholder paletteKey={featured.img} label="" aspect="16/10" rounded={0} showLabel={false} style={{ aspectRatio: 'auto', height: '100%' }}/>
           <div style={{ padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>⭐ {lang === 'es' ? 'Destacado' : 'Featured'} · {featured.cat} · {featured.m}</div>
@@ -174,7 +174,7 @@ const BlogPage = ({ lang, setPage }) => {
         </div>
 
         {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {rest.map((p, i) => (
             <div key={i} onClick={() => setPage('blog-post')} style={{ cursor: 'pointer', background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)' }}>
               <window.ImagePlaceholder paletteKey={p.img} label="" aspect="4/3" rounded={0} showLabel={false}/>
@@ -198,7 +198,7 @@ const BlogPostPage = ({ lang, setPage }) => {
       <section style={{ padding: '32px 40px 0' }}>
         <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer' }}>← {lang === 'es' ? 'Volver al blog' : 'Back to blog'}</a>
       </section>
-      <article style={{ padding: '24px 40px 60px', maxWidth: 820, margin: '0 auto' }}>
+      <article className="section-pad" style={{ padding: '24px 40px 60px', maxWidth: 820, margin: '0 auto' }}>
         <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 }}>Tulum · 4 min · 2026-04-15</div>
         <h1 style={{ fontSize: 44, fontWeight: 800, margin: 0, letterSpacing: -1.4, fontFamily: 'Archivo, sans-serif', lineHeight: 1.05, textWrap: 'balance' }}>
           {lang === 'es' ? 'Cómo llegar a Tulum desde el aeropuerto de Cancún' : 'How to get to Tulum from Cancún airport'}
@@ -230,7 +230,7 @@ const BlogPostPage = ({ lang, setPage }) => {
           <p style={{ textWrap: 'pretty' }}>{lang === 'es' ? 'Tiene sentido solo si planeas moverte mucho fuera de Tulum. Estaciónate en Tulum pueblo cuesta $200-400 MXN por día en lugares seguros. En la zona hotelera casi no hay estacionamiento público.' : 'Only makes sense if you plan to move around a lot outside Tulum. Parking in Tulum town costs $200-400 MXN/day in safe spots. The hotel zone has almost no public parking.'}</p>
         </div>
 
-        <div style={{ marginTop: 48, padding: 24, background: '#0a1f12', color: '#fff', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
+        <div className="resp-stack-col" style={{ marginTop: 48, padding: 24, background: '#0a1f12', color: '#fff', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
           <div>
             <div style={{ fontSize: 11, color: '#7dd87e', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>{lang === 'es' ? '¿Quieres el traslado privado?' : 'Want a private transfer?'}</div>
             <div style={{ fontSize: 20, fontWeight: 800, fontFamily: 'Archivo, sans-serif', marginTop: 4, letterSpacing: -0.4 }}>{lang === 'es' ? 'CUN → Tulum desde $125 USD' : 'CUN → Tulum from $125 USD'}</div>
@@ -280,7 +280,7 @@ const FAQPage = ({ lang }) => {
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', 'FAQ']}
         imgKey="cenotes-tour"
       />
-      <section style={{ padding: '40px 40px 60px', maxWidth: 900, margin: '0 auto' }}>
+      <section className="section-pad" style={{ padding: '40px 40px 60px', maxWidth: 900, margin: '0 auto' }}>
         {groups.map((g, gi) => (
           <div key={gi} style={{ marginBottom: 36 }}>
             <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 16px 0', letterSpacing: -0.5, fontFamily: 'Archivo, sans-serif' }}>{g.t}</h2>
@@ -314,13 +314,13 @@ const CheckoutPage = ({ lang, setPage }) => {
 
   return (
     <>
-      <section style={{ padding: '24px 40px 0' }}>
+      <section className="section-pad" style={{ padding: '24px 40px 0' }}>
         <a onClick={() => setPage('home')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer' }}>← {lang === 'es' ? 'Volver al inicio' : 'Back to home'}</a>
       </section>
 
       {/* Stepper */}
-      <section style={{ padding: '24px 40px' }}>
-        <div style={{ display: 'flex', gap: 0, marginBottom: 32 }}>
+      <section className="section-pad" style={{ padding: '24px 40px' }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', gap: 0, marginBottom: 32 }}>
           {[lang === 'es' ? 'Detalles' : 'Details', lang === 'es' ? 'Pago' : 'Payment', lang === 'es' ? 'Confirmación' : 'Confirmation'].map((s, i) => {
             const n = i + 1;
             const done = step > n;
@@ -337,13 +337,13 @@ const CheckoutPage = ({ lang, setPage }) => {
           })}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
           <div style={{ background: '#fff', borderRadius: 14, padding: 28, border: '1px solid rgba(10,10,10,0.06)' }}>
             {step === 1 && (
               <>
                 <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Tus datos de contacto' : 'Your contact details'}</h2>
                 <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 4, marginBottom: 20 }}>{lang === 'es' ? 'Necesitamos estos datos para confirmar tu servicio.' : 'We need these to confirm your service.'}</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
                     <label style={formLabel}>{lang === 'es' ? 'Nombre completo' : 'Full name'}</label>
                     <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={formInput}/>
@@ -374,7 +374,7 @@ const CheckoutPage = ({ lang, setPage }) => {
                 </p>
                 <label style={formLabel}>{lang === 'es' ? 'Número de tarjeta' : 'Card number'}</label>
                 <input value={card.num} onChange={e => setCard({ ...card, num: e.target.value })} placeholder="4242 4242 4242 4242" style={formInput}/>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
+                <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
                   <div>
                     <label style={formLabel}>{lang === 'es' ? 'Expira' : 'Expires'}</label>
                     <input value={card.exp} onChange={e => setCard({ ...card, exp: e.target.value })} placeholder="MM/YY" style={formInput}/>

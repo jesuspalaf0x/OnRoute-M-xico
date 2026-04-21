@@ -1,6 +1,7 @@
 // Subpáginas comunes: Header, Footer reutilizables + Páginas (Tours, TourDetail, About, Contact, Blog, BlogPost, FAQ, Checkout)
 
 const Header = ({ lang, setLang, page, setPage }) => {
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const t = window.COPY[lang];
   const accent = '#1FA84A';
   const links = [
@@ -13,7 +14,7 @@ const Header = ({ lang, setLang, page, setPage }) => {
   ];
   return (
     <>
-      <div style={{ background: '#0a1f12', color: '#fff', padding: '7px 32px', fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="resp-header-top" style={{ background: '#0a1f12', color: '#fff', padding: '7px 32px', fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: 20 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="phone" size={11} stroke={2}/> +52 998 000 0000</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="mail" size={11} stroke={2}/> hola@onroutemx.com</span>
@@ -24,19 +25,19 @@ const Header = ({ lang, setLang, page, setPage }) => {
           <span style={{ display: 'flex', gap: 10 }}><window.Icon name="instagram" size={13} stroke={1.8}/><window.Icon name="facebook" size={13} stroke={1.8}/></span>
         </div>
       </div>
-      <nav style={{
+      <nav className="resp-nav" style={{
         position: 'sticky', top: 0, zIndex: 20, padding: '14px 40px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(10,10,10,0.08)',
       }}>
         <a onClick={() => setPage('home')} style={{ cursor: 'pointer' }}><window.OnrouteLogo size={28} /></a>
-        <div style={{ display: 'flex', gap: 22, fontSize: 13, fontWeight: 500 }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', gap: 22, fontSize: 13, fontWeight: 500 }}>
           {links.map(l => (
-            <a key={l.id} onClick={() => setPage(l.id)} style={{ color: page === l.id ? accent : 'rgba(10,10,10,0.75)', cursor: 'pointer', fontWeight: page === l.id ? 700 : 500 }}>{l.label}</a>
+            <a key={l.id} onClick={() => { setPage(l.id); setMenuOpen(false); }} style={{ color: page === l.id ? accent : 'rgba(10,10,10,0.75)', cursor: 'pointer', fontWeight: page === l.id ? 700 : 500 }}>{l.label}</a>
           ))}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(10,10,10,0.12)', background: 'transparent', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
             {lang === 'es' ? 'Mi reserva' : 'My booking'}
           </button>
@@ -44,7 +45,24 @@ const Header = ({ lang, setLang, page, setPage }) => {
             {t.hero.cta}
           </button>
         </div>
+        <button className="show-on-mobile" onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}>
+          <window.Icon name="menu" size={24} />
+        </button>
       </nav>
+
+      {menuOpen && (
+        <div className="mobile-menu-overlay show-on-mobile-flex">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ cursor: 'pointer' }} onClick={() => { setPage('home'); setMenuOpen(false); }}><window.OnrouteLogo size={28} /></div>
+            <button onClick={() => setMenuOpen(false)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}><window.Icon name="check" size={24} /></button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, fontSize: 22, fontWeight: 700, marginTop: 20 }}>
+            {links.map(l => (
+              <a key={l.id} onClick={() => { setPage(l.id); setMenuOpen(false); }} style={{ color: page === l.id ? accent : '#0a0a0a', cursor: 'pointer', fontWeight: 700 }}>{l.label}</a>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 };
@@ -52,8 +70,8 @@ const Header = ({ lang, setLang, page, setPage }) => {
 const Footer = ({ lang, setPage }) => {
   const t = window.COPY[lang];
   return (
-    <footer style={{ padding: '36px 40px 20px', background: '#0a0a0a', color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', gap: 32, marginBottom: 28 }}>
+    <footer className="section-pad" style={{ padding: '36px 40px 20px', background: '#0a0a0a', color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>
+      <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', gap: 32, marginBottom: 28 }}>
         <div>
           <window.OnrouteLogo size={24} color="#fff"/>
           <p style={{ marginTop: 12, lineHeight: 1.6, maxWidth: 240, fontSize: 11 }}>{lang === 'es' ? 'Traslados privados y tours en la Riviera Maya y Yucatán.' : 'Private transfers and tours in Riviera Maya and Yucatán.'}</p>
@@ -70,7 +88,7 @@ const Footer = ({ lang, setPage }) => {
           </div>
         ))}
       </div>
-      <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="resp-stack-col" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>{t.footer.rights}</div>
         <div style={{ display: 'flex', gap: 16 }}>{t.footer.links.map((l, i) => <a key={i} style={{ color: 'inherit', cursor: 'pointer' }}>{l}</a>)}</div>
       </div>
@@ -82,14 +100,14 @@ const Footer = ({ lang, setPage }) => {
 const PageHero = ({ kicker, title, sub, crumbs, imgKey }) => {
   const accent = '#1FA84A';
   return (
-    <section style={{ padding: '32px 40px 0' }}>
+    <section className="section-pad" style={{ padding: '32px 40px 0' }}>
       <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', minHeight: 320 }}>
         <window.ImagePlaceholder paletteKey={imgKey || 'tulum'} label="" aspect="16/5" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto', minHeight: 320 }}/>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(10,31,18,0.45) 0%, rgba(10,31,18,0.75) 100%)' }}/>
         <div style={{ position: 'absolute', inset: 0, padding: '32px 40px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', color: '#fff' }}>
           {crumbs && <div style={{ fontSize: 11, marginBottom: 12, opacity: 0.75, display: 'flex', gap: 6 }}>{crumbs.map((c, i) => <React.Fragment key={i}>{i > 0 && <span>/</span>}<span>{c}</span></React.Fragment>)}</div>}
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: '#7dd87e', textTransform: 'uppercase', marginBottom: 8 }}>{kicker}</div>
-          <h1 style={{ fontSize: 48, lineHeight: 1, letterSpacing: -1.4, margin: 0, fontFamily: 'Archivo, sans-serif', fontWeight: 800, textWrap: 'balance', maxWidth: 760 }}>{title}</h1>
+          <h1 className="title-h1" style={{ fontSize: 48, lineHeight: 1, letterSpacing: -1.4, margin: 0, fontFamily: 'Archivo, sans-serif', fontWeight: 800, textWrap: 'balance', maxWidth: 760 }}>{title}</h1>
           {sub && <p style={{ fontSize: 15, lineHeight: 1.5, color: 'rgba(255,255,255,0.85)', maxWidth: 620, marginTop: 14, marginBottom: 0 }}>{sub}</p>}
         </div>
       </div>
@@ -121,7 +139,7 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Tours' : 'Tours']}
         imgKey="tulum-tour"
       />
-      <section style={{ padding: '32px 40px' }}>
+      <section className="section-pad" style={{ padding: '32px 40px' }}>
         {/* Barra de filtros */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 16, background: '#fff', borderRadius: 12, border: '1px solid rgba(10,10,10,0.06)', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -141,7 +159,7 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+        <div className="resp-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
           {all.map((tour, i) => (
             <div key={i} onClick={() => { setTourIdx(i % t.tours.list.length); setPage('tour-detail'); }} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'transform .2s' }}
               onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
@@ -193,16 +211,16 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
 
   return (
     <>
-      <section style={{ padding: '24px 40px 0' }}>
+      <section className="section-pad" style={{ padding: '24px 40px 0' }}>
         <a onClick={() => setPage('tours')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
           {lang === 'es' ? 'Volver a tours' : 'Back to tours'}
         </a>
       </section>
 
-      <section style={{ padding: '16px 40px' }}>
+      <section className="section-pad" style={{ padding: '16px 40px' }}>
         {/* Image gallery */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8, marginBottom: 24, height: 380 }}>
+        <div className="tour-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8, marginBottom: 24, height: 380 }}>
           <window.ImagePlaceholder paletteKey={tour.img} label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
           <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 8 }}>
             <window.ImagePlaceholder paletteKey="cenotes-tour" label="" aspect="auto" rounded={12} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
@@ -214,7 +232,7 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 40 }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 40 }}>
           {/* Left: content */}
           <div>
             <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>{tour.loc}</div>

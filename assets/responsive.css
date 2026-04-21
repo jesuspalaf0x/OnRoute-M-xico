@@ -1,0 +1,86 @@
+/* Global Responsive Utilities for OnRoute */
+
+.hide-on-mobile { display: block; }
+.show-on-mobile { display: none; }
+
+.mobile-menu-overlay {
+  position: fixed; top: 70px; left: 0; right: 0; bottom: 0;
+  background: rgba(244, 245, 242, 0.98);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+  display: flex; flex-direction: column;
+  padding: 30px 40px; gap: 24px;
+}
+
+@media (max-width: 900px) {
+  /* Tablets */
+  .section-pad { padding: 30px 24px !important; }
+  .resp-nav { padding: 14px 24px !important; }
+  .resp-header-top { padding: 7px 24px !important; }
+
+  /* Grids */
+  .resp-split { display: grid !important; grid-template-columns: 1fr !important; gap: 30px !important; }
+  .resp-grid-4 { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; }
+  .resp-grid-3 { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; }
+  .resp-grid-2 { display: grid !important; grid-template-columns: 1fr !important; gap: 20px !important; }
+  
+  .title-h1 { font-size: 42px !important; }
+  .title-h2 { font-size: 28px !important; }
+  .hero-img { min-height: 380px !important; }
+
+  /* Footer layout */
+  .footer-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+}
+
+@media (max-width: 650px) {
+  /* Mobile Phones */
+  .hide-on-mobile { display: none !important; }
+  .show-on-mobile { display: block !important; }
+  .show-on-mobile-flex { display: flex !important; }
+  
+  .section-pad { padding: 30px 16px !important; }
+  .resp-nav { padding: 14px 16px !important; }
+  .resp-header-top { display: none !important; } /* Ocultar barra superior verde densa en moviles */
+
+  /* Title adjustments */
+  .title-h1 { font-size: 34px !important; letter-spacing: -1px !important; }
+  .title-h2 { font-size: 26px !important; }
+  .hero-img { min-height: 280px !important; }
+
+  /* Force stack everywhere */
+  .resp-grid-4, .resp-grid-3 { display: grid !important; grid-template-columns: 1fr !important; }
+
+  /* Horizontal Scroll Carousel for specific sections (Destinos, Tours, Blog) */
+  .resp-scroll-cards {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    gap: 12px !important;
+    padding-bottom: 20px !important; 
+    margin-right: -16px !important; /* Bleed out of padding constraint */
+    padding-right: 16px !important; /* Bleed padding */
+    scrollbar-width: none;
+  }
+  .resp-scroll-cards::-webkit-scrollbar { display: none; }
+  .resp-scroll-cards > div {
+    flex: 0 0 85% !important; /* Carousel item width */
+    scroll-snap-align: center;
+  }
+
+  /* Layout flips */
+  .resp-stack-reverse { display: flex !important; flex-direction: column-reverse !important; gap: 24px !important; }
+  .resp-stack-col { display: flex !important; flex-direction: column !important; gap: 20px !important; }
+  .contact-footer-split { display: flex !important; flex-direction: column !important; gap: 30px !important;}
+
+  .footer-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+}
+
+@media (max-width: 900px) {
+  .tour-gallery-grid { grid-template-columns: 1.5fr 1fr !important; }
+  .tour-gallery-grid > div:nth-child(3) { display: none !important; }
+}
+@media (max-width: 650px) {
+  .tour-gallery-grid { grid-template-columns: 1fr !important; grid-template-rows: 1fr !important; height: 260px !important; }
+  .tour-gallery-grid > div:not(:first-child) { display: none !important; }
+}

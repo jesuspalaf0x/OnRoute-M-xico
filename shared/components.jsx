@@ -225,7 +225,7 @@ const Booker = ({ t, variant = 'card', accent = '#1FA84A' }) => {
           {t.title}
         </div>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+      <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
         <Field label={t.from} icon="plane" err={errors.from}>
           <input value={from} onChange={(e) => { setFrom(e.target.value); setErrors({ ...errors, from: false }); }}
             placeholder={t.fromPH}
@@ -237,7 +237,7 @@ const Booker = ({ t, variant = 'card', accent = '#1FA84A' }) => {
             style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: fieldText, fontWeight: 500, fontFamily: 'Inter, sans-serif', minWidth: 0 }}/>
         </Field>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10, marginBottom: 12 }}>
+      <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10, marginBottom: 12 }}>
         <Field label={t.date} icon="calendar" err={errors.date}>
           <input type="date" value={date} onChange={(e) => { setDate(e.target.value); setErrors({ ...errors, date: false }); }}
             style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: 13, color: fieldText, fontWeight: 500, fontFamily: 'Inter, sans-serif', minWidth: 0 }}/>

@@ -8,6 +8,7 @@ const V3Dense = ({ lang, setLang }) => {
   const accentDark = '#0F6B2E';
   const scrollRef = React.useRef(null);
   const [activeTab, setActiveTab] = React.useState('traslado');
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   const scrollTo = (id) => {
     const el = scrollRef.current?.querySelector(`[data-sec="${id}"]`);
@@ -26,7 +27,7 @@ const V3Dense = ({ lang, setLang }) => {
       background: '#f4f5f2', color: '#0a0a0a', fontFamily: 'Inter, sans-serif',
     }}>
       {/* Top bar con contacto */}
-      <div style={{ background: '#0a1f12', color: '#fff', padding: '7px 32px', fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="resp-header-top" style={{ background: '#0a1f12', color: '#fff', padding: '7px 32px', fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: 20 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="phone" size={11} stroke={2}/> +52 998 000 0000</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="mail" size={11} stroke={2}/> hola@onroutemx.com</span>
@@ -42,14 +43,14 @@ const V3Dense = ({ lang, setLang }) => {
       </div>
 
       {/* Nav */}
-      <nav style={{
+      <nav className="resp-nav" style={{
         position: 'sticky', top: 0, zIndex: 20, padding: '14px 40px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(10,10,10,0.08)',
       }}>
         <window.OnrouteLogo size={28} />
-        <div style={{ display: 'flex', gap: 22, fontSize: 13, fontWeight: 500 }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', gap: 22, fontSize: 13, fontWeight: 500 }}>
           <a onClick={() => scrollTo('cotizar')} style={navLink3}>{t.nav.inicio}</a>
           <a onClick={() => scrollTo('servicios')} style={navLink3}>{t.nav.servicios}</a>
           <a onClick={() => scrollTo('destinos')} style={navLink3}>{t.nav.destinos}</a>
@@ -58,7 +59,7 @@ const V3Dense = ({ lang, setLang }) => {
           <a onClick={() => scrollTo('blog')} style={navLink3}>{t.nav.blog}</a>
           <a onClick={() => scrollTo('contacto')} style={navLink3}>{t.nav.contacto}</a>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(10,10,10,0.12)', background: 'transparent', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
             {lang === 'es' ? 'Mi reserva' : 'My booking'}
           </button>
@@ -66,13 +67,32 @@ const V3Dense = ({ lang, setLang }) => {
             {t.hero.cta}
           </button>
         </div>
+        <button className="show-on-mobile" onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}>
+          <window.Icon name="menu" size={24} />
+        </button>
       </nav>
 
+      {menuOpen && (
+        <div className="mobile-menu-overlay show-on-mobile-flex">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <window.OnrouteLogo size={28} />
+            <button onClick={() => setMenuOpen(false)} style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer' }}><window.Icon name="check" size={24} /></button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, fontSize: 22, fontWeight: 700, marginTop: 20 }}>
+            <a onClick={() => { scrollTo('cotizar'); setMenuOpen(false); }} style={navLink3}>{t.nav.inicio}</a>
+            <a onClick={() => { scrollTo('servicios'); setMenuOpen(false); }} style={navLink3}>{t.nav.servicios}</a>
+            <a onClick={() => { scrollTo('destinos'); setMenuOpen(false); }} style={navLink3}>{t.nav.destinos}</a>
+            <a onClick={() => { scrollTo('tours'); setMenuOpen(false); }} style={navLink3}>{t.nav.tours}</a>
+            <a onClick={() => { scrollTo('contacto'); setMenuOpen(false); }} style={navLink3}>{t.nav.contacto}</a>
+          </div>
+        </div>
+      )}
+
       {/* HERO — split, cotizador tabbed + datos flanqueando */}
-      <section data-sec="cotizar" style={{ padding: '32px 40px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 28, alignItems: 'stretch' }}>
+      <section data-sec="cotizar" className="section-pad" style={{ padding: '32px 40px 40px' }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 28, alignItems: 'stretch' }}>
           {/* Lado izquierdo: imagen con datos overlay */}
-          <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', minHeight: 520 }}>
+          <div className="hero-img" style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', minHeight: 520 }}>
             <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(10,31,18,0.55) 0%, rgba(10,31,18,0.25) 50%, rgba(10,31,18,0.75) 100%)' }}/>
             <div style={{ position: 'absolute', inset: 0, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff' }}>
@@ -81,7 +101,7 @@ const V3Dense = ({ lang, setLang }) => {
                   <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent }}/>
                   {t.hero.kicker}
                 </div>
-                <h1 style={{ fontSize: 58, lineHeight: 1, letterSpacing: -1.8, margin: '18px 0 0 0', fontFamily: 'Archivo, sans-serif', fontWeight: 800, textWrap: 'balance' }}>
+                <h1 className="title-h1" style={{ fontSize: 58, lineHeight: 1, letterSpacing: -1.8, margin: '18px 0 0 0', fontFamily: 'Archivo, sans-serif', fontWeight: 800, textWrap: 'balance' }}>
                   {t.hero.title1} {t.hero.title2} <span style={{ color: '#7dd87e' }}>{t.hero.title3}</span>.
                 </h1>
                 <p style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(255,255,255,0.85)', maxWidth: 420, marginTop: 16 }}>
@@ -89,7 +109,7 @@ const V3Dense = ({ lang, setLang }) => {
                 </p>
               </div>
               {/* Stats row en grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+              <div className="resp-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                 {[
                   { n: '12K+', l: lang === 'es' ? 'Traslados' : 'Transfers' },
                   { n: '48', l: lang === 'es' ? 'Destinos' : 'Destinations' },
@@ -137,7 +157,7 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* RUTAS POPULARES con tarifas — tabla densa */}
-      <section style={{ padding: '20px 40px 40px' }}>
+      <section className="section-pad" style={{ padding: '20px 40px 40px' }}>
         <div style={{ background: '#fff', borderRadius: 14, padding: 24, border: '1px solid rgba(10,10,10,0.06)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
             <div>
@@ -146,7 +166,7 @@ const V3Dense = ({ lang, setLang }) => {
             </div>
             <button style={ghostBtn3}>{lang === 'es' ? 'Ver todas las rutas' : 'See all routes'} <window.Icon name="arrowRight" size={12} stroke={2.2}/></button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
               { from: 'CUN', to: 'Tulum', dur: '2h 00m', price: '$125', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
               { from: 'CUN', to: 'Playa del Carmen', dur: '1h 10m', price: '$89', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
@@ -177,7 +197,7 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* SERVICIOS — lista compacta con sub-bullets */}
-      <section data-sec="servicios" style={{ padding: '40px 40px' }}>
+      <section data-sec="servicios" className="section-pad" style={{ padding: '40px 40px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32 }}>
           <div>
             <div style={kicker3(accent)}>{t.services.kicker}</div>
@@ -185,7 +205,7 @@ const V3Dense = ({ lang, setLang }) => {
             <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.6)', marginTop: 10, maxWidth: 540 }}>{t.services.sub}</p>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
           {t.services.list.map((s, i) => {
             const icons = ['plane', 'car', 'leaf', 'users'];
             const features = [
@@ -218,10 +238,10 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* DESTINOS */}
-      <section data-sec="destinos" style={{ padding: '40px 40px' }}>
+      <section data-sec="destinos" className="section-pad" style={{ padding: '40px 40px' }}>
         <div style={kicker3(accent)}>{t.destinos.kicker}</div>
         <h2 style={sectionTitle3}>{t.destinos.title}</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 24 }}>
+        <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginTop: 24 }}>
           {t.destinos.list.map((d, i) => (
             <div key={i} style={{ background: '#fff', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer' }}>
               <window.ImagePlaceholder paletteKey={d.img} label="" aspect="4/2.5" rounded={0} showLabel={false}/>
@@ -237,8 +257,8 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* TOURS grid denso */}
-      <section data-sec="tours" style={{ padding: '40px 40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
+      <section data-sec="tours" className="section-pad" style={{ padding: '40px 40px' }}>
+        <div className="hide-on-mobile" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
           <div>
             <div style={kicker3(accent)}>{t.tours.kicker}</div>
             <h2 style={sectionTitle3}>{t.tours.title}</h2>
@@ -249,7 +269,7 @@ const V3Dense = ({ lang, setLang }) => {
             ))}
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
           {t.tours.list.map((tour, i) => (
             <div key={i} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
               <div style={{ position: 'relative' }}>
@@ -281,12 +301,12 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* WHY + TESTIMONIOS en doble columna */}
-      <section data-sec="why" style={{ padding: '40px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 20 }}>
+      <section data-sec="why" className="section-pad" style={{ padding: '40px 40px' }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 20 }}>
           <div style={{ background: '#fff', borderRadius: 14, padding: 28, border: '1px solid rgba(10,10,10,0.06)' }}>
             <div style={kicker3(accent)}>{t.why.kicker}</div>
             <h2 style={{ ...sectionTitle3, fontSize: 30 }}>{t.why.title}</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 24 }}>
+            <div className="resp-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 24 }}>
               {t.why.list.map((w, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                   <div style={{ width: 32, height: 32, flexShrink: 0, borderRadius: 8, background: 'rgba(31,168,74,0.1)', color: accentDark, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -324,12 +344,12 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* BLOG + FAQ */}
-      <section data-sec="blog" style={{ padding: '40px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20 }}>
+      <section data-sec="blog" className="section-pad" style={{ padding: '40px 40px' }}>
+        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20 }}>
           <div>
             <div style={kicker3(accent)}>{lang === 'es' ? 'Del blog' : 'From the blog'}</div>
             <h2 style={sectionTitle3}>{lang === 'es' ? 'Guías para viajar mejor' : 'Guides to travel better'}</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
+            <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
               {[
                 { t: lang === 'es' ? 'Cómo llegar a Tulum desde CUN' : 'How to get to Tulum from CUN', cat: 'Tulum', img: 'tulum', m: '4 min' },
                 { t: lang === 'es' ? 'Los 5 cenotes imperdibles' : 'The 5 must-visit cenotes', cat: 'Cenotes', img: 'cenotes-tour', m: '6 min' },
@@ -362,8 +382,8 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* CTA Contacto */}
-      <section data-sec="contacto" style={{ padding: '60px 40px', background: '#0a0a0a', color: '#fff' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 60, alignItems: 'center' }}>
+      <section data-sec="contacto" className="section-pad" style={{ padding: '60px 40px', background: '#0a0a0a', color: '#fff' }}>
+        <div className="contact-footer-split" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: 52, fontWeight: 800, margin: 0, letterSpacing: -1.6, fontFamily: 'Archivo, sans-serif', lineHeight: 1, textWrap: 'balance' }}>
               {lang === 'es' ? <>¿Listo para <span style={{ color: accent }}>rodar</span>?</> : <>Ready to <span style={{ color: accent }}>roll</span>?</>}
@@ -394,8 +414,8 @@ const V3Dense = ({ lang, setLang }) => {
       </section>
 
       {/* Footer denso */}
-      <footer style={{ padding: '36px 40px 20px', background: '#0a0a0a', color: 'rgba(255,255,255,0.5)', fontSize: 11, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', gap: 32, marginBottom: 28 }}>
+      <footer className="section-pad" style={{ padding: '36px 40px 20px', background: '#0a0a0a', color: 'rgba(255,255,255,0.5)', fontSize: 11, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr', gap: 32, marginBottom: 28 }}>
           <div>
             <window.OnrouteLogo size={24} color="#fff"/>
             <p style={{ marginTop: 12, lineHeight: 1.6, maxWidth: 240, fontSize: 11 }}>{lang === 'es' ? 'Traslados privados y tours en la Riviera Maya y Yucatán.' : 'Private transfers and tours in the Riviera Maya and Yucatán.'}</p>
@@ -412,7 +432,7 @@ const V3Dense = ({ lang, setLang }) => {
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="resp-stack-col" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>{t.footer.rights}</div>
           <div style={{ display: 'flex', gap: 16 }}>{t.footer.links.map((l, i) => <a key={i} style={{ color: 'inherit', cursor: 'pointer' }}>{l}</a>)}</div>
         </div>
