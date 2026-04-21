@@ -14,6 +14,10 @@ const V3Dense = ({ lang, setLang }) => {
   const { tours: wpTours, loading: toursLoading } = window.useWPTours ? window.useWPTours() : { tours: [], loading: false };
   const toursList = wpTours.length > 0 ? wpTours : t.tours.list;
 
+  // Blog dinámico desde WordPress
+  const { posts: wpPosts, loading: postsLoading } = window.useWPPosts ? window.useWPPosts(3) : { posts: [], loading: false };
+
+
   const scrollTo = (id) => {
     const el = scrollRef.current?.querySelector(`[data-sec="${id}"]`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -361,18 +365,30 @@ const V3Dense = ({ lang, setLang }) => {
             <div style={kicker3(accent)}>{lang === 'es' ? 'Del blog' : 'From the blog'}</div>
             <h2 style={sectionTitle3}>{lang === 'es' ? 'Guías para viajar mejor' : 'Guides to travel better'}</h2>
             <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
-              {[
-                { t: lang === 'es' ? 'Cómo llegar a Tulum desde CUN' : 'How to get to Tulum from CUN', cat: 'Tulum', img: 'tulum', m: '4 min' },
-                { t: lang === 'es' ? 'Los 5 cenotes imperdibles' : 'The 5 must-visit cenotes', cat: 'Cenotes', img: 'cenotes-tour', m: '6 min' },
-                { t: lang === 'es' ? 'Qué empacar para Yucatán' : 'What to pack for Yucatán', cat: 'Tips', img: 'chichen', m: '3 min' },
-              ].map((p, i) => (
-                <div key={i} style={{ background: '#fff', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer' }}>
-                  <window.ImagePlaceholder paletteKey={p.img} label="" aspect="4/3" rounded={0} showLabel={false}/>
-                  <div style={{ padding: 12 }}>
-                    <div style={{ fontSize: 9, color: accent, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{p.cat} · {p.m}</div>
-                    <h4 style={{ fontSize: 12, fontWeight: 700, margin: 0, letterSpacing: -0.2, lineHeight: 1.3, fontFamily: 'Archivo, sans-serif', textWrap: 'balance' }}>{p.t}</h4>
-                  </div>
+              {postsLoading && (
+                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '24px 0', color: 'rgba(10,10,10,0.4)', fontSize: 12 }}>
+                  <div style={{ width: 20, height: 20, border: `2px solid ${accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 8px' }} />
+                  {lang === 'es' ? 'Cargando artículos...' : 'Loading articles...'}
                 </div>
+              )}
+              {!postsLoading && wpPosts.map((p, i) => (
+                <a key={p.id || i} href={p.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ background: '#fff', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    {p.isURL && p.img ? (
+                      <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
+                        <img src={p.img} alt={p.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.3s' }} />
+                      </div>
+                    ) : (
+                      <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={0} showLabel={false}/>
+                    )}
+                    <div style={{ padding: 12, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ fontSize: 9, color: accent, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{p.cat} · {p.readMin}</div>
+                      <h4 style={{ fontSize: 12, fontWeight: 700, margin: '0 0 6px', letterSpacing: -0.2, lineHeight: 1.3, fontFamily: 'Archivo, sans-serif' }}>{p.t}</h4>
+                      <p style={{ fontSize: 10, color: 'rgba(10,10,10,0.55)', margin: 0, lineHeight: 1.4, flex: 1 }}>{p.excerpt.length > 80 ? p.excerpt.slice(0, 80) + '…' : p.excerpt}</p>
+                      <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.35)', marginTop: 8 }}>{p.date}</div>
+                    </div>
+                  </div>
+                </a>
               ))}
             </div>
           </div>

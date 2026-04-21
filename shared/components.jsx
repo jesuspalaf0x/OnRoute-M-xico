@@ -330,4 +330,52 @@ const useWPTours = () => {
   return { tours, loading };
 };
 
-Object.assign(window, { OnrouteLogo, ImagePlaceholder, Icon, WhatsappFAB, LangToggle, Booker, useWPTours });
+// Hook dinámico para cargar entradas de Blog desde WordPress REST API
+const useWPPosts = (count = 3) => {
+  const [posts, setPosts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch(`https://onroutemx.com/wp-json/wp/v2/posts?_embed=true&per_page=${count}&status=publish`)
+      .then(res => res.json())
+      .then(data => {
+        const mapped = data.map(post => {
+          // Imagen destacada
+          const img = post._embedded && post._embedded['wp:featuredmedia'] && post._embedded['wp:featuredmedia'][0]
+            ? post._embedded['wp:featuredmedia'][0].source_url
+            : null;
+          // Categoría
+          const cats = post._embedded && post._embedded['wp:term'] ? post._embedded['wp:term'][0] : [];
+          const cat = cats.length > 0 ? cats[0].name : 'OnRoute';
+          // Extracto limpio (quitar tags HTML)
+          const excerpt = post.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/&#8230;/g, '…').trim();
+          // Tiempo estimado de lectura (aprox. 200 palabras/min)
+          const wordCount = post.content.rendered.replace(/<[^>]+>/g, '').split(' ').length;
+          const readMin = Math.max(1, Math.ceil(wordCount / 200));
+
+          return {
+            id: post.id,
+            t: post.title.rendered,
+            excerpt,
+            cat,
+            readMin: `${readMin} min`,
+            img,
+            isURL: !!img,
+            link: post.link,
+            date: new Date(post.date).toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' }),
+          };
+        });
+        setPosts(mapped);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error cargando blog:', err);
+        setLoading(false);
+      });
+  }, [count]);
+
+  return { posts, loading };
+};
+
+Object.assign(window, { OnrouteLogo, ImagePlaceholder, Icon, WhatsappFAB, LangToggle, Booker, useWPTours, useWPPosts });
+
