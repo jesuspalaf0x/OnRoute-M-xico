@@ -468,6 +468,7 @@ const CheckoutPage = ({ lang, setPage }) => {
             </div>
           </div>
         </div>
+        </div>
       </section>
     </>
   );
