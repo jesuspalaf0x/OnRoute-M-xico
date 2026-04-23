@@ -177,7 +177,7 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
         title={lang === 'es' ? 'Tours que se quedan en la memoria' : 'Tours that stay with you'}
         sub={lang === 'es' ? 'Explora cenotes, ruinas mayas, islas y experiencias culinarias con guías locales certificados.' : 'Explore cenotes, Mayan ruins, islands and culinary experiences with certified local guides.'}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Tours y Actividades' : 'Tours']}
-        imgKey="tulum-tour"
+        imgKey="uploads/Imagenes para sitio/flamencos-rosas-las-coloradas-yucatan-tour.jpg"
       />
       <section className="section-pad" style={{ padding: '32px 40px' }}>
         {/* Barra de filtros */}

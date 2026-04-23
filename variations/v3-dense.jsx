@@ -102,7 +102,7 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
         <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 28, alignItems: 'stretch' }}>
           {/* Lado izquierdo: imagen con datos overlay */}
           <div className="hero-img" style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', minHeight: 520 }}>
-            <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
+            <window.ImagePlaceholder paletteKey="uploads/Imagenes para sitio/tour-bicicleta-tulum-riviera-maya-zona-hotelera.jpg" label="" aspect="4/3" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(10,31,18,0.55) 0%, rgba(10,31,18,0.25) 50%, rgba(10,31,18,0.75) 100%)' }}/>
             <div style={{ position: 'absolute', inset: 0, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', color: '#fff' }}>
               <div>

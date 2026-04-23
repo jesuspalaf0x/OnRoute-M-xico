@@ -10,7 +10,7 @@ const AboutPage = ({ lang }) => {
         title={lang === 'es' ? 'Locales. Bilingües. En ruta desde 2018.' : 'Local. Bilingual. On the road since 2018.'}
         sub={lang === 'es' ? 'Somos un equipo de conductores, guías y operadores de la Riviera Maya que conocemos cada curva del camino.' : "We're drivers, guides and operators from the Riviera Maya who know every bend of the road."}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Nosotros' : 'About']}
-        imgKey="pdc"
+        imgKey="uploads/Imagenes para sitio/tour-cenote-zemway-nadar-riviera-maya.jpg"
       />
       <section className="section-pad" style={{ padding: '60px 40px' }}>
         <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
@@ -69,7 +69,7 @@ const ContactPage = ({ lang }) => {
         title={lang === 'es' ? '¿Hablamos?' : "Let's talk"}
         sub={lang === 'es' ? 'Por WhatsApp contestamos en menos de 10 minutos. Por email, el mismo día.' : 'We reply on WhatsApp in under 10 minutes. Email, same day.'}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Contacto' : 'Contact']}
-        imgKey="bacalar"
+        imgKey="uploads/Imagenes para sitio/turista-reservacion-tour-tulum-riviera-maya.png"
       />
       <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
         <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
@@ -144,7 +144,7 @@ const BlogPage = ({ lang, setPage }) => {
         title={lang === 'es' ? 'Historias, guías y consejos del camino' : 'Stories, guides and tips from the road'}
         sub={lang === 'es' ? 'Lo que hemos aprendido llevando miles de viajeros por la Riviera Maya.' : "What we've learned moving thousands of travelers across the Riviera Maya."}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', 'Blog']}
-        imgKey="valladolid"
+        imgKey="uploads/Imagenes para sitio/descanso-playa-caribe-vacaciones-riviera-maya.jpg"
       />
       <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
         {loading && (
