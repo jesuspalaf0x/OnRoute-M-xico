@@ -479,7 +479,7 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
         </div>
         <div className="resp-stack-col" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>{t.footer.rights}</div>
-          <div style={{ display: 'flex', gap: 16 }}>{t.footer.links.map((l, i) => <a key={i} style={{ color: 'inherit', cursor: 'pointer' }}>{l}</a>)}</div>
+          <div style={{ display: 'flex', gap: 16 }}>{t.footer.links.map((l, i) => <a key={i} onClick={() => navigate(l.page)} style={{ color: 'inherit', cursor: 'pointer' }}>{l.label}</a>)}</div>
         </div>
       </footer>
 

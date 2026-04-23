@@ -73,7 +73,11 @@ const COPY = {
     footer: {
       tag: 'Travel & Experiences',
       rights: '© 2026 OnRoute México. Todos los derechos reservados.',
-      links: ['Términos', 'Privacidad', 'Aviso legal'],
+      links: [
+        { label: 'Términos', page: 'terms' },
+        { label: 'Privacidad', page: 'privacy' },
+        { label: 'Aviso legal', page: 'legal' }
+      ],
     },
   },
   en: {
@@ -145,7 +149,11 @@ const COPY = {
     footer: {
       tag: 'Travel & Experiences',
       rights: '© 2026 OnRoute México. All rights reserved.',
-      links: ['Terms', 'Privacy', 'Legal'],
+      links: [
+        { label: 'Terms', page: 'terms' },
+        { label: 'Privacy', page: 'privacy' },
+        { label: 'Legal', page: 'legal' }
+      ],
     },
   },
 };

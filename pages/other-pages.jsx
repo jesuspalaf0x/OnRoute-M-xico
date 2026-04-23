@@ -480,4 +480,89 @@ const CheckoutPage = ({ lang, setPage }) => {
 const formLabel = { display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: 1, color: 'rgba(10,10,10,0.55)', textTransform: 'uppercase', marginBottom: 6, fontFamily: 'Inter, sans-serif' };
 const formInput = { width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(10,10,10,0.1)', fontSize: 13, fontFamily: 'Inter, sans-serif', background: '#fff', outline: 'none' };
 
-Object.assign(window, { AboutPage, ContactPage, BlogPage, BlogPostPage, FAQPage, CheckoutPage });
+const PrivacyPage = ({ lang }) => {
+  const t = window.COPY[lang];
+  return (
+    <>
+      <window.PageHero
+        kicker={lang === 'es' ? 'Privacidad' : 'Privacy'}
+        title={lang === 'es' ? 'Aviso de Privacidad Integral' : 'Comprehensive Privacy Policy'}
+        sub={lang === 'es' ? 'Última actualización: 23 de abril de 2026' : 'Last updated: April 23, 2026'}
+        crumbs={[t.nav.inicio, lang === 'es' ? 'Privacidad' : 'Privacy']}
+        imgKey="tulum"
+      />
+      <section className="section-pad" style={{ padding: '60px 40px' }}>
+        <div style={{ maxWidth: 800, margin: '0 auto', width: '100%', lineHeight: 1.7, fontSize: 14, color: 'rgba(10,10,10,0.8)' }}>
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>1. Identidad y Domicilio del Responsable</h3>
+          <p>OnRoute México (en adelante "OnRoute"), con domicilio en Tulum, Quintana Roo, México, es el responsable del uso y protección de sus datos personales. Ponemos a su disposición este aviso en cumplimiento con la normativa mexicana vigente para informarle qué información recabamos y para qué fines.</p>
+          
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>2. Datos Personales que Recabamos</h3>
+          <p>Para llevar a cabo las finalidades descritas en este aviso, recabaremos las siguientes categorías de datos:</p>
+          <ul>
+            <li><strong>Datos de identificación:</strong> Nombre completo, firma, identificación oficial (para verificación de identidad).</li>
+            <li><strong>Datos de contacto:</strong> Correo electrónico, teléfono móvil y/o fijo, domicilio, usuario de redes sociales (Facebook/Instagram).</li>
+            <li><strong>Datos de navegación:</strong> Dirección IP, tipo de navegador, cookies y tecnologías de rastreo a través de https://onroutemx.com/.</li>
+            <li><strong>Datos de servicio:</strong> Historial de viajes, destinos solicitados y preferencias turísticas.</li>
+          </ul>
+          <p><em>Nota:</em> OnRoute no recaba datos personales sensibles (origen racial, estado de salud, información genética, creencias religiosas, etc.).</p>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>3. Finalidades del Tratamiento de Datos</h3>
+          <p>Sus datos serán utilizados para las siguientes finalidades <strong>primarias</strong>, necesarias para el servicio:</p>
+          <ul>
+            <li>Gestionar y confirmar sus reservaciones de transporte y experiencias turísticas.</li>
+            <li>Verificar su identidad para garantizar la seguridad del servicio.</li>
+            <li>Emitir comprobantes fiscales (facturación) y gestionar pagos.</li>
+            <li>Mantener comunicación directa sobre el estatus de su servicio vía WhatsApp, llamada o correo.</li>
+            <li>Almacenamiento y gestión de su expediente de cliente en nuestra plataforma CRM (HubSpot).</li>
+          </ul>
+          <p>De manera <strong>secundaria</strong>, utilizaremos su información para:</p>
+          <ul>
+            <li>Evaluar la calidad del servicio mediante encuestas.</li>
+            <li>Enviar promociones, boletines informativos y novedades sobre Tulum y la región (pudiendo darse de baja en cualquier momento).</li>
+          </ul>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>4. Transferencia de Datos y Terceros</h3>
+          <p>Le informamos que sus datos personales son compartidos exclusivamente con:</p>
+          <ul>
+            <li><strong>Proveedores de Servicios Tecnológicos:</strong> Utilizamos HubSpot para la gestión de relaciones con clientes y almacenamiento de datos bajo estrictos estándares de seguridad digital.</li>
+            <li><strong>Autoridades:</strong> Solo en caso de requerimiento legal o judicial debidamente fundado.</li>
+          </ul>
+          <p>OnRoute México no vende, alquila ni comparte su información personal con terceras empresas con fines comerciales ajenos a nuestra operación.</p>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>5. Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)</h3>
+          <p>Usted tiene derecho a conocer qué datos tenemos de usted, para qué los utilizamos y las condiciones del uso que les damos (Acceso). Asimismo, es su derecho solicitar la corrección de su información (Rectificación), que la eliminemos de nuestros registros (Cancelación) o ponerse al uso de sus datos para fines específicos (Oposición).</p>
+          <p>Para ejercer sus <strong>Derechos ARCO</strong>, deberá enviar una solicitud al correo <a href="mailto:hola@onroutemx.com" style={{ color: '#1FA84A', fontWeight: 600 }}>hola@onroutemx.com</a> que contenga:</p>
+          <ol>
+            <li>Nombre completo del titular.</li>
+            <li>Documento que acredite su identidad (INE o Pasaporte escaneado).</li>
+            <li>Descripción clara de los datos sobre los que busca ejercer sus derechos.</li>
+            <li>Cualquier otro elemento que facilite la localización de los datos.</li>
+          </ol>
+          <p>Daremos respuesta a su solicitud en un plazo máximo de 20 días hábiles.</p>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>6. Uso de Cookies y Tecnologías de Rastreo</h3>
+          <p>Nuestro sitio web utiliza cookies para mejorar su experiencia. Estas herramientas nos permiten recordar sus preferencias y analizar el tráfico del sitio.</p>
+          <ul>
+            <li>Usted puede desactivar el uso de cookies desde la configuración de su navegador; sin embargo, esto podría afectar algunas funciones de personalización de nuestra web.</li>
+            <li>Los datos obtenidos (IP, tiempo de navegación) se tratan de forma agregada y no vulneran la seguridad de su equipo.</li>
+          </ul>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>7. Seguridad de la Información</h3>
+          <p>En OnRoute, implementamos medidas de seguridad administrativas, técnicas y físicas para proteger sus datos personales contra daño, pérdida, alteración o uso no autorizado. Toda la comunicación vía formularios web está protegida por protocolos de cifrado.</p>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>8. Cambios al Aviso de Privacidad</h3>
+          <p>OnRoute se reserva el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente aviso para la atención de novedades legislativas o políticas internas. Estas modificaciones estarán disponibles en nuestra página web <a href="https://onroutemx.com/" style={{ color: '#1FA84A', fontWeight: 600 }}>https://onroutemx.com/</a>.</p>
+
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>9. Contacto</h3>
+          <p>Si tiene dudas sobre el tratamiento de su información, puede contactarnos directamente en:</p>
+          <ul>
+            <li><strong>Correo electrónico:</strong> <a href="mailto:hola@onroutemx.com" style={{ color: '#1FA84A', fontWeight: 600 }}>hola@onroutemx.com</a></li>
+            <li><strong>Ubicación:</strong> Tulum, Quintana Roo, México.</li>
+          </ul>
+        </div>
+      </section>
+    </>
+  );
+};
+
+Object.assign(window, { AboutPage, ContactPage, BlogPage, BlogPostPage, FAQPage, CheckoutPage, PrivacyPage });
