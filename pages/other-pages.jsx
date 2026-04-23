@@ -13,45 +13,47 @@ const AboutPage = ({ lang }) => {
         imgKey="uploads/Imagenes para sitio/tour-cenote-zemway-nadar-riviera-maya.jpg"
       />
       <section className="section-pad" style={{ padding: '60px 40px' }}>
-        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: accent, textTransform: 'uppercase', marginBottom: 10 }}>{lang === 'es' ? 'Nuestra historia' : 'Our story'}</div>
-            <h2 style={{ fontSize: 36, fontWeight: 800, margin: 0, letterSpacing: -1, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance' }}>
-              {lang === 'es' ? 'Empezamos con una camioneta y una promesa.' : 'We started with one van and one promise.'}
-            </h2>
-            <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 18, textWrap: 'pretty' }}>
-              {lang === 'es' ? 'En 2018, Luis y Diego — amigos de la infancia en Playa del Carmen — compraron una Toyota Hiace con el último ahorro del mes y empezaron a trasladar turistas desde el aeropuerto de Cancún. La promesa era simple: puntualidad, honestidad, y tratar a cada pasajero como invitado.' : "In 2018, Luis and Diego — childhood friends from Playa del Carmen — bought a Toyota Hiace with their last savings and started shuttling tourists from Cancún airport. The promise was simple: be on time, be honest, treat every passenger like a guest."}
-            </p>
-            <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 14, textWrap: 'pretty' }}>
-              {lang === 'es' ? 'Hoy somos un equipo de 24 conductores certificados, 12 guías bilingües y una flotilla de 18 vehículos cubriendo toda la Riviera Maya y Yucatán. La promesa sigue siendo la misma.' : "Today we're a team of 24 certified drivers, 12 bilingual guides and a fleet of 18 vehicles covering the whole Riviera Maya and Yucatán. The promise hasn't changed."}
-            </p>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'start' }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: accent, textTransform: 'uppercase', marginBottom: 10 }}>{lang === 'es' ? 'Nuestra historia' : 'Our story'}</div>
+              <h2 style={{ fontSize: 36, fontWeight: 800, margin: 0, letterSpacing: -1, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance' }}>
+                {lang === 'es' ? 'Empezamos con una camioneta y una promesa.' : 'We started with one van and one promise.'}
+              </h2>
+              <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 18, textWrap: 'pretty' }}>
+                {lang === 'es' ? 'En 2018, Luis y Diego — amigos de la infancia en Playa del Carmen — compraron una Toyota Hiace con el último ahorro del mes y empezaron a trasladar turistas desde el aeropuerto de Cancún. La promesa era simple: puntualidad, honestidad, y tratar a cada pasajero como invitado.' : "In 2018, Luis and Diego — childhood friends from Playa del Carmen — bought a Toyota Hiace with their last savings and started shuttling tourists from Cancún airport. The promise was simple: be on time, be honest, treat every passenger like a guest."}
+              </p>
+              <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 14, textWrap: 'pretty' }}>
+                {lang === 'es' ? 'Hoy somos un equipo de 24 conductores certificados, 12 guías bilingües y una flotilla de 18 vehículos cubriendo toda la Riviera Maya y Yucatán. La promesa sigue siendo la misma.' : "Today we're a team of 24 certified drivers, 12 bilingual guides and a fleet of 18 vehicles covering the whole Riviera Maya and Yucatán. The promise hasn't changed."}
+              </p>
+            </div>
+            <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={12} showLabel={false} />
           </div>
-          <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={12} showLabel={false} />
-        </div>
 
-        <div className="resp-grid-3" style={{ marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {[
-            { icon: 'leaf',   t: lang === 'es' ? 'Locales de raíz' : 'Rooted local',        d: lang === 'es' ? 'Todo el equipo vive y creció en la Riviera Maya.' : 'Every team member lives and grew up in the Riviera Maya.' },
-            { icon: 'shield', t: lang === 'es' ? 'Transparencia total' : 'Total transparency', d: lang === 'es' ? 'Tarifa fija publicada. Sin cargos ocultos.' : 'Published flat rate. No hidden fees.' },
-            { icon: 'heart',  t: lang === 'es' ? 'Trato humano' : 'Human touch',             d: lang === 'es' ? 'WhatsApp directo con un humano, nunca un bot.' : 'Direct WhatsApp with a human, never a bot.' },
-          ].map((v, i) => (
-            <div key={i} style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid rgba(10,10,10,0.06)' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(31,168,74,0.1)', color: '#0F6B2E', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                <window.Icon name={v.icon} size={22} stroke={2} />
+          <div className="resp-grid-3" style={{ marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+            {[
+              { icon: 'leaf',   t: lang === 'es' ? 'Locales de raíz' : 'Rooted local',        d: lang === 'es' ? 'Todo el equipo vive y creció en la Riviera Maya.' : 'Every team member lives and grew up in the Riviera Maya.' },
+              { icon: 'shield', t: lang === 'es' ? 'Transparencia total' : 'Total transparency', d: lang === 'es' ? 'Tarifa fija publicada. Sin cargos ocultos.' : 'Published flat rate. No hidden fees.' },
+              { icon: 'heart',  t: lang === 'es' ? 'Trato humano' : 'Human touch',             d: lang === 'es' ? 'WhatsApp directo con un humano, nunca un bot.' : 'Direct WhatsApp with a human, never a bot.' },
+            ].map((v, i) => (
+              <div key={i} style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid rgba(10,10,10,0.06)' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(31,168,74,0.1)', color: '#0F6B2E', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                  <window.Icon name={v.icon} size={22} stroke={2} />
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.3, fontFamily: 'Archivo, sans-serif' }}>{v.t}</h3>
+                <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.6)', lineHeight: 1.55, margin: 0 }}>{v.d}</p>
               </div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.3, fontFamily: 'Archivo, sans-serif' }}>{v.t}</h3>
-              <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.6)', lineHeight: 1.55, margin: 0 }}>{v.d}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="resp-grid-2" style={{ marginTop: 60, background: '#0a1f12', color: '#fff', borderRadius: 16, padding: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
-          {[['12K+', lang === 'es' ? 'Traslados' : 'Transfers'], ['48', lang === 'es' ? 'Destinos' : 'Destinations'], ['24', lang === 'es' ? 'Conductores' : 'Drivers'], ['4.9', lang === 'es' ? 'Rating Google' : 'Google rating']].map((n, i) => (
-            <div key={i} style={{ borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none', paddingLeft: i > 0 ? 28 : 0 }}>
-              <div style={{ fontSize: 52, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -1.6, lineHeight: 1 }}>{n[0]}</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 6 }}>{n[1]}</div>
-            </div>
-          ))}
+          <div className="resp-grid-2" style={{ marginTop: 60, background: '#0a1f12', color: '#fff', borderRadius: 16, padding: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+            {[['12K+', lang === 'es' ? 'Traslados' : 'Transfers'], ['48', lang === 'es' ? 'Destinos' : 'Destinations'], ['24', lang === 'es' ? 'Conductores' : 'Drivers'], ['4.9', lang === 'es' ? 'Rating Google' : 'Google rating']].map((n, i) => (
+              <div key={i} style={{ borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none', paddingLeft: i > 0 ? 28 : 0 }}>
+                <div style={{ fontSize: 52, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -1.6, lineHeight: 1 }}>{n[0]}</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 6 }}>{n[1]}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </>
@@ -72,58 +74,60 @@ const ContactPage = ({ lang }) => {
         imgKey="uploads/Imagenes para sitio/turista-reservacion-tour-tulum-riviera-maya.png"
       />
       <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
-        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[
-              { icon: 'whatsapp', t: 'WhatsApp', s: '+52 998 000 0000', extra: lang === 'es' ? 'Respuesta < 10 min' : 'Reply < 10 min', bg: '#25D366', color: '#fff' },
-              { icon: 'phone',    t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 998 000 0000', extra: lang === 'es' ? 'Lun-Dom · 7am-11pm' : 'Mon-Sun · 7am-11pm', bg: '#fff', color: '#0a0a0a' },
-              { icon: 'mail',     t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a' },
-              { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Juárez 123, Playa del Carmen', extra: 'Q. Roo, México', bg: '#fff', color: '#0a0a0a' },
-            ].map((c, i) => (
-              <a key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, borderRadius: 12, background: c.bg, color: c.color, border: c.bg === '#fff' ? '1px solid rgba(10,10,10,0.08)' : 'none', cursor: 'pointer' }}>
-                <div style={{ width: 42, height: 42, borderRadius: 10, background: c.bg === '#fff' ? 'rgba(31,168,74,0.1)' : 'rgba(255,255,255,0.2)', color: c.bg === '#fff' ? '#0F6B2E' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <window.Icon name={c.icon} size={20} stroke={2} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600, letterSpacing: 0.3 }}>{c.t}</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, fontFamily: 'Archivo, sans-serif', marginTop: 2 }}>{c.s}</div>
-                  <div style={{ fontSize: 11, opacity: 0.65, marginTop: 2 }}>{c.extra}</div>
-                </div>
-                <window.Icon name="arrowRight" size={14} stroke={2.2} />
-              </a>
-            ))}
-          </div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { icon: 'whatsapp', t: 'WhatsApp', s: '+52 998 000 0000', extra: lang === 'es' ? 'Respuesta < 10 min' : 'Reply < 10 min', bg: '#25D366', color: '#fff' },
+                { icon: 'phone',    t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 998 000 0000', extra: lang === 'es' ? 'Lun-Dom · 7am-11pm' : 'Mon-Sun · 7am-11pm', bg: '#fff', color: '#0a0a0a' },
+                { icon: 'mail',     t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a' },
+                { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Juárez 123, Playa del Carmen', extra: 'Q. Roo, México', bg: '#fff', color: '#0a0a0a' },
+              ].map((c, i) => (
+                <a key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, borderRadius: 12, background: c.bg, color: c.color, border: c.bg === '#fff' ? '1px solid rgba(10,10,10,0.08)' : 'none', cursor: 'pointer' }}>
+                  <div style={{ width: 42, height: 42, borderRadius: 10, background: c.bg === '#fff' ? 'rgba(31,168,74,0.1)' : 'rgba(255,255,255,0.2)', color: c.bg === '#fff' ? '#0F6B2E' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <window.Icon name={c.icon} size={20} stroke={2} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600, letterSpacing: 0.3 }}>{c.t}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, fontFamily: 'Archivo, sans-serif', marginTop: 2 }}>{c.s}</div>
+                    <div style={{ fontSize: 11, opacity: 0.65, marginTop: 2 }}>{c.extra}</div>
+                  </div>
+                  <window.Icon name="arrowRight" size={14} stroke={2.2} />
+                </a>
+              ))}
+            </div>
 
-          <form onSubmit={e => { e.preventDefault(); setSent(true); }} style={{ background: '#fff', padding: 28, borderRadius: 14, border: '1px solid rgba(10,10,10,0.06)' }}>
-            <h3 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Escríbenos' : 'Send a message'}</h3>
-            <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{lang === 'es' ? 'Respondemos en menos de 2 horas hábiles.' : 'We reply in under 2 business hours.'}</p>
-            {sent ? (
-              <div style={{ marginTop: 24, padding: 28, background: '#f0f7f2', borderRadius: 10, textAlign: 'center' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-                  <window.Icon name="check" size={24} stroke={3} />
+            <form onSubmit={e => { e.preventDefault(); setSent(true); }} style={{ background: '#fff', padding: 28, borderRadius: 14, border: '1px solid rgba(10,10,10,0.06)' }}>
+              <h3 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Escríbenos' : 'Send a message'}</h3>
+              <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{lang === 'es' ? 'Respondemos en menos de 2 horas hábiles.' : 'We reply in under 2 business hours.'}</p>
+              {sent ? (
+                <div style={{ marginTop: 24, padding: 28, background: '#f0f7f2', borderRadius: 10, textAlign: 'center' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+                    <window.Icon name="check" size={24} stroke={3} />
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.3 }}>{lang === 'es' ? '¡Mensaje enviado!' : 'Message sent!'}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{lang === 'es' ? 'Te respondemos pronto a tu email.' : "We'll reply to your email shortly."}</div>
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.3 }}>{lang === 'es' ? '¡Mensaje enviado!' : 'Message sent!'}</div>
-                <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{lang === 'es' ? 'Te respondemos pronto a tu email.' : "We'll reply to your email shortly."}</div>
-              </div>
-            ) : (
-              <>
-                <div className="resp-split" style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={lang === 'es' ? 'Tu nombre' : 'Your name'} style={formInput} />
-                  <input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" style={formInput} />
-                </div>
-                <select value={form.service} onChange={e => setForm({ ...form, service: e.target.value })} style={{ ...formInput, marginTop: 10, width: '100%' }}>
-                  <option value="traslado">{lang === 'es' ? 'Traslado aeropuerto' : 'Airport transfer'}</option>
-                  <option value="tour">{lang === 'es' ? 'Tour / experiencia' : 'Tour / experience'}</option>
-                  <option value="evento">{lang === 'es' ? 'Grupo o evento' : 'Group or event'}</option>
-                  <option value="otro">{lang === 'es' ? 'Otro' : 'Other'}</option>
-                </select>
-                <textarea required rows={5} value={form.msg} onChange={e => setForm({ ...form, msg: e.target.value })} placeholder={lang === 'es' ? 'Cuéntanos sobre tu viaje...' : 'Tell us about your trip...'} style={{ ...formInput, marginTop: 10, width: '100%', resize: 'vertical', fontFamily: 'Inter, sans-serif' }} />
-                <button type="submit" style={{ marginTop: 14, width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                  {lang === 'es' ? 'Enviar mensaje' : 'Send message'}
-                </button>
-              </>
-            )}
-          </form>
+              ) : (
+                <>
+                  <div className="resp-split" style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={lang === 'es' ? 'Tu nombre' : 'Your name'} style={formInput} />
+                    <input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="you@email.com" style={formInput} />
+                  </div>
+                  <select value={form.service} onChange={e => setForm({ ...form, service: e.target.value })} style={{ ...formInput, marginTop: 10, width: '100%' }}>
+                    <option value="traslado">{lang === 'es' ? 'Traslado aeropuerto' : 'Airport transfer'}</option>
+                    <option value="tour">{lang === 'es' ? 'Tour / experiencia' : 'Tour / experience'}</option>
+                    <option value="evento">{lang === 'es' ? 'Grupo o evento' : 'Group or event'}</option>
+                    <option value="otro">{lang === 'es' ? 'Otro' : 'Other'}</option>
+                  </select>
+                  <textarea required rows={5} value={form.msg} onChange={e => setForm({ ...form, msg: e.target.value })} placeholder={lang === 'es' ? 'Cuéntanos sobre tu viaje...' : 'Tell us about your trip...'} style={{ ...formInput, marginTop: 10, width: '100%', resize: 'vertical', fontFamily: 'Inter, sans-serif' }} />
+                  <button type="submit" style={{ marginTop: 14, width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                    {lang === 'es' ? 'Enviar mensaje' : 'Send message'}
+                  </button>
+                </>
+              )}
+            </form>
+          </div>
         </div>
       </section>
     </>
@@ -147,51 +151,53 @@ const BlogPage = ({ lang, setPage }) => {
         imgKey="uploads/Imagenes para sitio/descanso-playa-caribe-vacaciones-riviera-maya.jpg"
       />
       <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
-        {loading && (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(10,10,10,0.4)', fontSize: 14 }}>
-            <div style={{ width: 32, height: 32, border: `3px solid ${accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
-            {lang === 'es' ? 'Cargando artículos...' : 'Loading articles...'}
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          </div>
-        )}
-
-        {!loading && featured && (
-          <div className="resp-split" onClick={() => { window._selectedPost = featured; setPage('blog-post'); }}
-            style={{ cursor: 'pointer', background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', display: 'grid', gridTemplateColumns: '1.3fr 1fr', marginBottom: 32 }}>
-            {featured.img
-              ? <img src={featured.img} alt={featured.t} style={{ width: '100%', height: 300, objectFit: 'cover', display: 'block' }} />
-              : <window.ImagePlaceholder paletteKey="valladolid" label="" aspect="16/10" rounded={0} showLabel={false} style={{ aspectRatio: 'auto', height: '100%' }}/>}
-            <div style={{ padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>⭐ {lang === 'es' ? 'Destacado' : 'Featured'} · {featured.cat} · {featured.readMin}</div>
-              <h2 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: -0.8, fontFamily: 'Archivo, sans-serif', lineHeight: 1.15, textWrap: 'balance' }}>{featured.t}</h2>
-              <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.65)', lineHeight: 1.6, marginTop: 12 }}>{featured.excerpt}</p>
-              <div style={{ marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 6, color: accent, fontSize: 12, fontWeight: 700 }}>
-                {lang === 'es' ? 'Leer artículo' : 'Read article'} <window.Icon name="arrowRight" size={12} stroke={2.2}/>
-              </div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          {loading && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(10,10,10,0.4)', fontSize: 14 }}>
+              <div style={{ width: 32, height: 32, border: `3px solid ${accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+              {lang === 'es' ? 'Cargando artículos...' : 'Loading articles...'}
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
-          </div>
-        )}
+          )}
 
-        {!loading && (
-          <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-            {rest.map((p, i) => (
-              <div key={p.id || i} onClick={() => { window._selectedPost = p; setPage('blog-post'); }}
-                style={{ cursor: 'pointer', background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', transition: 'transform .2s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                {p.img
-                  ? <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}><img src={p.img} alt={p.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} /></div>
-                  : <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={0} showLabel={false}/>}
-                <div style={{ padding: 16 }}>
-                  <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 6 }}>{p.cat} · {p.readMin}</div>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0, letterSpacing: -0.2, lineHeight: 1.3, fontFamily: 'Archivo, sans-serif' }}>{p.t}</h3>
-                  <p style={{ fontSize: 11, color: 'rgba(10,10,10,0.55)', margin: '8px 0 0', lineHeight: 1.5 }}>{p.excerpt && p.excerpt.length > 90 ? p.excerpt.slice(0, 90) + '…' : p.excerpt}</p>
-                  <div style={{ fontSize: 10, color: 'rgba(10,10,10,0.4)', marginTop: 8 }}>{p.date}</div>
+          {!loading && featured && (
+            <div className="resp-split" onClick={() => { window._selectedPost = featured; setPage('blog-post'); }}
+              style={{ cursor: 'pointer', background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', display: 'grid', gridTemplateColumns: '1.3fr 1fr', marginBottom: 32 }}>
+              {featured.img
+                ? <img src={featured.img} alt={featured.t} style={{ width: '100%', height: 300, objectFit: 'cover', display: 'block' }} />
+                : <window.ImagePlaceholder paletteKey="valladolid" label="" aspect="16/10" rounded={0} showLabel={false} style={{ aspectRatio: 'auto', height: '100%' }}/>}
+              <div style={{ padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>⭐ {lang === 'es' ? 'Destacado' : 'Featured'} · {featured.cat} · {featured.readMin}</div>
+                <h2 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: -0.8, fontFamily: 'Archivo, sans-serif', lineHeight: 1.15, textWrap: 'balance' }}>{featured.t}</h2>
+                <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.65)', lineHeight: 1.6, marginTop: 12 }}>{featured.excerpt}</p>
+                <div style={{ marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 6, color: accent, fontSize: 12, fontWeight: 700 }}>
+                  {lang === 'es' ? 'Leer artículo' : 'Read article'} <window.Icon name="arrowRight" size={12} stroke={2.2}/>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          )}
+
+          {!loading && (
+            <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              {rest.map((p, i) => (
+                <div key={p.id || i} onClick={() => { window._selectedPost = p; setPage('blog-post'); }}
+                  style={{ cursor: 'pointer', background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', transition: 'transform .2s' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                  {p.img
+                    ? <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}><img src={p.img} alt={p.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} /></div>
+                    : <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={0} showLabel={false}/>}
+                  <div style={{ padding: 16 }}>
+                    <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 6 }}>{p.cat} · {p.readMin}</div>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0, letterSpacing: -0.2, lineHeight: 1.3, fontFamily: 'Archivo, sans-serif' }}>{p.t}</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(10,10,10,0.55)', margin: '8px 0 0', lineHeight: 1.5 }}>{p.excerpt && p.excerpt.length > 90 ? p.excerpt.slice(0, 90) + '…' : p.excerpt}</p>
+                    <div style={{ fontSize: 10, color: 'rgba(10,10,10,0.4)', marginTop: 8 }}>{p.date}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
     </>
   );
@@ -216,10 +222,12 @@ const BlogPostPage = ({ lang, setPage }) => {
   return (
     <>
       <section style={{ padding: '32px 40px 0' }}>
-        <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
-          {lang === 'es' ? 'Volver al blog' : 'Back to blog'}
-        </a>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            {lang === 'es' ? 'Volver al blog' : 'Back to blog'}
+          </a>
+        </div>
       </section>
       <article className="section-pad" style={{ padding: '24px 40px 60px', maxWidth: 820, margin: '0 auto' }}>
         <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 }}>
@@ -333,26 +341,29 @@ const CheckoutPage = ({ lang, setPage }) => {
   return (
     <>
       <section className="section-pad" style={{ padding: '24px 40px 0' }}>
-        <a onClick={() => setPage('home')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer' }}>← {lang === 'es' ? 'Volver al inicio' : 'Back to home'}</a>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          <a onClick={() => setPage('home')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer' }}>← {lang === 'es' ? 'Volver al inicio' : 'Back to home'}</a>
+        </div>
       </section>
 
       <section className="section-pad" style={{ padding: '24px 40px' }}>
-        <div className="hide-on-mobile" style={{ display: 'flex', gap: 0, marginBottom: 32 }}>
-          {[lang === 'es' ? 'Detalles' : 'Details', lang === 'es' ? 'Pago' : 'Payment', lang === 'es' ? 'Confirmación' : 'Confirmation'].map((s, i) => {
-            const n = i + 1;
-            const done = step > n;
-            const active = step === n;
-            return (
-              <div key={i} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: done || active ? accent : 'rgba(10,10,10,0.1)', color: done || active ? '#fff' : 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, fontFamily: 'Archivo, sans-serif' }}>
-                  {done ? <window.Icon name="check" size={14} stroke={3} /> : n}
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+          <div className="hide-on-mobile" style={{ display: 'flex', gap: 0, marginBottom: 32 }}>
+            {[lang === 'es' ? 'Detalles' : 'Details', lang === 'es' ? 'Pago' : 'Payment', lang === 'es' ? 'Confirmación' : 'Confirmation'].map((s, i) => {
+              const n = i + 1;
+              const done = step > n;
+              const active = step === n;
+              return (
+                <div key={i} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: done || active ? accent : 'rgba(10,10,10,0.1)', color: done || active ? '#fff' : 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, fontFamily: 'Archivo, sans-serif' }}>
+                    {done ? <window.Icon name="check" size={14} stroke={3} /> : n}
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? '#0a0a0a' : 'rgba(10,10,10,0.5)' }}>{s}</div>
+                  {i < 2 && <div style={{ flex: 1, height: 1, background: done ? accent : 'rgba(10,10,10,0.12)', marginLeft: 10 }} />}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? '#0a0a0a' : 'rgba(10,10,10,0.5)' }}>{s}</div>
-                {i < 2 && <div style={{ flex: 1, height: 1, background: done ? accent : 'rgba(10,10,10,0.12)', marginLeft: 10 }} />}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
 
         <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
           <div style={{ background: '#fff', borderRadius: 14, padding: 28, border: '1px solid rgba(10,10,10,0.06)' }}>
