@@ -7,7 +7,7 @@ const AboutPage = ({ lang }) => {
     <>
       <window.PageHero
         kicker={lang === 'es' ? 'Nosotros' : 'About us'}
-        title={lang === 'es' ? 'Locales. Bilingües. En ruta desde 2018.' : 'Local. Bilingual. On the road since 2018.'}
+        title={lang === 'es' ? 'Somos gente local trabajando en rutas caribeñas desde 2018' : 'We are local people working on Caribbean routes since 2018'}
         sub={lang === 'es' ? 'Somos un equipo de conductores, guías y operadores de la Riviera Maya que conocemos cada curva del camino.' : "We're drivers, guides and operators from the Riviera Maya who know every bend of the road."}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Nosotros' : 'About']}
         imgKey="uploads/Imagenes para sitio/tour-cenote-zemway-nadar-riviera-maya.jpg"
@@ -18,13 +18,16 @@ const AboutPage = ({ lang }) => {
             <div>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: accent, textTransform: 'uppercase', marginBottom: 10 }}>{lang === 'es' ? 'Nuestra historia' : 'Our story'}</div>
               <h2 style={{ fontSize: 36, fontWeight: 800, margin: 0, letterSpacing: -1, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance' }}>
-                {lang === 'es' ? 'Empezamos con una camioneta y una promesa.' : 'We started with one van and one promise.'}
+                {lang === 'es' ? 'Nuestra Historia: De la Pasión por la Riviera Maya al Emprendimiento Familiar.' : 'Our Story: From Passion for the Riviera Maya to a Family Enterprise.'}
               </h2>
               <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 18, textWrap: 'pretty' }}>
-                {lang === 'es' ? 'En 2018, Luis y Diego — amigos de la infancia en Playa del Carmen — compraron una Toyota Hiace con el último ahorro del mes y empezaron a trasladar turistas desde el aeropuerto de Cancún. La promesa era simple: puntualidad, honestidad, y tratar a cada pasajero como invitado.' : "In 2018, Luis and Diego — childhood friends from Playa del Carmen — bought a Toyota Hiace with their last savings and started shuttling tourists from Cancún airport. The promise was simple: be on time, be honest, treat every passenger like a guest."}
+                {lang === 'es' ? '¡Hola! Mi nombre es Jesús Palafox. Mi camino en el mundo del turismo nacional y extranjero comenzó en 2018, en cuanto cumplí la mayoría de edad. Desde entonces, y hasta la fecha, he recorrido miles de kilómetros a lo largo y ancho de Quintana Roo y Yucatán.' : 'Hello! My name is Jesús Palafox. My journey in the world of national and foreign tourism began in 2018, as soon as I came of age. Since then, and to date, I have traveled thousands of kilometers across Quintana Roo and Yucatán.'}
               </p>
               <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 14, textWrap: 'pretty' }}>
-                {lang === 'es' ? 'Hoy somos un equipo de 24 conductores certificados, 12 guías bilingües y una flotilla de 18 vehículos cubriendo toda la Riviera Maya y Yucatán. La promesa sigue siendo la misma.' : "Today we're a team of 24 certified drivers, 12 bilingual guides and a fleet of 18 vehicles covering the whole Riviera Maya and Yucatán. The promise hasn't changed."}
+                {lang === 'es' ? 'Empecé esta travesía al volante de un taxi, una experiencia que me permitió conocer cada rincón de la región y perfeccionar el trato con los viajeros. Luego, evolucioné hacia la guía turística, y hoy, me enorgullece presentarme como un emprendedor independiente. Mi misión es clara: mostrar la verdadera esencia y el lado más auténtico de nuestra amada ciudad, Tulum.' : 'I started this journey behind the wheel of a taxi, an experience that allowed me to know every corner of the region and perfect my interaction with travelers. Then, I evolved into a tour guide, and today, I am proud to present myself as an independent entrepreneur. My mission is clear: to show the true essence and the most authentic side of our beloved city, Tulum.'}
+              </p>
+              <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.7)', lineHeight: 1.65, marginTop: 14, textWrap: 'pretty' }}>
+                {lang === 'es' ? 'Este proyecto es un sueño compartido y un negocio 100% familiar. Operado por mi padre, José Antonio, y por mí, nos dedicamos a ofrecer experiencias agradables y seguras a todos los destinos que nos solicitan. Para nosotros, no eres solo un cliente; nos esforzamos por brindar siempre un trato cálido, humano y transparente, como si estuviéramos recibiendo a amigos en casa.' : 'This project is a shared dream and a 100% family business. Operated by my father, José Antonio, and me, we are dedicated to offering pleasant and safe experiences to all the destinations we are asked for. For us, you are not just a customer; we strive to always provide a warm, human, and transparent treatment, as if we were receiving friends at home.'}
               </p>
             </div>
             <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={12} showLabel={false} />
@@ -32,8 +35,8 @@ const AboutPage = ({ lang }) => {
 
           <div className="resp-grid-3" style={{ marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {[
-              { icon: 'leaf',   t: lang === 'es' ? 'Locales de raíz' : 'Rooted local',        d: lang === 'es' ? 'Todo el equipo vive y creció en la Riviera Maya.' : 'Every team member lives and grew up in the Riviera Maya.' },
-              { icon: 'shield', t: lang === 'es' ? 'Transparencia total' : 'Total transparency', d: lang === 'es' ? 'Tarifa fija publicada. Sin cargos ocultos.' : 'Published flat rate. No hidden fees.' },
+              { icon: 'leaf',   t: lang === 'es' ? 'Locales de raíz' : 'Rooted local',        d: lang === 'es' ? 'Nos enorgullece presentarnos como personas que han echado raíces en Tulum toda la vida.' : 'We are proud to present ourselves as people who have taken root in Tulum our whole lives.' },
+              { icon: 'shield', t: lang === 'es' ? 'Transparencia total' : 'Total transparency', d: lang === 'es' ? 'Todas nuestras tarifas están publicadas, no tenemos ningún cargo oculto, lo que vez es lo que pagas.' : 'All our rates are published, we have no hidden charges, what you see is what you pay.' },
               { icon: 'heart',  t: lang === 'es' ? 'Trato humano' : 'Human touch',             d: lang === 'es' ? 'WhatsApp directo con un humano, nunca un bot.' : 'Direct WhatsApp with a human, never a bot.' },
             ].map((v, i) => (
               <div key={i} style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid rgba(10,10,10,0.06)' }}>
@@ -47,7 +50,7 @@ const AboutPage = ({ lang }) => {
           </div>
 
           <div className="resp-grid-2" style={{ marginTop: 60, background: '#0a1f12', color: '#fff', borderRadius: 16, padding: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
-            {[['12K+', lang === 'es' ? 'Traslados' : 'Transfers'], ['48', lang === 'es' ? 'Destinos' : 'Destinations'], ['24', lang === 'es' ? 'Conductores' : 'Drivers'], ['4.9', lang === 'es' ? 'Rating Google' : 'Google rating']].map((n, i) => (
+            {[['12K+', lang === 'es' ? 'Traslados' : 'Transfers'], ['48', lang === 'es' ? 'Destinos' : 'Destinations'], ['5', lang === 'es' ? 'Conductores' : 'Drivers'], ['4.9', lang === 'es' ? 'Rating Google' : 'Google rating']].map((n, i) => (
               <div key={i} style={{ borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.12)' : 'none', paddingLeft: i > 0 ? 28 : 0 }}>
                 <div style={{ fontSize: 52, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -1.6, lineHeight: 1 }}>{n[0]}</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 6 }}>{n[1]}</div>
@@ -81,7 +84,7 @@ const ContactPage = ({ lang }) => {
                 { icon: 'whatsapp', t: 'WhatsApp', s: '+52 984 106 8542', extra: lang === 'es' ? 'Respuesta < 10 min' : 'Reply < 10 min', bg: '#25D366', color: '#fff', href: 'https://wa.me/529841068542' },
                 { icon: 'phone',    t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 (984) 115 6844', extra: lang === 'es' ? 'Exclusivamente para llamadas' : 'Calls only', bg: '#fff', color: '#0a0a0a', href: 'tel:+529841156844' },
                 { icon: 'mail',     t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a', href: 'mailto:hola@onroutemx.com' },
-                { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Juárez 123, Playa del Carmen', extra: 'Q. Roo, México', bg: '#fff', color: '#0a0a0a', href: 'https://maps.google.com/?q=Playa+del+Carmen' },
+                { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Satélite entre Calles Okoot y Tun-kul 63, 21', extra: 'Tulum, Q. Roo, México', bg: '#fff', color: '#0a0a0a', href: 'https://maps.google.com/?q=Av.+Satélite+entre+Calles+Okoot+y+Tun-kul+63,+Tulum' },
               ].map((c, i) => (
                 <a key={i} href={c.href} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, borderRadius: 12, background: c.bg, color: c.color, border: c.bg === '#fff' ? '1px solid rgba(10,10,10,0.08)' : 'none', cursor: 'pointer', textDecoration: 'none' }}>
                   <div style={{ width: 42, height: 42, borderRadius: 10, background: c.bg === '#fff' ? 'rgba(31,168,74,0.1)' : 'rgba(255,255,255,0.2)', color: c.bg === '#fff' ? '#0F6B2E' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
