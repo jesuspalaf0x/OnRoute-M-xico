@@ -47,15 +47,19 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
       {/* Top bar con contacto */}
       <div className="resp-header-top" style={{ background: '#0a1f12', color: '#fff', padding: '7px 32px', fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: 20 }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="phone" size={11} stroke={2}/> +52 998 000 0000</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="phone" size={11} stroke={2}/> +52 (984) 106 8542</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="mail" size={11} stroke={2}/> hola@onroutemx.com</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: accent }}><window.Icon name="check" size={11} stroke={3}/> {lang === 'es' ? 'Cancelación gratis 24h antes' : 'Free cancellation 24h before'}</span>
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <window.LangToggle lang={lang} onChange={setLang} dark />
           <span style={{ display: 'flex', gap: 10 }}>
-            <window.Icon name="instagram" size={13} stroke={1.8}/>
-            <window.Icon name="facebook" size={13} stroke={1.8}/>
+            <a href="https://www.instagram.com/onroute.tulum?igsh=a2N3ZDdrYmI5bWN5&utm_source=qr" target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex' }}>
+              <window.Icon name="instagram" size={13} stroke={1.8}/>
+            </a>
+            <a href="https://www.facebook.com/share/16oa6iX9CD/?mibextid=wwXIfr" target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex' }}>
+              <window.Icon name="facebook" size={13} stroke={1.8}/>
+            </a>
           </span>
         </div>
       </div>
@@ -177,10 +181,10 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
           </div>
           <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
             {[
-              { from: 'CUN', to: 'Tulum', dur: '2h 00m', price: '$125', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
-              { from: 'CUN', to: 'Playa del Carmen', dur: '1h 10m', price: '$89', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
-              { from: 'CUN', to: 'Zona Hotelera', dur: '0h 20m', price: '$55', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
-              { from: 'TQO', to: 'Tulum Beach', dur: '0h 30m', price: '$65', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
+              { from: 'CUN', to: 'Tulum Centro', dur: '1h 45m', price: '$125.00', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
+              { from: 'TQO', to: 'Tulum Centro', dur: '0h 55m', price: '$62.00', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
+              { from: 'TQO', to: 'Playa del Carmen', dur: '1h 45m', price: '$120.00', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
+              { from: 'TQO', to: 'Zona Hotelera Tulum', dur: '1h 25m', price: '$100.00', type: lang === 'es' ? 'Privado · 1-4 pax' : 'Private · 1-4 pax' },
             ].map((r, i) => (
               <div key={i} style={{ padding: 14, border: '1px solid rgba(10,10,10,0.06)', borderRadius: 10, cursor: 'pointer', transition: 'all .15s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.background = '#f0f7f2'; }}
@@ -219,9 +223,9 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
             const icons = ['plane', 'car', 'leaf', 'users'];
             const features = [
               [lang === 'es' ? 'Vuelo monitoreado' : 'Flight tracking', lang === 'es' ? 'Sillas para bebé' : 'Baby seats', lang === 'es' ? 'Parada en OXXO' : 'OXXO stop'],
-              [lang === 'es' ? 'Por horas o día completo' : 'Hourly or full-day', lang === 'es' ? 'Conductor bilingüe' : 'Bilingual driver', lang === 'es' ? 'Itinerario flexible' : 'Flexible route'],
-              [lang === 'es' ? 'Guía certificado INAH' : 'INAH-certified guide', lang === 'es' ? 'Comida incluida' : 'Meal included', lang === 'es' ? 'Equipo snorkel' : 'Snorkel gear'],
-              [lang === 'es' ? 'Van o Sprinter' : 'Van or Sprinter', lang === 'es' ? 'Hasta 16 pax' : 'Up to 16 pax', lang === 'es' ? 'Decoración eventos' : 'Event décor'],
+              [lang === 'es' ? 'Por horas o día completo' : 'Hourly or full-day', lang === 'es' ? 'Conductor local' : 'Local driver', lang === 'es' ? 'A tu ritmo' : 'At your pace'],
+              [lang === 'es' ? 'Transporte' : 'Transport', lang === 'es' ? 'Tickets' : 'Tickets', lang === 'es' ? 'Botiquín' : 'First aid kit'],
+              [lang === 'es' ? 'Van o Sprinter' : 'Van or Sprinter', lang === 'es' ? 'Hasta 16 pax' : 'Up to 16 pax', lang === 'es' ? 'Confort en cada viaje' : 'Comfort on every trip'],
             ];
             return (
               <div key={i} style={{ background: '#fff', borderRadius: 12, padding: 18, border: '1px solid rgba(10,10,10,0.06)', position: 'relative' }}>
@@ -422,17 +426,18 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              { icon: 'whatsapp', t: 'WhatsApp', s: '+52 998 000 0000', bg: '#25D366' },
-              { icon: 'phone', t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 998 000 0000', bg: 'rgba(255,255,255,0.08)' },
-              { icon: 'mail', t: 'Email', s: 'hola@onroutemx.com', bg: 'rgba(255,255,255,0.08)' },
+              { icon: 'whatsapp', t: 'WhatsApp', s: '+52 984 106 8542', extra: null, bg: '#25D366', href: 'https://wa.me/529841068542' },
+              { icon: 'phone', t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 (984) 115 6844', extra: lang === 'es' ? 'Exclusivamente para llamadas' : 'Calls only', bg: 'rgba(255,255,255,0.08)', href: 'tel:+529841156844' },
+              { icon: 'mail', t: 'Email', s: 'hola@onroutemx.com', extra: null, bg: 'rgba(255,255,255,0.08)', href: 'mailto:hola@onroutemx.com' },
             ].map((c, i) => (
-              <a key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 10, background: c.bg, border: c.bg.includes('rgba') ? '1px solid rgba(255,255,255,0.1)' : 'none', cursor: 'pointer' }}>
+              <a key={i} href={c.href} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 10, background: c.bg, border: c.bg.includes('rgba') ? '1px solid rgba(255,255,255,0.1)' : 'none', cursor: 'pointer', textDecoration: 'none', color: '#fff' }}>
                 <div style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <window.Icon name={c.icon} size={16} stroke={2}/>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>{c.t}</div>
                   <div style={{ fontSize: 14, fontWeight: 700, fontFamily: 'Archivo, sans-serif' }}>{c.s}</div>
+                  {c.extra && <div style={{ fontSize: 11, opacity: 0.65, marginTop: 2 }}>{c.extra}</div>}
                 </div>
                 <window.Icon name="arrowRight" size={14} stroke={2.2}/>
               </a>
@@ -449,14 +454,14 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
             <p style={{ marginTop: 12, lineHeight: 1.6, maxWidth: 240, fontSize: 11 }}>{lang === 'es' ? 'Traslados privados y tours en la Riviera Maya y Yucatán.' : 'Private transfers and tours in the Riviera Maya and Yucatán.'}</p>
           </div>
           {[
-            { t: t.nav.servicios, l: t.services.list.map(s => s.t) },
-            { t: t.nav.destinos, l: t.destinos.list.slice(0, 4).map(d => d.n) },
-            { t: t.nav.tours, l: t.tours.list.slice(0, 4).map(x => x.loc) },
-            { t: lang === 'es' ? 'Empresa' : 'Company', l: [t.nav.nosotros, t.nav.blog, t.nav.contacto, 'FAQ'] },
+            { t: t.nav.servicios, l: t.services.list.map(s => ({ label: s.t, page: 'home' })) },
+            { t: t.nav.destinos, l: t.destinos.list.slice(0, 4).map(d => ({ label: d.n, page: 'tours' })) },
+            { t: t.nav.tours, l: t.tours.list.slice(0, 4).map(x => ({ label: x.loc, page: 'tours' })) },
+            { t: lang === 'es' ? 'Empresa' : 'Company', l: [{ label: t.nav.nosotros, page: 'about' }, { label: t.nav.blog, page: 'blog' }, { label: t.nav.contacto, page: 'contact' }, { label: 'FAQ', page: 'faq' }] },
           ].map((col, i) => (
             <div key={i}>
               <div style={{ color: '#fff', fontWeight: 700, marginBottom: 12, fontSize: 11, letterSpacing: 0.5, textTransform: 'uppercase' }}>{col.t}</div>
-              {col.l.map((x, j) => <a key={j} style={{ display: 'block', color: 'inherit', padding: '3px 0', cursor: 'pointer' }}>{x}</a>)}
+              {col.l.map((x, j) => <a key={j} onClick={() => navigate(x.page)} style={{ display: 'block', color: 'inherit', padding: '3px 0', cursor: 'pointer' }}>{x.label}</a>)}
             </div>
           ))}
         </div>

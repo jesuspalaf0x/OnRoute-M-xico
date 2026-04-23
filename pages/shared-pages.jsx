@@ -15,13 +15,20 @@ const Header = ({ lang, setLang, page, setPage }) => {
     <>
       <div className="resp-header-top" style={{ background: '#0a1f12', color: '#fff', padding: '7px 32px', fontSize: 11, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', gap: 20 }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="phone" size={11} stroke={2}/> +52 998 000 0000</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="phone" size={11} stroke={2}/> +52 (984) 106 8542</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="mail" size={11} stroke={2}/> hola@onroutemx.com</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: accent }}><window.Icon name="check" size={11} stroke={3}/> {lang === 'es' ? 'Cancelación gratis 24h antes' : 'Free cancellation 24h before'}</span>
         </div>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
           <window.LangToggle lang={lang} onChange={setLang} dark />
-          <span style={{ display: 'flex', gap: 10 }}><window.Icon name="instagram" size={13} stroke={1.8}/><window.Icon name="facebook" size={13} stroke={1.8}/></span>
+          <span style={{ display: 'flex', gap: 10 }}>
+            <a href="https://www.instagram.com/onroute.tulum?igsh=a2N3ZDdrYmI5bWN5&utm_source=qr" target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex' }}>
+              <window.Icon name="instagram" size={13} stroke={1.8}/>
+            </a>
+            <a href="https://www.facebook.com/share/16oa6iX9CD/?mibextid=wwXIfr" target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex' }}>
+              <window.Icon name="facebook" size={13} stroke={1.8}/>
+            </a>
+          </span>
         </div>
       </div>
       <nav className="resp-nav" style={{

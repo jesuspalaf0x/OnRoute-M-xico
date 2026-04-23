@@ -78,12 +78,12 @@ const ContactPage = ({ lang }) => {
           <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { icon: 'whatsapp', t: 'WhatsApp', s: '+52 998 000 0000', extra: lang === 'es' ? 'Respuesta < 10 min' : 'Reply < 10 min', bg: '#25D366', color: '#fff' },
-                { icon: 'phone',    t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 998 000 0000', extra: lang === 'es' ? 'Lun-Dom · 7am-11pm' : 'Mon-Sun · 7am-11pm', bg: '#fff', color: '#0a0a0a' },
-                { icon: 'mail',     t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a' },
-                { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Juárez 123, Playa del Carmen', extra: 'Q. Roo, México', bg: '#fff', color: '#0a0a0a' },
+                { icon: 'whatsapp', t: 'WhatsApp', s: '+52 984 106 8542', extra: lang === 'es' ? 'Respuesta < 10 min' : 'Reply < 10 min', bg: '#25D366', color: '#fff', href: 'https://wa.me/529841068542' },
+                { icon: 'phone',    t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 (984) 115 6844', extra: lang === 'es' ? 'Exclusivamente para llamadas' : 'Calls only', bg: '#fff', color: '#0a0a0a', href: 'tel:+529841156844' },
+                { icon: 'mail',     t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a', href: 'mailto:hola@onroutemx.com' },
+                { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Juárez 123, Playa del Carmen', extra: 'Q. Roo, México', bg: '#fff', color: '#0a0a0a', href: 'https://maps.google.com/?q=Playa+del+Carmen' },
               ].map((c, i) => (
-                <a key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, borderRadius: 12, background: c.bg, color: c.color, border: c.bg === '#fff' ? '1px solid rgba(10,10,10,0.08)' : 'none', cursor: 'pointer' }}>
+                <a key={i} href={c.href} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, borderRadius: 12, background: c.bg, color: c.color, border: c.bg === '#fff' ? '1px solid rgba(10,10,10,0.08)' : 'none', cursor: 'pointer', textDecoration: 'none' }}>
                   <div style={{ width: 42, height: 42, borderRadius: 10, background: c.bg === '#fff' ? 'rgba(31,168,74,0.1)' : 'rgba(255,255,255,0.2)', color: c.bg === '#fff' ? '#0F6B2E' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <window.Icon name={c.icon} size={20} stroke={2} />
                   </div>
