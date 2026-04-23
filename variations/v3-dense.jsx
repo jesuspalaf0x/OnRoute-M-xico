@@ -150,33 +150,9 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
             </div>
           </div>
 
-          {/* Lado derecho: cotizador con tabs */}
-          <div style={{ background: '#fff', borderRadius: 16, padding: 24, border: '1px solid rgba(10,10,10,0.06)', boxShadow: '0 8px 32px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', gap: 4, background: '#f4f5f2', padding: 4, borderRadius: 10, marginBottom: 20 }}>
-              {tabs.map(tab => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-                  flex: 1, padding: '9px 12px', borderRadius: 7, border: 'none',
-                  background: activeTab === tab.id ? '#fff' : 'transparent',
-                  color: activeTab === tab.id ? '#0a0a0a' : 'rgba(10,10,10,0.6)',
-                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  boxShadow: activeTab === tab.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                  transition: 'all .15s', fontFamily: 'Inter, sans-serif',
-                }}>
-                  <window.Icon name={tab.icon} size={13} stroke={2}/> {tab.label}
-                </button>
-              ))}
-            </div>
-            <div style={{ flex: 1 }}>
-              <window.Booker t={t.booker} variant="inline" accent={accent} />
-            </div>
-            <div style={{ marginTop: 16, padding: 12, background: '#f0f7f2', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 10, fontSize: 11, color: accentDark }}>
-              <window.Icon name="shield" size={14} stroke={2}/>
-              <div>
-                <strong>{lang === 'es' ? 'Mejor precio garantizado.' : 'Best price guaranteed.'}</strong>{' '}
-                {lang === 'es' ? 'Si lo encuentras más barato, te igualamos la tarifa.' : 'Find it cheaper, we match the price.'}
-              </div>
-            </div>
+          {/* Lado derecho: SmartQuoter inteligente */}
+          <div style={{ display: 'flex', alignItems: 'stretch' }}>
+            <window.SmartQuoter lang={lang} />
           </div>
         </div>
       </section>
