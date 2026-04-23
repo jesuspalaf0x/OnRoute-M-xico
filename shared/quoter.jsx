@@ -109,12 +109,15 @@ const SmartQuoter = ({ lang }) => {
 
   // Espera a que Google Maps Places esté disponible mediante evento
   React.useEffect(() => {
-    const isReady = () => !!(window.GOOGLE_MAPS_READY && window.google?.maps?.places?.Autocomplete);
+    const isReady = () => !!(
+      window.GOOGLE_MAPS_READY &&
+      window.google?.maps?.places &&
+      (window.google.maps.places.Autocomplete || window.google.maps.places.AutocompleteService)
+    );
     if (isReady()) { setMapsReady(true); return; }
-    const onReady = () => setMapsReady(true);
+    const onReady = () => { console.log('[OnRoute] Google Maps listo via evento'); setMapsReady(true); };
     window.addEventListener('google-maps-ready', onReady);
-    // Fallback: polling por si el evento ya disparó antes
-    const t = setInterval(() => { if (isReady()) { setMapsReady(true); clearInterval(t); } }, 500);
+    const t = setInterval(() => { if (isReady()) { console.log('[OnRoute] Google Maps listo via polling'); setMapsReady(true); clearInterval(t); } }, 500);
     return () => { window.removeEventListener('google-maps-ready', onReady); clearInterval(t); };
   }, []);
 
