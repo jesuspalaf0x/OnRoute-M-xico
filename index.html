@@ -26,12 +26,18 @@
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <!-- Config privada (API key, tipo de cambio) -->
   <script src="config.js"></script>
-  <!-- Google Maps + Places (se carga dinámicamente desde config.js) -->
+  <!-- Google Maps Places — callback garantiza que está listo antes de usarlo -->
   <script>
+    window.initMapsCallback = function() {
+      window.GOOGLE_MAPS_READY = true;
+      window.dispatchEvent(new Event('google-maps-ready'));
+    };
     (function() {
+      var key = window.GOOGLE_MAPS_API_KEY || '';
+      if (!key) { console.warn('OnRoute: falta GOOGLE_MAPS_API_KEY en config.js'); return; }
       var s = document.createElement('script');
-      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + (window.GOOGLE_MAPS_API_KEY || '') + '&libraries=places&language=es';
-      s.async = true; s.defer = true;
+      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + key + '&libraries=places&language=es&callback=initMapsCallback';
+      s.async = true;
       document.head.appendChild(s);
     })();
   </script>
@@ -41,7 +47,7 @@
   <script src="shared/price-matrix.js"></script>
   <script type="text/babel" src="shared/data.jsx?v=2"></script>
   <script type="text/babel" src="shared/components.jsx?v=2"></script>
-  <script type="text/babel" src="shared/quoter.jsx?v=1"></script>
+  <script type="text/babel" src="shared/quoter.jsx?v=3"></script>
   <script type="text/babel" src="variations/v3-dense.jsx?v=2"></script>
   <script type="text/babel" src="pages/shared-pages.jsx?v=2"></script>
   <script type="text/babel" src="pages/other-pages.jsx?v=2"></script>

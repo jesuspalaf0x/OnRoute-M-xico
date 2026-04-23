@@ -107,12 +107,15 @@ const SmartQuoter = ({ lang }) => {
       .catch(console.error);
   }, []);
 
-  // Espera a que Google Maps Places esté disponible
+  // Espera a que Google Maps Places esté disponible mediante evento
   React.useEffect(() => {
-    const check = () => !!(window.google && window.google.maps && window.google.maps.places && window.google.maps.places.Autocomplete);
-    if (check()) { setMapsReady(true); return; }
-    const t = setInterval(() => { if (check()) { setMapsReady(true); clearInterval(t); } }, 300);
-    return () => clearInterval(t);
+    const isReady = () => !!(window.GOOGLE_MAPS_READY && window.google?.maps?.places?.Autocomplete);
+    if (isReady()) { setMapsReady(true); return; }
+    const onReady = () => setMapsReady(true);
+    window.addEventListener('google-maps-ready', onReady);
+    // Fallback: polling por si el evento ya disparó antes
+    const t = setInterval(() => { if (isReady()) { setMapsReady(true); clearInterval(t); } }, 500);
+    return () => { window.removeEventListener('google-maps-ready', onReady); clearInterval(t); };
   }, []);
 
   // Inicializa Autocomplete cuando todo esté listo
