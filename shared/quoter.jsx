@@ -260,7 +260,7 @@ const SmartQuoter = ({ lang }) => {
             transition: 'all .15s', fontFamily: 'Inter, sans-serif',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}>
-            <window.Icon name={i === 0 ? 'car' : i === 1 ? 'map' : 'heart'} size={13} stroke={2} />
+            <window.Icon name={i === 0 ? 'car' : i === 1 ? 'globe' : 'heart'} size={13} stroke={2} />
             {tabLabels[i]}
           </button>
         ))}
@@ -289,7 +289,7 @@ const SmartQuoter = ({ lang }) => {
         <div style={{ marginBottom: 14 }}>
           <label style={labelStyle}>{t.from}</label>
           <div style={{ position: 'relative' }}>
-            <span style={iconWrap()}><window.Icon name="send" size={14} stroke={2} /></span>
+            <span style={iconWrap()}><window.Icon name="plane" size={14} stroke={2} /></span>
             <input
               ref={fromRef}
               type="text"
@@ -361,7 +361,7 @@ const SmartQuoter = ({ lang }) => {
         {/* Alerta error */}
         {result?.error && (
           <div style={{ background: '#fff3cd', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#856404', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <window.Icon name="alert" size={14} stroke={2} /> {result.error}
+            <window.Icon name="shield" size={14} stroke={2} /> {result.error}
           </div>
         )}
 
