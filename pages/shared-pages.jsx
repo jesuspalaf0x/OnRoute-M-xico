@@ -31,6 +31,18 @@ const Header = ({ lang, setLang, page, setPage }) => {
           </span>
         </div>
       </div>
+      {/* Barra superior de utilidades sólo para móviles (idioma, redes) */}
+      <div className="show-on-mobile-flex" style={{ padding: '6px 16px', background: '#0a1f12', color: '#fff', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
+        <window.LangToggle lang={lang} onChange={setLang} dark />
+        <span style={{ display: 'flex', gap: 14 }}>
+          <a href="https://www.instagram.com/onroute.tulum?igsh=a2N3ZDdrYmI5bWN5&utm_source=qr" target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex' }}>
+            <window.Icon name="instagram" size={14} stroke={1.8}/>
+          </a>
+          <a href="https://www.facebook.com/share/16oa6iX9CD/?mibextid=wwXIfr" target="_blank" rel="noreferrer" style={{ color: 'inherit', display: 'inline-flex' }}>
+            <window.Icon name="facebook" size={14} stroke={1.8}/>
+          </a>
+        </span>
+      </div>
       <nav className="resp-nav" style={{
         position: 'sticky', top: 0, zIndex: 20, padding: '14px 40px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
