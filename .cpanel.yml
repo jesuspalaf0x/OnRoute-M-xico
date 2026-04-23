@@ -7,3 +7,4 @@ deployment:
     - /bin/cp -R shared $DEPLOYPATH
     - /bin/cp -R variations $DEPLOYPATH
     - /bin/cp -R pages $DEPLOYPATH
+    - /bin/cp -R uploads $DEPLOYPATH
