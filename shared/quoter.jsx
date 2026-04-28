@@ -57,10 +57,10 @@ function detectZone(lat, lng, geojson) {
     const geo = feature.geometry;
     const name = feature.properties.Tulum;
     if (geo.type === 'Polygon') {
-      if (pointInPolygon(lng, lat, geo.coordinates)) return name;
+      if (pointInPolygon(lat, lng, geo.coordinates)) return name;
     } else if (geo.type === 'MultiPolygon') {
       for (const poly of geo.coordinates) {
-        if (pointInPolygon(lng, lat, poly)) return name;
+        if (pointInPolygon(lat, lng, poly)) return name;
       }
     }
   }
