@@ -57,13 +57,27 @@
       
       const getInitialState = () => {
         const p = window.location.pathname;
+        const search = new URLSearchParams(window.location.search);
+        
+        // Soporte a rutas query param (NUEVO MÉTODO)
+        if (search.has('tour')) return { page: 'tour-detail', slug: search.get('tour') };
+        if (search.has('p')) {
+           const pg = search.get('p');
+           if (['tours', 'about', 'contact', 'blog', 'blog-post', 'faq', 'privacy', 'checkout'].includes(pg)) {
+               return { page: pg, slug: search.get('slug') };
+           }
+        }
+        
+        // Soporte a la ruta vieja ?v=... para compatibilidad
+        if (search.get('v')) return { page: 'tour-detail', slug: search.get('v') };
+
+        // Soporte a paths (MÉTODO ANTERIOR, por si acaso)
         if (p.startsWith('/tours/')) return { page: 'tour-detail', slug: p.replace('/tours/', '') };
         if (p === '/tours') return { page: 'tours', slug: null };
         if (p === '/about') return { page: 'about', slug: null };
         if (p === '/contact') return { page: 'contact', slug: null };
         if (p === '/blog') return { page: 'blog', slug: null };
-        const search = new URLSearchParams(window.location.search);
-        if (search.get('v')) return { page: 'tour-detail', slug: search.get('v') };
+        
         return { page: 'home', slug: null };
       };
 
@@ -80,12 +94,17 @@
 
       const setPage = (newPage) => {
         setRoute({ page: newPage, slug: route.slug });
-        if (newPage === 'home') window.history.pushState(null, '', '/');
-        else if (newPage === 'tour-detail') {
+        if (newPage === 'home') {
+          window.history.pushState(null, '', '/');
+        } else if (newPage === 'tour-detail') {
           const slug = window._selectedTour?.slug || route.slug || '';
-          window.history.pushState(null, '', `/tours/${slug}`);
+          window.history.pushState(null, '', `/?tour=${slug}`);
+        } else if (newPage === 'blog-post') {
+          const slug = window._selectedPost?.slug || route.slug || '';
+          window.history.pushState(null, '', `/?p=blog-post&slug=${slug}`);
+        } else {
+          window.history.pushState(null, '', `/?p=${newPage}`);
         }
-        else window.history.pushState(null, '', `/${newPage}`);
         window.scrollTo({ top: 0, behavior: 'instant' });
       };
 
