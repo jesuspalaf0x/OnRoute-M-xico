@@ -37,6 +37,16 @@
   `;
   document.head.appendChild(style);
 })();
+// ── Formateo de nombres ────────────────────────────────────────
+function formatLocationName(name) {
+  if (!name) return '';
+  const parts = name.split(',');
+  if (parts.length > 2) {
+    return parts.slice(0, 2).join(',').trim();
+  }
+  return name.trim();
+}
+
 
 // ── Ray-casting: punto dentro de polígono ──────────────────
 function pointInPolygon(lat, lng, polygon) {
@@ -308,7 +318,7 @@ const SmartQuoter = ({ lang }) => {
           {fromZone && (
             <div style={{ fontSize: 11, color: accentDk, marginTop: 5, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
               <window.Icon name="pin" size={11} stroke={2.2} />
-              {t.fromZoneLabel} {fromZone}
+              {t.fromZoneLabel} {formatLocationName(fromVal)}
             </div>
           )}
         </div>
@@ -330,7 +340,7 @@ const SmartQuoter = ({ lang }) => {
           {toZone && (
             <div style={{ fontSize: 11, color: accentDk, marginTop: 5, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}>
               <window.Icon name="pin" size={11} stroke={2.2} />
-              {t.toZoneLabel} {toZone}
+              {t.toZoneLabel} {formatLocationName(toVal)}
             </div>
           )}
         </div>
@@ -380,12 +390,12 @@ const SmartQuoter = ({ lang }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 10, opacity: 0.6, marginBottom: 3, textTransform: 'uppercase', letterSpacing: 0.8 }}>{t.fromZoneLabel}</div>
-                <div style={{ fontWeight: 700, fontSize: 12, lineHeight: 1.3 }}>{result.fromZone}</div>
+                <div style={{ fontWeight: 700, fontSize: 12, lineHeight: 1.3 }}>{formatLocationName(fromVal)}</div>
               </div>
               <window.Icon name="arrowRight" size={16} stroke={2} />
               <div style={{ flex: 1, textAlign: 'right' }}>
                 <div style={{ fontSize: 10, opacity: 0.6, marginBottom: 3, textTransform: 'uppercase', letterSpacing: 0.8 }}>{t.toZoneLabel}</div>
-                <div style={{ fontWeight: 700, fontSize: 12, lineHeight: 1.3 }}>{result.toZone}</div>
+                <div style={{ fontWeight: 700, fontSize: 12, lineHeight: 1.3 }}>{formatLocationName(toVal)}</div>
               </div>
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 14 }}>
