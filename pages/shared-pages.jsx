@@ -359,35 +359,72 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
 
       <section className="section-pad" style={{ padding: '16px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-          {/* Image hero gallery */}
-          <div className="tour-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, borderRadius: 16, overflow: 'hidden', height: 380, marginBottom: 24, cursor: 'pointer' }} onClick={() => { setLightboxIndex(0); setIsLightboxOpen(true); }}>
+          {/* Image hero gallery DESKTOP */}
+          <div className="hide-on-mobile" style={{ display: 'grid', gridTemplateColumns: galleryImages.length >= 5 ? '2fr 1fr 1fr' : (galleryImages.length > 1 ? '2fr 1fr' : '1fr'), gap: 12, borderRadius: 16, overflow: 'hidden', height: 440, marginBottom: 24, cursor: 'pointer' }} onClick={() => { setLightboxIndex(0); setIsLightboxOpen(true); }}>
             <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-              <img src={galleryImages[0] || tour.img || ''} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              <img src={galleryImages[0] || tour.img || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             </div>
-            {galleryImages.length > 1 ? (
-              <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12, height: '100%' }}>
-                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 8 }}>
-                  <img src={galleryImages[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            {galleryImages.length >= 5 ? (
+              <>
+                <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12, height: '100%' }}>
+                  <img src={galleryImages[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} />
+                  <img src={galleryImages[2]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} />
                 </div>
-                {galleryImages[2] ? (
-                  <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 8 }}>
-                    <img src={galleryImages[2]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12, height: '100%' }}>
+                  <img src={galleryImages[3]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} />
+                  <div style={{ position: 'relative', height: '100%' }}>
+                    <img src={galleryImages[4]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} />
+                    {galleryImages.length > 5 && (
+                      <div style={{ position: 'absolute', inset: 0, borderRadius: 8, background: 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, fontWeight: 700 }}>
+                        +{galleryImages.length - 5} {lang === 'es' ? 'fotos' : 'photos'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            ) : galleryImages.length > 1 ? (
+              <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12, height: '100%' }}>
+                <img src={galleryImages[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} />
+                {galleryImages[2] && (
+                  <div style={{ position: 'relative', height: '100%' }}>
+                    <img src={galleryImages[2]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }} />
                     {galleryImages.length > 3 && (
-                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, fontWeight: 700 }}>
+                      <div style={{ position: 'absolute', inset: 0, borderRadius: 8, background: 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, fontWeight: 700 }}>
                         +{galleryImages.length - 3} {lang === 'es' ? 'fotos' : 'photos'}
                       </div>
                     )}
                   </div>
-                ) : <div/>}
+                )}
               </div>
             ) : <div/>}
+          </div>
+
+          {/* Image hero gallery MOBILE */}
+          <div className="show-on-mobile" style={{ marginBottom: 24, cursor: 'pointer' }} onClick={() => { setLightboxIndex(0); setIsLightboxOpen(true); }}>
+            <div style={{ height: 260, borderRadius: 16, overflow: 'hidden', marginBottom: 8, position: 'relative' }}>
+               <img src={galleryImages[0] || tour.img || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+            {galleryImages.length > 1 && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                {galleryImages.slice(1, 5).map((img, idx) => (
+                  <div key={idx} style={{ height: 68, borderRadius: 8, overflow: 'hidden', position: 'relative' }}>
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    {idx === 3 && galleryImages.length > 5 && (
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13, fontWeight: 700 }}>
+                        +{galleryImages.length - 5}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 40 }}>
             {/* Left: content */}
             <div>
               <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>{tour.loc}</div>
-              <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, letterSpacing: -1.2, fontFamily: 'Archivo, sans-serif', lineHeight: 1.05, textWrap: 'balance' }}>{tour.t}</h1>
+              <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, letterSpacing: -1.2, fontFamily: 'Archivo, sans-serif', lineHeight: 1.05, textWrap: 'balance' }} dangerouslySetInnerHTML={{ __html: tour.t }}></h1>
               <div style={{ display: 'flex', gap: 14, marginTop: 14, fontSize: 12, color: 'rgba(10,10,10,0.7)', flexWrap: 'wrap', rowGap: 8 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="star" size={12} color="#F5B700" stroke={0}/> <strong>{tour.rating}</strong> ({tour.rev} {lang === 'es' ? 'reseñas' : 'reviews'})</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="clock" size={12} stroke={2}/> {tour.dur} {lang === 'es' ? 'de duración' : 'duration'}</span>
