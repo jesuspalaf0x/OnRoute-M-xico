@@ -152,6 +152,13 @@ const SmartQuoter = ({ lang }) => {
         setFromVal(p.name || p.formatted_address);
         setFromZone(detectZone(lat, lng, geojson));
         setResult(null);
+
+        // Sesgo contextual: Priorizar lugares a 50km del origen para el destino
+        if (toAc.current && window.google?.maps?.Circle) {
+          const circle = new window.google.maps.Circle({ center: { lat, lng }, radius: 50000 });
+          toAc.current.setBounds(circle.getBounds());
+          toAc.current.setOptions({ strictBounds: false });
+        }
       });
     }
 
@@ -165,6 +172,13 @@ const SmartQuoter = ({ lang }) => {
         setToVal(p.name || p.formatted_address);
         setToZone(detectZone(lat, lng, geojson));
         setResult(null);
+
+        // Sesgo contextual: Priorizar lugares a 50km del destino para el origen
+        if (fromAc.current && window.google?.maps?.Circle) {
+          const circle = new window.google.maps.Circle({ center: { lat, lng }, radius: 50000 });
+          fromAc.current.setBounds(circle.getBounds());
+          fromAc.current.setOptions({ strictBounds: false });
+        }
       });
     }
   }, [mapsReady, geojson]);
