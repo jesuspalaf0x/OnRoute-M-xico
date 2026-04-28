@@ -134,7 +134,13 @@ const SmartQuoter = ({ lang }) => {
   // Inicializa Autocomplete cuando todo esté listo
   React.useEffect(() => {
     if (!mapsReady || !geojson) return;
-    const opts = { componentRestrictions: { country: 'mx' }, fields: ['geometry', 'name', 'formatted_address'] };
+    const yucatanBounds = { north: 21.7, south: 18.0, west: -90.6, east: -86.6 };
+    const opts = { 
+      componentRestrictions: { country: 'mx' }, 
+      bounds: yucatanBounds,
+      strictBounds: true,
+      fields: ['geometry', 'name', 'formatted_address'] 
+    };
 
     if (fromRef.current && !fromAc.current) {
       fromAc.current = new window.google.maps.places.Autocomplete(fromRef.current, opts);
