@@ -269,6 +269,31 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
   const [pax, setPax] = React.useState(2);
   const [date, setDate] = React.useState('');
   const [tab, setTab] = React.useState('description');
+  const [galleryImages, setGalleryImages] = React.useState([]);
+  const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
+  const [lightboxIndex, setLightboxIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!tour) return;
+    const imgIds = tour.meta?.imagen?.[0];
+    if (imgIds) {
+      fetch(`https://onroutemx.com/wp-json/wp/v2/media?include=${imgIds}&per_page=20`)
+        .then(res => res.json())
+        .then(data => {
+            const idArray = imgIds.split(',');
+            const sortedUrls = [];
+            idArray.forEach(id => {
+                const found = data.find(m => m.id == id);
+                if (found) sortedUrls.push(found.source_url);
+            });
+            const finalGallery = [tour.img, ...sortedUrls.filter(u => u !== tour.img)];
+            setGalleryImages(finalGallery);
+        })
+        .catch(e => console.error(e));
+    } else {
+        setGalleryImages([tour.img]);
+    }
+  }, [tour]);
 
   if (loading && !tour) {
      return <div style={{textAlign: 'center', padding: '100px 0'}}>Cargando tour...</div>;
@@ -334,13 +359,28 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
 
       <section className="section-pad" style={{ padding: '16px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-          {/* Image hero */}
-          <div style={{ borderRadius: 16, overflow: 'hidden', height: 380, marginBottom: 24, position: 'relative' }}>
-            {tour.isURL && tour.img ? (
-              <img src={tour.img} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            ) : (
-              <window.ImagePlaceholder paletteKey={tour.img || 'tulum-tour'} label="" aspect="auto" rounded={16} showLabel={false} style={{ height: '100%', aspectRatio: 'auto' }}/>
-            )}
+          {/* Image hero gallery */}
+          <div className="tour-gallery-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, borderRadius: 16, overflow: 'hidden', height: 380, marginBottom: 24, cursor: 'pointer' }} onClick={() => { setLightboxIndex(0); setIsLightboxOpen(true); }}>
+            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <img src={galleryImages[0] || tour.img || ''} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+            {galleryImages.length > 1 ? (
+              <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12, height: '100%' }}>
+                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 8 }}>
+                  <img src={galleryImages[1]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                </div>
+                {galleryImages[2] ? (
+                  <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 8 }}>
+                    <img src={galleryImages[2]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    {galleryImages.length > 3 && (
+                      <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, fontWeight: 700 }}>
+                        +{galleryImages.length - 3} {lang === 'es' ? 'fotos' : 'photos'}
+                      </div>
+                    )}
+                  </div>
+                ) : <div/>}
+              </div>
+            ) : <div/>}
           </div>
 
           <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 40 }}>
@@ -348,10 +388,13 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
             <div>
               <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 8 }}>{tour.loc}</div>
               <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, letterSpacing: -1.2, fontFamily: 'Archivo, sans-serif', lineHeight: 1.05, textWrap: 'balance' }}>{tour.t}</h1>
-              <div style={{ display: 'flex', gap: 20, marginTop: 14, fontSize: 12, color: 'rgba(10,10,10,0.7)', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 14, marginTop: 14, fontSize: 12, color: 'rgba(10,10,10,0.7)', flexWrap: 'wrap', rowGap: 8 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="star" size={12} color="#F5B700" stroke={0}/> <strong>{tour.rating}</strong> ({tour.rev} {lang === 'es' ? 'reseñas' : 'reviews'})</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="clock" size={12} stroke={2}/> {tour.dur}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="clock" size={12} stroke={2}/> {tour.dur} {lang === 'es' ? 'de duración' : 'duration'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="users" size={12} stroke={2}/> {lang === 'es' ? 'Aforo máx.' : 'Max group'} {meta['num-personas']?.[0] || '12'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>{lang === 'es' ? 'Edad min.' : 'Min age'} {meta['edad']?.[0] || '6'}+</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><window.Icon name="globe" size={12} stroke={2}/> ES / EN</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.6 }}>ID: {meta['id-exp']?.[0] || 'N/A'}</span>
               </div>
 
               {/* Tags */}
@@ -488,6 +531,26 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
           </div>
         </div>
       </section>
+
+      {isLightboxOpen && galleryImages.length > 0 && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '20px 30px', display: 'flex', justifyContent: 'space-between', color: '#fff' }}>
+            <div style={{ fontSize: 14, fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{lightboxIndex + 1} / {galleryImages.length}</div>
+            <button onClick={() => setIsLightboxOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: 4 }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+            <button onClick={() => setLightboxIndex(i => i > 0 ? i - 1 : galleryImages.length - 1)} style={{ position: 'absolute', left: '2%', background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: 48, height: 48, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2, backdropFilter: 'blur(4px)' }}>
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <img src={galleryImages[lightboxIndex]} style={{ maxHeight: '90vh', maxWidth: '90vw', objectFit: 'contain', userSelect: 'none' }} />
+            <button onClick={() => setLightboxIndex(i => i < galleryImages.length - 1 ? i + 1 : 0)} style={{ position: 'absolute', right: '2%', background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: 48, height: 48, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2, backdropFilter: 'blur(4px)' }}>
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };
