@@ -253,25 +253,71 @@ const ToursPage = ({ lang, setPage, setTourIdx }) => {
 };
 
 // PÁGINA: Tour detail — lee el tour seleccionado desde window._selectedTour o fallback
-const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
+const TourDetailPage = ({ lang, setPage, routeSlug }) => {
   const t = window.COPY[lang];
   const accent = '#1FA84A';
   const accentDark = '#0F6B2E';
 
-  // Usar el tour que se pasó al navegar, o el primero estático como fallback
-  const tour = window._selectedTour || t.tours.list[tourIdx] || t.tours.list[0];
+  const { tours, loading } = window.useWPTours();
+
+  let tour = window._selectedTour;
+  if (routeSlug && (!tour || tour.slug !== routeSlug)) {
+    const found = tours.find(x => x.slug === routeSlug || x.id == routeSlug);
+    if (found) tour = found;
+  }
 
   const [pax, setPax] = React.useState(2);
   const [date, setDate] = React.useState('');
-  const [tab, setTab] = React.useState('itinerary');
+  const [tab, setTab] = React.useState('description');
 
-  const itinerary = [
-    { time: '09:00', t: lang === 'es' ? 'Pick-up en tu hotel' : 'Pick-up at your hotel', d: lang === 'es' ? 'Recogida puntual en la recepción de tu hotel o Airbnb.' : 'On-time pick-up at your hotel or Airbnb reception.' },
-    { time: '10:30', t: lang === 'es' ? 'Llegada a la zona arqueológica' : 'Arrival at the archaeological site', d: lang === 'es' ? 'Guía certificado te acompaña durante el recorrido.' : 'Certified guide joins you for the tour.' },
-    { time: '13:00', t: lang === 'es' ? 'Comida tradicional' : 'Traditional lunch', d: lang === 'es' ? 'Buffet de comida yucateca en restaurante local.' : 'Yucatecan buffet at a local restaurant.' },
-    { time: '15:00', t: lang === 'es' ? 'Baño en cenote' : 'Swim at cenote', d: lang === 'es' ? 'Nada en aguas cristalinas con equipo incluido.' : 'Swim in crystal waters, gear included.' },
-    { time: '18:00', t: lang === 'es' ? 'Regreso' : 'Return', d: lang === 'es' ? 'Te dejamos de vuelta en tu hotel.' : 'Drop-off back at your hotel.' },
-  ];
+  if (loading && !tour) {
+     return <div style={{textAlign: 'center', padding: '100px 0'}}>Cargando tour...</div>;
+  }
+
+  if (!tour) {
+     tour = t.tours.list[0]; // fallback final
+  }
+
+  // Parse WP data
+  const meta = tour.meta || {};
+  
+  const itinerary = [];
+  for (let i = 1; i <= 9; i++) {
+    const time = meta[`horario-${i}`]?.[0];
+    const desc = meta[`itinerario-de-horario-${i}`]?.[0];
+    if (time && desc) {
+      itinerary.push({ time, t: lang === 'es' ? 'Actividad' : 'Activity', d: desc });
+    }
+  }
+  if (itinerary.length === 0) {
+    itinerary.push(
+      { time: '09:00', t: lang === 'es' ? 'Pick-up en tu hotel' : 'Pick-up at your hotel', d: lang === 'es' ? 'Recogida puntual en la recepción de tu hotel o Airbnb.' : 'On-time pick-up at your hotel or Airbnb reception.' },
+      { time: '10:30', t: lang === 'es' ? 'Llegada a la zona arqueológica' : 'Arrival at the archaeological site', d: lang === 'es' ? 'Guía certificado te acompaña durante el recorrido.' : 'Certified guide joins you for the tour.' },
+      { time: '13:00', t: lang === 'es' ? 'Comida tradicional' : 'Traditional lunch', d: lang === 'es' ? 'Buffet de comida yucateca en restaurante local.' : 'Yucatecan buffet at a local restaurant.' },
+      { time: '15:00', t: lang === 'es' ? 'Baño en cenote' : 'Swim at cenote', d: lang === 'es' ? 'Nada en aguas cristalinas con equipo incluido.' : 'Swim in crystal waters, gear included.' },
+      { time: '18:00', t: lang === 'es' ? 'Regreso' : 'Return', d: lang === 'es' ? 'Te dejamos de vuelta en tu hotel.' : 'Drop-off back at your hotel.' }
+    );
+  }
+
+  const parsePHPSerializedBooleans = (str) => {
+    if (!str) return [];
+    const results = [];
+    const regex = /s:\d+:"([^"]+)";s:(4|5):"(true|false)"/g;
+    let match;
+    while ((match = regex.exec(str)) !== null) {
+      if (match[3] === 'true') {
+        results.push(match[1]);
+      }
+    }
+    return results;
+  };
+
+  const includedItems = parsePHPSerializedBooleans(meta['incluir-en-la-experiencia']?.[0]);
+  const notIncludedItems = parsePHPSerializedBooleans(meta['no-incluye']?.[0]);
+  const bringItems = parsePHPSerializedBooleans(meta['informacion-a-turistas']?.[0]);
+
+  const finalIncluded = includedItems.length > 0 ? includedItems : [lang==='es'?'Transporte privado':'Private transport', lang==='es'?'Guía certificado bilingüe':'Certified bilingual guide', lang==='es'?'Entradas incluidas':'Entry fees included', lang==='es'?'Seguro de viaje':'Travel insurance'];
+  const finalNotIncluded = notIncludedItems.length > 0 ? notIncludedItems : [lang==='es'?'Propinas (opcionales)':'Tips (optional)', lang==='es'?'Bebidas alcohólicas':'Alcoholic drinks', lang==='es'?'Gastos personales':'Personal expenses'];
 
   const priceNum = parseFloat(String(tour.price).replace(/[$,]/g, '')) || 0;
 
@@ -314,21 +360,26 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
               </div>
 
               {/* Tabs */}
-              <div style={{ marginTop: 32, borderBottom: '1px solid rgba(10,10,10,0.1)', display: 'flex', gap: 24 }}>
+              <div style={{ marginTop: 32, borderBottom: '1px solid rgba(10,10,10,0.1)', display: 'flex', gap: 24, overflowX: 'auto', whiteSpace: 'nowrap', scrollbarWidth: 'none' }}>
                 {[
+                  { id: 'description', label: lang === 'es' ? 'Descripción' : 'Description' },
                   { id: 'itinerary', label: lang === 'es' ? 'Itinerario' : 'Itinerary' },
                   { id: 'includes',  label: lang === 'es' ? 'Incluye' : 'Includes' },
+                  { id: 'bring',     label: lang === 'es' ? 'Qué llevar' : 'What to bring' },
                   { id: 'reviews',   label: lang === 'es' ? 'Reseñas' : 'Reviews' },
                 ].map(x => (
                   <button key={x.id} onClick={() => setTab(x.id)} style={{ padding: '10px 0', border: 'none', background: 'transparent', fontSize: 13, fontWeight: 700, cursor: 'pointer', color: tab === x.id ? '#0a0a0a' : 'rgba(10,10,10,0.5)', borderBottom: '2px solid ' + (tab === x.id ? accent : 'transparent'), marginBottom: -1, fontFamily: 'Inter, sans-serif' }}>{x.label}</button>
                 ))}
               </div>
 
-              <div style={{ paddingTop: 24 }}>
+              <div style={{ paddingTop: 24, paddingBottom: 40 }}>
+                {tab === 'description' && (
+                  <div className="tour-description" style={{ fontSize: 14, color: 'rgba(10,10,10,0.8)', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: tour.content || (lang === 'es' ? '<p>No hay descripción disponible para este tour.</p>' : '<p>No description available for this tour.</p>') }} />
+                )}
                 {tab === 'itinerary' && (
                   <div>
                     {itinerary.map((it, i) => (
-                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '60px 16px 1fr', gap: 16, paddingBottom: 20, position: 'relative' }}>
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '120px 16px 1fr', gap: 16, paddingBottom: 20, position: 'relative' }}>
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a', fontFamily: 'ui-monospace, monospace' }}>{it.time}</div>
                         <div style={{ position: 'relative' }}>
                           <div style={{ width: 12, height: 12, borderRadius: '50%', background: accent, border: '3px solid #fff', boxShadow: '0 0 0 1.5px ' + accent, marginTop: 2 }}/>
@@ -336,7 +387,7 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
                         </div>
                         <div>
                           <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: -0.2, fontFamily: 'Archivo, sans-serif' }}>{it.t}</div>
-                          <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 3, lineHeight: 1.5 }}>{it.d}</div>
+                          <div style={{ fontSize: 13, color: 'rgba(10,10,10,0.7)', marginTop: 4, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{it.d}</div>
                         </div>
                       </div>
                     ))}
@@ -346,20 +397,37 @@ const TourDetailPage = ({ lang, setPage, tourIdx = 0 }) => {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                     <div>
                       <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 10px 0', fontFamily: 'Archivo, sans-serif', color: accentDark }}>✓ {lang === 'es' ? 'Incluido' : 'Included'}</h4>
-                      {[lang==='es'?'Transporte privado':'Private transport', lang==='es'?'Guía certificado bilingüe':'Certified bilingual guide', lang==='es'?'Entradas incluidas':'Entry fees included', lang==='es'?'Seguro de viaje':'Travel insurance'].map((x, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 12, color: 'rgba(10,10,10,0.75)' }}>
+                      {finalIncluded.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 13, color: 'rgba(10,10,10,0.75)' }}>
                           <window.Icon name="check" size={14} color={accent} stroke={3}/> {x}
                         </div>
                       ))}
                     </div>
                     <div>
                       <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 10px 0', fontFamily: 'Archivo, sans-serif', color: 'rgba(10,10,10,0.5)' }}>× {lang === 'es' ? 'No incluido' : 'Not included'}</h4>
-                      {[lang==='es'?'Propinas (opcionales)':'Tips (optional)', lang==='es'?'Bebidas alcohólicas':'Alcoholic drinks', lang==='es'?'Gastos personales':'Personal expenses'].map((x, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 12, color: 'rgba(10,10,10,0.6)' }}>
+                      {finalNotIncluded.map((x, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', fontSize: 13, color: 'rgba(10,10,10,0.6)' }}>
                           <span style={{ color: 'rgba(10,10,10,0.3)', fontWeight: 700 }}>×</span> {x}
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+                {tab === 'bring' && (
+                  <div>
+                    <h4 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 12px 0', fontFamily: 'Archivo, sans-serif', color: '#0a0a0a' }}>{lang === 'es' ? 'Recomendaciones' : 'Recommendations'}</h4>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                      {bringItems.length > 0 ? bringItems.map((x, i) => (
+                        <span key={i} style={{ fontSize: 12, background: 'rgba(10,10,10,0.04)', padding: '6px 12px', borderRadius: 8, color: '#0a0a0a', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                           <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent }}></span> {x}
+                        </span>
+                      )) : (
+                        <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.6)', margin: 0 }}>{lang === 'es' ? 'Ropa cómoda y protector solar.' : 'Comfortable clothes and sunscreen.'}</p>
+                      )}
+                    </div>
+                    {meta['pregunta-1'] && meta['pregunta-1'][0] && (
+                      <div style={{ marginTop: 20, padding: 16, background: '#f0f7f2', borderRadius: 12, fontSize: 13, color: accentDark, lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: meta['pregunta-1'][0] }} />
+                    )}
                   </div>
                 )}
                 {tab === 'reviews' && (

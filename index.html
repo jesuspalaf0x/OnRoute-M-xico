@@ -54,16 +54,43 @@
   <script type="text/babel">
     function App() {
       const [lang, setLang] = React.useState(() => localStorage.getItem('onroute-lang') || 'es');
-      const [page, setPage] = React.useState('home');
-      const [tourIdx, setTourIdx] = React.useState(0);
+      
+      const getInitialState = () => {
+        const p = window.location.pathname;
+        if (p.startsWith('/tours/')) return { page: 'tour-detail', slug: p.replace('/tours/', '') };
+        if (p === '/tours') return { page: 'tours', slug: null };
+        if (p === '/about') return { page: 'about', slug: null };
+        if (p === '/contact') return { page: 'contact', slug: null };
+        if (p === '/blog') return { page: 'blog', slug: null };
+        const search = new URLSearchParams(window.location.search);
+        if (search.get('v')) return { page: 'tour-detail', slug: search.get('v') };
+        return { page: 'home', slug: null };
+      };
+
+      const [route, setRoute] = React.useState(getInitialState);
+      const page = route.page;
 
       React.useEffect(() => { localStorage.setItem('onroute-lang', lang); }, [lang]);
+      
       React.useEffect(() => {
+        const handlePop = () => setRoute(getInitialState());
+        window.addEventListener('popstate', handlePop);
+        return () => window.removeEventListener('popstate', handlePop);
+      }, []);
+
+      const setPage = (newPage) => {
+        setRoute({ page: newPage, slug: route.slug });
+        if (newPage === 'home') window.history.pushState(null, '', '/');
+        else if (newPage === 'tour-detail') {
+          const slug = window._selectedTour?.slug || route.slug || '';
+          window.history.pushState(null, '', `/tours/${slug}`);
+        }
+        else window.history.pushState(null, '', `/${newPage}`);
         window.scrollTo({ top: 0, behavior: 'instant' });
-      }, [page]);
+      };
 
       const isHome = page === 'home';
-      const pageProps = { lang, setLang, page, setPage, tourIdx, setTourIdx };
+      const pageProps = { lang, setLang, page, setPage, routeSlug: route.slug };
 
       let content;
       if (isHome) {

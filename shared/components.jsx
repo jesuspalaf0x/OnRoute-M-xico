@@ -303,11 +303,11 @@ const useWPTours = () => {
           const meta = post.mis_datos || {};
           let priceStr = meta.precio && meta.precio[0] ? `$${meta.precio[0]}` : 'Por cotizar';
           let imgKey = post._embedded && post._embedded['wp:featuredmedia'] ? post._embedded['wp:featuredmedia'][0].source_url : 'tulum-tour';
-          // Validar si imgKey no es una key local sino una URL, ImagePlaceholder lo manejará diferente luego, o de momento dejar el fallback
           
           return {
             id: post.id,
             t: post.title.rendered,
+            slug: post.slug,
             loc: meta.ubicacion ? meta.ubicacion[0] : 'Riviera Maya',
             price: priceStr,
             dur: meta['duracion-del-recorrido'] ? meta['duracion-del-recorrido'][0] : 'Varía',
@@ -315,7 +315,9 @@ const useWPTours = () => {
             rev: Math.floor(Math.random() * 200) + 50, // Temporal random reviews count
             tags: meta['tipo-de-actividad'] || [],
             img: imgKey,
-            isURL: imgKey.startsWith('http')
+            isURL: imgKey.startsWith('http'),
+            meta: meta,
+            content: post.content ? post.content.rendered : ''
           };
         });
         setTours(mapped);
