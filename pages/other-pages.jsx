@@ -35,9 +35,9 @@ const AboutPage = ({ lang }) => {
 
           <div className="resp-grid-3" style={{ marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
             {[
-              { icon: 'leaf',   t: lang === 'es' ? 'Locales de raíz' : 'Rooted local',        d: lang === 'es' ? 'Nos enorgullece presentarnos como personas que han echado raíces en Tulum toda la vida.' : 'We are proud to present ourselves as people who have taken root in Tulum our whole lives.' },
+              { icon: 'leaf', t: lang === 'es' ? 'Locales de raíz' : 'Rooted local', d: lang === 'es' ? 'Nos enorgullece presentarnos como personas que han echado raíces en Tulum toda la vida.' : 'We are proud to present ourselves as people who have taken root in Tulum our whole lives.' },
               { icon: 'shield', t: lang === 'es' ? 'Transparencia total' : 'Total transparency', d: lang === 'es' ? 'Todas nuestras tarifas están publicadas, no tenemos ningún cargo oculto, lo que vez es lo que pagas.' : 'All our rates are published, we have no hidden charges, what you see is what you pay.' },
-              { icon: 'heart',  t: lang === 'es' ? 'Trato humano' : 'Human touch',             d: lang === 'es' ? 'WhatsApp directo con un humano, nunca un bot.' : 'Direct WhatsApp with a human, never a bot.' },
+              { icon: 'heart', t: lang === 'es' ? 'Trato humano' : 'Human touch', d: lang === 'es' ? 'WhatsApp directo con un humano, nunca un bot.' : 'Direct WhatsApp with a human, never a bot.' },
             ].map((v, i) => (
               <div key={i} style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid rgba(10,10,10,0.06)' }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(31,168,74,0.1)', color: '#0F6B2E', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
@@ -82,9 +82,9 @@ const ContactPage = ({ lang }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { icon: 'whatsapp', t: 'WhatsApp', s: '+52 984 106 8542', extra: lang === 'es' ? 'Respuesta < 10 min' : 'Reply < 10 min', bg: '#25D366', color: '#fff', href: 'https://wa.me/529841068542' },
-                { icon: 'phone',    t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 (984) 115 6844', extra: lang === 'es' ? 'Exclusivamente para llamadas' : 'Calls only', bg: '#fff', color: '#0a0a0a', href: 'tel:+529841156844' },
-                { icon: 'mail',     t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a', href: 'mailto:hola@onroutemx.com' },
-                { icon: 'pin',      t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Satélite entre Calles Okoot y Tun-kul 63, 21', extra: 'Tulum, Q. Roo, México', bg: '#fff', color: '#0a0a0a', href: 'https://maps.google.com/?q=Av.+Satélite+entre+Calles+Okoot+y+Tun-kul+63,+Tulum' },
+                { icon: 'phone', t: lang === 'es' ? 'Teléfono' : 'Phone', s: '+52 (984) 115 6844', extra: lang === 'es' ? 'Exclusivamente para llamadas' : 'Calls only', bg: '#fff', color: '#0a0a0a', href: 'tel:+529841156844' },
+                { icon: 'mail', t: 'Email', s: 'hola@onroutemx.com', extra: lang === 'es' ? 'Respuesta el mismo día' : 'Same-day reply', bg: '#fff', color: '#0a0a0a', href: 'mailto:hola@onroutemx.com' },
+                { icon: 'pin', t: lang === 'es' ? 'Oficina' : 'Office', s: 'Av. Satélite entre Calles Okoot y Tun-kul 63, 21', extra: 'Tulum, Q. Roo, México', bg: '#fff', color: '#0a0a0a', href: 'https://maps.google.com/?q=Av.+Satélite+entre+Calles+Okoot+y+Tun-kul+63,+Tulum' },
               ].map((c, i) => (
                 <a key={i} href={c.href} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, borderRadius: 12, background: c.bg, color: c.color, border: c.bg === '#fff' ? '1px solid rgba(10,10,10,0.08)' : 'none', cursor: 'pointer', textDecoration: 'none' }}>
                   <div style={{ width: 42, height: 42, borderRadius: 10, background: c.bg === '#fff' ? 'rgba(31,168,74,0.1)' : 'rgba(255,255,255,0.2)', color: c.bg === '#fff' ? '#0F6B2E' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -168,13 +168,13 @@ const BlogPage = ({ lang, setPage }) => {
               style={{ cursor: 'pointer', background: '#fff', borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', display: 'grid', gridTemplateColumns: '1.3fr 1fr', marginBottom: 32 }}>
               {featured.img
                 ? <img src={featured.img} alt={featured.t} style={{ width: '100%', height: 300, objectFit: 'cover', display: 'block' }} />
-                : <window.ImagePlaceholder paletteKey="valladolid" label="" aspect="16/10" rounded={0} showLabel={false} style={{ aspectRatio: 'auto', height: '100%' }}/>}
+                : <window.ImagePlaceholder paletteKey="valladolid" label="" aspect="16/10" rounded={0} showLabel={false} style={{ aspectRatio: 'auto', height: '100%' }} />}
               <div style={{ padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>⭐ {lang === 'es' ? 'Destacado' : 'Featured'} · {featured.cat} · {featured.readMin}</div>
                 <h2 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: -0.8, fontFamily: 'Archivo, sans-serif', lineHeight: 1.15, textWrap: 'balance' }}>{featured.t}</h2>
                 <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.65)', lineHeight: 1.6, marginTop: 12 }}>{featured.excerpt}</p>
                 <div style={{ marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 6, color: accent, fontSize: 12, fontWeight: 700 }}>
-                  {lang === 'es' ? 'Leer artículo' : 'Read article'} <window.Icon name="arrowRight" size={12} stroke={2.2}/>
+                  {lang === 'es' ? 'Leer artículo' : 'Read article'} <window.Icon name="arrowRight" size={12} stroke={2.2} />
                 </div>
               </div>
             </div>
@@ -189,7 +189,7 @@ const BlogPage = ({ lang, setPage }) => {
                   onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
                   {p.img
                     ? <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}><img src={p.img} alt={p.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} /></div>
-                    : <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={0} showLabel={false}/>}
+                    : <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={0} showLabel={false} />}
                   <div style={{ padding: 16 }}>
                     <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 6 }}>{p.cat} · {p.readMin}</div>
                     <h3 style={{ fontSize: 14, fontWeight: 700, margin: 0, letterSpacing: -0.2, lineHeight: 1.3, fontFamily: 'Archivo, sans-serif' }}>{p.t}</h3>
@@ -227,7 +227,7 @@ const BlogPostPage = ({ lang, setPage }) => {
       <section style={{ padding: '32px 40px 0' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
           <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
             {lang === 'es' ? 'Volver al blog' : 'Back to blog'}
           </a>
         </div>
@@ -254,7 +254,7 @@ const BlogPostPage = ({ lang, setPage }) => {
             </div>
             <a href={post.link} target="_blank" rel="noopener noreferrer"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', background: accent, color: '#fff', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
-              {lang === 'es' ? 'Leer artículo completo' : 'Read full article'} <window.Icon name="arrowRight" size={14} stroke={2.2}/>
+              {lang === 'es' ? 'Leer artículo completo' : 'Read full article'} <window.Icon name="arrowRight" size={14} stroke={2.2} />
             </a>
           </div>
         </div>
@@ -345,7 +345,7 @@ const CheckoutPage = ({ lang, setPage }) => {
     if (step === 2 && window.ClipSDK) {
       try {
         // Inicializa el SDK con la llave pública. REEMPLAZAR CON LA TUYA DE PRODUCCIÓN/PRUEBAS.
-        const clip = new window.ClipSDK('TU_CLIP_PUBLIC_KEY_AQUI');
+        const clip = new window.ClipSDK('f92a4f3a-8ce8-424d-952e-8974fa53a7f4');
         const card = clip.element.create("Card", { locale: lang === 'es' ? 'es' : 'en' });
         card.mount("clip-checkout-div");
         setClipCardObj(card);
@@ -371,13 +371,13 @@ const CheckoutPage = ({ lang, setPage }) => {
     setLoadingPayment(true);
     try {
       if (!clipCardObj) throw new Error("El sistema de pagos no está inicializado.");
-      
+
       // 1. Obtener Token Seguro de Clip
       const cardToken = await clipCardObj.cardToken();
       if (!cardToken || !cardToken.id) {
-          throw new Error("No se pudo generar el token. Revisa los datos de la tarjeta.");
+        throw new Error("No se pudo generar el token. Revisa los datos de la tarjeta.");
       }
-      
+
       const payload = {
         clip_token: cardToken.id,
         name: form.name,
@@ -435,102 +435,102 @@ const CheckoutPage = ({ lang, setPage }) => {
             })}
           </div>
 
-        <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
-          <div style={{ background: '#fff', borderRadius: 14, padding: 28, border: '1px solid rgba(10,10,10,0.06)' }}>
-            {step === 1 && (
-              <>
-                <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Tus datos de contacto' : 'Your contact details'}</h2>
-                <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 4, marginBottom: 20 }}>{lang === 'es' ? 'Necesitamos estos datos para confirmar tu servicio.' : 'We need these to confirm your service.'}</p>
-                <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                  <div>
-                    <label style={formLabel}>{lang === 'es' ? 'Nombre completo' : 'Full name'}</label>
-                    <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={formInput} />
+          <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
+            <div style={{ background: '#fff', borderRadius: 14, padding: 28, border: '1px solid rgba(10,10,10,0.06)' }}>
+              {step === 1 && (
+                <>
+                  <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Tus datos de contacto' : 'Your contact details'}</h2>
+                  <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 4, marginBottom: 20 }}>{lang === 'es' ? 'Necesitamos estos datos para confirmar tu servicio.' : 'We need these to confirm your service.'}</p>
+                  <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                    <div>
+                      <label style={formLabel}>{lang === 'es' ? 'Nombre completo' : 'Full name'}</label>
+                      <input required value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={formInput} />
+                    </div>
+                    <div>
+                      <label style={formLabel}>{lang === 'es' ? 'Teléfono (WhatsApp)' : 'Phone (WhatsApp)'}</label>
+                      <input required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+1 555 000 0000" style={formInput} />
+                    </div>
                   </div>
-                  <div>
-                    <label style={formLabel}>{lang === 'es' ? 'Teléfono (WhatsApp)' : 'Phone (WhatsApp)'}</label>
-                    <input required value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+1 555 000 0000" style={formInput} />
+                  <div style={{ marginTop: 10 }}>
+                    <label style={formLabel}>Email</label>
+                    <input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={formInput} />
                   </div>
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <label style={formLabel}>Email</label>
-                  <input required type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} style={formInput} />
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <label style={formLabel}>{lang === 'es' ? 'Notas al conductor (opcional)' : 'Notes to driver (optional)'}</label>
-                  <textarea rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={lang === 'es' ? 'Número de vuelo, silla de bebé...' : 'Flight number, baby seat...'} style={{ ...formInput, resize: 'vertical', fontFamily: 'Inter, sans-serif' }} />
-                </div>
-                <button onClick={() => setStep(2)} style={{ marginTop: 20, width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                  {lang === 'es' ? 'Continuar al pago' : 'Continue to payment'}
-                </button>
-              </>
-            )}
-            {step === 2 && (
-              <>
-                <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Pago seguro' : 'Secure payment'}</h2>
-                <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 4, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <window.Icon name="shield" size={13} stroke={2} color={accent} /> {lang === 'es' ? 'Encriptación PCI · procesado por Clip' : 'PCI encryption · processed by Clip'}
-                </p>
-                {/* Contenedor donde Clip inyectará su formulario seguro (iframe) */}
-                <div id="clip-checkout-div" style={{ minHeight: 250 }}></div>
-
-                <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-                  <button onClick={() => setStep(1)} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid rgba(10,10,10,0.15)', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                    ← {lang === 'es' ? 'Atrás' : 'Back'}
+                  <div style={{ marginTop: 10 }}>
+                    <label style={formLabel}>{lang === 'es' ? 'Notas al conductor (opcional)' : 'Notes to driver (optional)'}</label>
+                    <textarea rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={lang === 'es' ? 'Número de vuelo, silla de bebé...' : 'Flight number, baby seat...'} style={{ ...formInput, resize: 'vertical', fontFamily: 'Inter, sans-serif' }} />
+                  </div>
+                  <button onClick={() => setStep(2)} style={{ marginTop: 20, width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                    {lang === 'es' ? 'Continuar al pago' : 'Continue to payment'}
                   </button>
-                  <button disabled={loadingPayment} onClick={handlePayment} style={{ flex: 1, padding: '14px', borderRadius: 10, border: 'none', background: loadingPayment ? 'rgba(10,10,10,0.2)' : accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: loadingPayment ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                    {loadingPayment ? (lang === 'es' ? 'Procesando...' : 'Processing...') : (lang === 'es' ? 'Confirmar y pagar' : 'Confirm & pay')}
-                  </button>
-                </div>
-              </>
-            )}
-            {step === 3 && (
-              <div style={{ textAlign: 'center', padding: '20px 20px' }}>
-                <div style={{ width: 72, height: 72, borderRadius: '50%', background: accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                  <window.Icon name="check" size={40} stroke={3} />
-                </div>
-                <h2 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: -0.8, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? '¡Reserva confirmada!' : 'Booking confirmed!'}</h2>
-                <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.65)', marginTop: 10, maxWidth: 400, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.55 }}>
-                  {lang === 'es' ? 'Te enviamos los detalles a tu email y WhatsApp. El conductor te contacta 24h antes del servicio.' : "We sent the details to your email and WhatsApp. Your driver will contact you 24h before the service."}
-                </p>
-                <div style={{ marginTop: 24 }}>
-                  <button onClick={() => setPage('home')} style={{ padding: '12px 20px', borderRadius: 10, border: 'none', background: '#0a0a0a', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                    {lang === 'es' ? 'Volver al inicio' : 'Back to home'}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <div style={{ position: 'sticky', top: 80, background: '#fff', borderRadius: 14, padding: 22, border: '1px solid rgba(10,10,10,0.06)' }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 14px 0', letterSpacing: -0.2, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Resumen de reserva' : 'Booking summary'}</h3>
-              {tour.img ? (
-                <div style={{ aspectRatio: '16/9', overflow: 'hidden', borderRadius: 8, marginBottom: 12 }}>
-                  <img src={tour.img} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              ) : (
-                <window.ImagePlaceholder paletteKey="tulum-tour" label="" aspect="16/9" rounded={8} showLabel={false} style={{ marginBottom: 12 }} />
+                </>
               )}
-              <div style={{ fontSize: 10, color: '#0F6B2E', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{tour.loc}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.2 }} dangerouslySetInnerHTML={{ __html: tour.t }}></div>
-              <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{date} · {pax} pax</div>
-              <div style={{ borderTop: '1px dashed rgba(10,10,10,0.12)', margin: '16px 0 12px' }} />
-              {[
-                [lang === 'es' ? 'Servicio' : 'Service', formatMoney(subtotal)],
-                [lang === 'es' ? 'Cargos de servicio' : 'Service fees', formatMoney(serviceFees)],
-                [lang === 'es' ? 'Impuestos (16%)' : 'Taxes (16%)', formatMoney(taxes)],
-              ].map((l, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(10,10,10,0.7)', padding: '4px 0' }}>
-                  <span>{l[0]}</span><span style={{ fontWeight: 600 }}>{l[1]}</span>
+              {step === 2 && (
+                <>
+                  <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Pago seguro' : 'Secure payment'}</h2>
+                  <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 4, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <window.Icon name="shield" size={13} stroke={2} color={accent} /> {lang === 'es' ? 'Encriptación PCI · procesado por Clip' : 'PCI encryption · processed by Clip'}
+                  </p>
+                  {/* Contenedor donde Clip inyectará su formulario seguro (iframe) */}
+                  <div id="clip-checkout-div" style={{ minHeight: 250 }}></div>
+
+                  <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                    <button onClick={() => setStep(1)} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid rgba(10,10,10,0.15)', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                      ← {lang === 'es' ? 'Atrás' : 'Back'}
+                    </button>
+                    <button disabled={loadingPayment} onClick={handlePayment} style={{ flex: 1, padding: '14px', borderRadius: 10, border: 'none', background: loadingPayment ? 'rgba(10,10,10,0.2)' : accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: loadingPayment ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                      {loadingPayment ? (lang === 'es' ? 'Procesando...' : 'Processing...') : (lang === 'es' ? 'Confirmar y pagar' : 'Confirm & pay')}
+                    </button>
+                  </div>
+                </>
+              )}
+              {step === 3 && (
+                <div style={{ textAlign: 'center', padding: '20px 20px' }}>
+                  <div style={{ width: 72, height: 72, borderRadius: '50%', background: accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                    <window.Icon name="check" size={40} stroke={3} />
+                  </div>
+                  <h2 style={{ fontSize: 28, fontWeight: 800, margin: 0, letterSpacing: -0.8, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? '¡Reserva confirmada!' : 'Booking confirmed!'}</h2>
+                  <p style={{ fontSize: 14, color: 'rgba(10,10,10,0.65)', marginTop: 10, maxWidth: 400, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.55 }}>
+                    {lang === 'es' ? 'Te enviamos los detalles a tu email y WhatsApp. El conductor te contacta 24h antes del servicio.' : "We sent the details to your email and WhatsApp. Your driver will contact you 24h before the service."}
+                  </p>
+                  <div style={{ marginTop: 24 }}>
+                    <button onClick={() => setPage('home')} style={{ padding: '12px 20px', borderRadius: 10, border: 'none', background: '#0a0a0a', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                      {lang === 'es' ? 'Volver al inicio' : 'Back to home'}
+                    </button>
+                  </div>
                 </div>
-              ))}
-              <div style={{ borderTop: '1px solid rgba(10,10,10,0.08)', marginTop: 10, paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: 13, fontWeight: 700 }}>Total</span>
-                <span style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.5 }}>{formatMoney(total)} <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(10,10,10,0.5)' }}>MXN</span></span>
+              )}
+            </div>
+
+            <div>
+              <div style={{ position: 'sticky', top: 80, background: '#fff', borderRadius: 14, padding: 22, border: '1px solid rgba(10,10,10,0.06)' }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 14px 0', letterSpacing: -0.2, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Resumen de reserva' : 'Booking summary'}</h3>
+                {tour.img ? (
+                  <div style={{ aspectRatio: '16/9', overflow: 'hidden', borderRadius: 8, marginBottom: 12 }}>
+                    <img src={tour.img} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ) : (
+                  <window.ImagePlaceholder paletteKey="tulum-tour" label="" aspect="16/9" rounded={8} showLabel={false} style={{ marginBottom: 12 }} />
+                )}
+                <div style={{ fontSize: 10, color: '#0F6B2E', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{tour.loc}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.2 }} dangerouslySetInnerHTML={{ __html: tour.t }}></div>
+                <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{date} · {pax} pax</div>
+                <div style={{ borderTop: '1px dashed rgba(10,10,10,0.12)', margin: '16px 0 12px' }} />
+                {[
+                  [lang === 'es' ? 'Servicio' : 'Service', formatMoney(subtotal)],
+                  [lang === 'es' ? 'Cargos de servicio' : 'Service fees', formatMoney(serviceFees)],
+                  [lang === 'es' ? 'Impuestos (16%)' : 'Taxes (16%)', formatMoney(taxes)],
+                ].map((l, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(10,10,10,0.7)', padding: '4px 0' }}>
+                    <span>{l[0]}</span><span style={{ fontWeight: 600 }}>{l[1]}</span>
+                  </div>
+                ))}
+                <div style={{ borderTop: '1px solid rgba(10,10,10,0.08)', marginTop: 10, paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700 }}>Total</span>
+                  <span style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.5 }}>{formatMoney(total)} <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(10,10,10,0.5)' }}>MXN</span></span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </section>
     </>
@@ -555,7 +555,7 @@ const PrivacyPage = ({ lang }) => {
         <div style={{ maxWidth: 800, margin: '0 auto', width: '100%', lineHeight: 1.7, fontSize: 14, color: 'rgba(10,10,10,0.8)' }}>
           <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>1. Identidad y Domicilio del Responsable</h3>
           <p>OnRoute México (en adelante "OnRoute"), con domicilio en Tulum, Quintana Roo, México, es el responsable del uso y protección de sus datos personales. Ponemos a su disposición este aviso en cumplimiento con la normativa mexicana vigente para informarle qué información recabamos y para qué fines.</p>
-          
+
           <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0a0a0a', marginTop: 40, marginBottom: 12 }}>2. Datos Personales que Recabamos</h3>
           <p>Para llevar a cabo las finalidades descritas en este aviso, recabaremos las siguientes categorías de datos:</p>
           <ul>
