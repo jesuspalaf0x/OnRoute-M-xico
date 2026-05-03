@@ -339,7 +339,21 @@ const CheckoutPage = ({ lang, setPage }) => {
   const accent = '#1FA84A';
   const [step, setStep] = React.useState(1);
   const [form, setForm] = React.useState({ name: '', email: '', phone: '', notes: '' });
-  const [card, setCard] = React.useState({ num: '', exp: '', cvv: '', name: '' });
+  const [clipCardObj, setClipCardObj] = React.useState(null);
+
+  React.useEffect(() => {
+    if (step === 2 && window.ClipSDK) {
+      try {
+        // Inicializa el SDK con la llave pública. REEMPLAZAR CON LA TUYA DE PRODUCCIÓN/PRUEBAS.
+        const clip = new window.ClipSDK('TU_CLIP_PUBLIC_KEY_AQUI');
+        const card = clip.element.create("Card", { locale: lang === 'es' ? 'es' : 'en' });
+        card.mount("clip-checkout-div");
+        setClipCardObj(card);
+      } catch (e) {
+        console.error("Error al montar Clip SDK", e);
+      }
+    }
+  }, [step, lang]);
 
   const booking = window._bookingParams || {};
   const tour = booking.tour || { t: 'Tour o Traslado', loc: 'Riviera Maya', price: '0', img: null };
@@ -356,12 +370,16 @@ const CheckoutPage = ({ lang, setPage }) => {
   const handlePayment = async () => {
     setLoadingPayment(true);
     try {
-      // 1. Aquí se generaría el Token de Clip (Clip.createToken({...}))
-      // Por ahora simularemos el token para conectar el flujo:
-      const mockClipToken = 'tok_' + Math.random().toString(36).substr(2);
-
+      if (!clipCardObj) throw new Error("El sistema de pagos no está inicializado.");
+      
+      // 1. Obtener Token Seguro de Clip
+      const cardToken = await clipCardObj.cardToken();
+      if (!cardToken || !cardToken.id) {
+          throw new Error("No se pudo generar el token. Revisa los datos de la tarjeta.");
+      }
+      
       const payload = {
-        clip_token: mockClipToken,
+        clip_token: cardToken.id,
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -450,24 +468,11 @@ const CheckoutPage = ({ lang, setPage }) => {
               <>
                 <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: -0.6, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Pago seguro' : 'Secure payment'}</h2>
                 <p style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', marginTop: 4, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <window.Icon name="shield" size={13} stroke={2} color={accent} /> {lang === 'es' ? 'Encriptación SSL · procesado por Stripe' : 'SSL encryption · processed by Stripe'}
+                  <window.Icon name="shield" size={13} stroke={2} color={accent} /> {lang === 'es' ? 'Encriptación PCI · procesado por Clip' : 'PCI encryption · processed by Clip'}
                 </p>
-                <label style={formLabel}>{lang === 'es' ? 'Número de tarjeta' : 'Card number'}</label>
-                <input value={card.num} onChange={e => setCard({ ...card, num: e.target.value })} placeholder="4242 4242 4242 4242" style={formInput} />
-                <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 10 }}>
-                  <div>
-                    <label style={formLabel}>{lang === 'es' ? 'Expira' : 'Expires'}</label>
-                    <input value={card.exp} onChange={e => setCard({ ...card, exp: e.target.value })} placeholder="MM/YY" style={formInput} />
-                  </div>
-                  <div>
-                    <label style={formLabel}>CVV</label>
-                    <input value={card.cvv} onChange={e => setCard({ ...card, cvv: e.target.value })} placeholder="123" style={formInput} />
-                  </div>
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <label style={formLabel}>{lang === 'es' ? 'Nombre en la tarjeta' : 'Name on card'}</label>
-                  <input value={card.name} onChange={e => setCard({ ...card, name: e.target.value })} style={formInput} />
-                </div>
+                {/* Contenedor donde Clip inyectará su formulario seguro (iframe) */}
+                <div id="clip-checkout-div" style={{ minHeight: 250 }}></div>
+
                 <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
                   <button onClick={() => setStep(1)} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid rgba(10,10,10,0.15)', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
                     ← {lang === 'es' ? 'Atrás' : 'Back'}
