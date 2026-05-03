@@ -351,6 +351,45 @@ const CheckoutPage = ({ lang, setPage }) => {
   const total = subtotal + serviceFees + taxes;
   const formatMoney = (val) => '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const [loadingPayment, setLoadingPayment] = React.useState(false);
+
+  const handlePayment = async () => {
+    setLoadingPayment(true);
+    try {
+      // 1. Aquí se generaría el Token de Clip (Clip.createToken({...}))
+      // Por ahora simularemos el token para conectar el flujo:
+      const mockClipToken = 'tok_' + Math.random().toString(36).substr(2);
+
+      const payload = {
+        clip_token: mockClipToken,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        notes: form.notes,
+        tour_title: tour.t,
+        pax: pax,
+        date: date,
+        total: total
+      };
+
+      const res = await fetch('https://onroutemx.com/wp-json/onroute/v1/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setStep(3); // Mostrar confirmación
+      } else {
+        alert('Error al procesar el pago: ' + (data.message || 'Intente de nuevo.'));
+      }
+    } catch (e) {
+      alert('Error de conexión.');
+    }
+    setLoadingPayment(false);
+  };
+
   return (
     <>
       <section className="section-pad" style={{ padding: '24px 40px 0' }}>
@@ -433,8 +472,8 @@ const CheckoutPage = ({ lang, setPage }) => {
                   <button onClick={() => setStep(1)} style={{ padding: '14px 20px', borderRadius: 10, border: '1px solid rgba(10,10,10,0.15)', background: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
                     ← {lang === 'es' ? 'Atrás' : 'Back'}
                   </button>
-                  <button onClick={() => setStep(3)} style={{ flex: 1, padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-                    {lang === 'es' ? 'Confirmar y pagar' : 'Confirm & pay'}
+                  <button disabled={loadingPayment} onClick={handlePayment} style={{ flex: 1, padding: '14px', borderRadius: 10, border: 'none', background: loadingPayment ? 'rgba(10,10,10,0.2)' : accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: loadingPayment ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                    {loadingPayment ? (lang === 'es' ? 'Procesando...' : 'Processing...') : (lang === 'es' ? 'Confirmar y pagar' : 'Confirm & pay')}
                   </button>
                 </div>
               </>
