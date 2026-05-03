@@ -387,7 +387,7 @@ const CheckoutPage = ({ lang, setPage }) => {
         tour_title: tour.t,
         pax: pax,
         date: date,
-        total: total
+        total: Number(total.toFixed(2)) // Forzamos 2 decimales estrictos en JavaScript
       };
 
       const res = await fetch('https://onroutemx.com/wp-json/onroute/v1/checkout', {
