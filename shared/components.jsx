@@ -1,22 +1,17 @@
 // Componentes compartidos: ImagePlaceholder, Logo, WhatsappFAB, Booker, Icons
 
-const OnrouteLogo = ({ size = 28, color = '#0a0a0a', accent = '#1FA84A', showText = true }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-    <svg width={size} height={size * 1.08} viewBox="0 0 100 108" fill="none">
-      {/* Pin shape inspired by logo */}
-      <path d="M50 4 C25 4 8 22 8 46 C8 68 30 90 50 104 C70 90 92 68 92 46 C92 22 75 4 50 4 Z" fill={accent}/>
-      <circle cx="50" cy="44" r="22" fill="#fff"/>
-      <circle cx="50" cy="44" r="6" fill={accent}/>
-      <path d="M50 50 L50 76" stroke={accent} strokeWidth="5" strokeLinecap="round"/>
-    </svg>
-    {showText && (
-      <div style={{ lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span style={{ fontSize: size * 0.32, letterSpacing: 0.4, color: color, opacity: 0.7, fontWeight: 500, fontFamily: 'Inter, sans-serif' }}>Travel & Experiences</span>
-        <span style={{ fontSize: size * 0.78, fontWeight: 800, color: color, letterSpacing: -0.8, fontFamily: 'Archivo, sans-serif' }}>Onroute</span>
-      </div>
-    )}
-  </div>
-);
+const OnrouteLogo = ({ size = 28, color = '#0a0a0a' }) => {
+  const isWhite = color === '#fff';
+  const src = isWhite 
+    ? 'uploads/Marca OnRoute/marca_onroute_en_blanco.png'
+    : 'uploads/Marca OnRoute/marca_onroute_a_color.png';
+  
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <img src={src} alt="OnRoute" style={{ height: size * 1.4, objectFit: 'contain' }} />
+    </div>
+  );
+};
 
 // Placeholder de imagen con gradientes tonales o imagen real de WP
 const ImagePlaceholder = ({ paletteKey, label, aspect = '4/3', rounded = 8, style = {}, showLabel = true, isURL = false }) => {
