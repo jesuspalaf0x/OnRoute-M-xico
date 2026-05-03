@@ -341,6 +341,16 @@ const CheckoutPage = ({ lang, setPage }) => {
   const [form, setForm] = React.useState({ name: '', email: '', phone: '', notes: '' });
   const [card, setCard] = React.useState({ num: '', exp: '', cvv: '', name: '' });
 
+  const booking = window._bookingParams || {};
+  const tour = booking.tour || { t: 'Tour o Traslado', loc: 'Riviera Maya', price: '0', img: null };
+  const pax = booking.pax || 2;
+  const date = booking.date || new Date().toISOString().split('T')[0];
+  const subtotal = booking.total || 0;
+  const serviceFees = subtotal * 0.05; // 5% fee example
+  const taxes = subtotal * 0.16; // 16% IVA
+  const total = subtotal + serviceFees + taxes;
+  const formatMoney = (val) => '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   return (
     <>
       <section className="section-pad" style={{ padding: '24px 40px 0' }}>
@@ -450,15 +460,21 @@ const CheckoutPage = ({ lang, setPage }) => {
           <div>
             <div style={{ position: 'sticky', top: 80, background: '#fff', borderRadius: 14, padding: 22, border: '1px solid rgba(10,10,10,0.06)' }}>
               <h3 style={{ fontSize: 14, fontWeight: 700, margin: '0 0 14px 0', letterSpacing: -0.2, fontFamily: 'Archivo, sans-serif' }}>{lang === 'es' ? 'Resumen de reserva' : 'Booking summary'}</h3>
-              <window.ImagePlaceholder paletteKey="tulum-tour" label="" aspect="16/9" rounded={8} showLabel={false} style={{ marginBottom: 12 }} />
-              <div style={{ fontSize: 10, color: '#0F6B2E', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{lang === 'es' ? 'Traslado privado' : 'Private transfer'}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.2 }}>Cancún Airport (CUN) → Tulum</div>
-              <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>2026-05-15 · 2 pax · {lang === 'es' ? 'ida' : 'one way'}</div>
+              {tour.img ? (
+                <div style={{ aspectRatio: '16/9', overflow: 'hidden', borderRadius: 8, marginBottom: 12 }}>
+                  <img src={tour.img} alt={tour.t} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              ) : (
+                <window.ImagePlaceholder paletteKey="tulum-tour" label="" aspect="16/9" rounded={8} showLabel={false} style={{ marginBottom: 12 }} />
+              )}
+              <div style={{ fontSize: 10, color: '#0F6B2E', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{tour.loc}</div>
+              <div style={{ fontSize: 15, fontWeight: 700, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.2 }} dangerouslySetInnerHTML={{ __html: tour.t }}></div>
+              <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.6)', marginTop: 6 }}>{date} · {pax} pax</div>
               <div style={{ borderTop: '1px dashed rgba(10,10,10,0.12)', margin: '16px 0 12px' }} />
               {[
-                [lang === 'es' ? 'Traslado privado' : 'Private transfer', '$125.00'],
-                [lang === 'es' ? 'Cargos de servicio' : 'Service fees', '$8.00'],
-                [lang === 'es' ? 'Impuestos' : 'Taxes', '$12.50'],
+                [lang === 'es' ? 'Servicio' : 'Service', formatMoney(subtotal)],
+                [lang === 'es' ? 'Cargos de servicio' : 'Service fees', formatMoney(serviceFees)],
+                [lang === 'es' ? 'Impuestos (16%)' : 'Taxes (16%)', formatMoney(taxes)],
               ].map((l, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'rgba(10,10,10,0.7)', padding: '4px 0' }}>
                   <span>{l[0]}</span><span style={{ fontWeight: 600 }}>{l[1]}</span>
@@ -466,7 +482,7 @@ const CheckoutPage = ({ lang, setPage }) => {
               ))}
               <div style={{ borderTop: '1px solid rgba(10,10,10,0.08)', marginTop: 10, paddingTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <span style={{ fontSize: 13, fontWeight: 700 }}>Total</span>
-                <span style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.5 }}>$145.50 <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(10,10,10,0.5)' }}>USD</span></span>
+                <span style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Archivo, sans-serif', letterSpacing: -0.5 }}>{formatMoney(total)} <span style={{ fontSize: 11, fontWeight: 500, color: 'rgba(10,10,10,0.5)' }}>MXN</span></span>
               </div>
             </div>
           </div>

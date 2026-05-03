@@ -559,7 +559,7 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
                   </div>
                 </div>
 
-                <button onClick={() => setPage('checkout')} style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <button onClick={() => { window._bookingParams = { tour, pax, date, total: priceNum * pax }; setPage('checkout'); }} style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   {lang === 'es' ? 'Reservar ahora' : 'Book now'} <window.Icon name="arrowRight" size={14} stroke={2.2}/>
                 </button>
                 <div style={{ textAlign: 'center', fontSize: 10, color: 'rgba(10,10,10,0.5)', marginTop: 10 }}>{lang === 'es' ? 'No se cobra hasta confirmar disponibilidad' : 'No charge until availability confirmed'}</div>
