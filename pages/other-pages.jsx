@@ -345,7 +345,7 @@ const CheckoutPage = ({ lang, setPage }) => {
     if (step === 2 && window.ClipSDK) {
       try {
         // Inicializa el SDK con la llave pública. REEMPLAZAR CON LA TUYA DE PRODUCCIÓN/PRUEBAS.
-        const clip = new window.ClipSDK('f92a4f3a-8ce8-424d-952e-8974fa53a7f4');
+        const clip = new window.ClipSDK('test_ac9d88c7-8d3d-4a17-ad17-0b675e4176a6');
         const card = clip.element.create("Card", { locale: lang === 'es' ? 'es' : 'en' });
         card.mount("clip-checkout-div");
         setClipCardObj(card);
