@@ -279,7 +279,7 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
         )}
         <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
           {!toursLoading && toursList.map((tour, i) => (
-            <div key={tour.id || i} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
+            <div key={tour.id || i} onClick={() => { window._selectedTour = tour; navigate('tour-detail'); }} style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}>
               <div style={{ position: 'relative' }}>
                 <window.ImagePlaceholder paletteKey={tour.img} isURL={!!tour.isURL} label="" aspect="4/3" rounded={0} showLabel={false}/>
                 <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.95)', padding: '3px 8px', borderRadius: 4, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -291,7 +291,7 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
               </div>
               <div style={{ padding: 12, display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)', letterSpacing: 0.4, marginBottom: 4, textTransform: 'uppercase', fontWeight: 700 }}>{tour.loc}</div>
-                <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }}>{tour.t}</h3>
+                <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }} dangerouslySetInnerHTML={{ __html: tour.t }} />
                 <div style={{ display: 'flex', gap: 4, marginBottom: 10, flexWrap: 'wrap' }}>
                   {(Array.isArray(tour.tags) ? tour.tags : []).map((tag, j) => <span key={j} style={{ fontSize: 9, background: '#f0f7f2', padding: '2px 6px', borderRadius: 3, color: accentDark, fontWeight: 600 }}>{tag}</span>)}
                 </div>

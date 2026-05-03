@@ -165,7 +165,7 @@ const V1Minimal = ({ lang, setLang }) => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 20 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.5)', marginBottom: 6, letterSpacing: 0.3 }}>{tour.loc} · {tour.dur}</div>
-                  <h3 style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: -0.4, fontFamily: 'Archivo, sans-serif', lineHeight: 1.2 }}>{tour.t}</h3>
+                  <h3 style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: -0.4, fontFamily: 'Archivo, sans-serif', lineHeight: 1.2 }} dangerouslySetInnerHTML={{ __html: tour.t }} />
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 11, color: 'rgba(10,10,10,0.5)' }}>{t.booker.price}</div>

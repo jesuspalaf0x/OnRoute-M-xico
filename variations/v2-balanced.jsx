@@ -178,7 +178,7 @@ const V2Balanced = ({ lang, setLang }) => {
               </div>
               <div style={{ padding: 16, display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ fontSize: 10, color: 'rgba(10,10,10,0.5)', letterSpacing: 0.3, marginBottom: 6, textTransform: 'uppercase', fontWeight: 600 }}>{tour.loc}</div>
-                <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 10px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif', textWrap: 'balance' }}>{tour.t}</h3>
+                <h3 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 10px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif', textWrap: 'balance' }} dangerouslySetInnerHTML={{ __html: tour.t }} />
                 <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
                   {tour.tags.map((tag, j) => <span key={j} style={{ fontSize: 10, background: '#f0f0ec', padding: '3px 8px', borderRadius: 4, color: 'rgba(10,10,10,0.7)', fontWeight: 500 }}>{tag}</span>)}
                 </div>

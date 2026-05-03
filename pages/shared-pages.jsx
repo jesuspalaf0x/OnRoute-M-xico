@@ -156,7 +156,7 @@ const TourCard = ({ tour, onClick, accentDark = '#0F6B2E', accent = '#1FA84A', l
     </div>
     <div style={{ padding: 12, display: 'flex', flexDirection: 'column', flex: 1 }}>
       <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.5)', letterSpacing: 0.4, marginBottom: 4, textTransform: 'uppercase', fontWeight: 700 }}>{tour.loc}</div>
-      <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }}>{tour.t}</h3>
+      <h3 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', letterSpacing: -0.2, lineHeight: 1.25, fontFamily: 'Archivo, sans-serif' }} dangerouslySetInnerHTML={{ __html: tour.t }} />
       <div style={{ display: 'flex', gap: 4, marginBottom: 10, flexWrap: 'wrap' }}>
         {(Array.isArray(tour.tags) ? tour.tags : []).slice(0, 3).map((tag, j) => <span key={j} style={{ fontSize: 9, background: '#f0f7f2', padding: '2px 6px', borderRadius: 3, color: accentDark, fontWeight: 600 }}>{tag}</span>)}
       </div>
