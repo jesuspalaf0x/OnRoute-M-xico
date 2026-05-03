@@ -489,7 +489,7 @@ const PrivacyPage = ({ lang }) => {
         title={lang === 'es' ? 'Aviso de Privacidad Integral' : 'Comprehensive Privacy Policy'}
         sub={lang === 'es' ? 'Última actualización: 23 de abril de 2026' : 'Last updated: April 23, 2026'}
         crumbs={[t.nav.inicio, lang === 'es' ? 'Privacidad' : 'Privacy']}
-        imgKey="tulum"
+        imgKey="uploads/Imagenes para sitio/Playas-de-tulum-playa-paraiso.png"
       />
       <section className="section-pad" style={{ padding: '60px 40px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', width: '100%', lineHeight: 1.7, fontSize: 14, color: 'rgba(10,10,10,0.8)' }}>
