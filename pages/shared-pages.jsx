@@ -460,7 +460,7 @@ const TourDetailPage = ({ lang, setPage, routeSlug }) => {
                   <div>
                     {itinerary.map((it, i) => (
                       <div key={i} style={{ display: 'grid', gridTemplateColumns: '120px 16px 1fr', gap: 16, paddingBottom: 20, position: 'relative' }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a', fontFamily: 'ui-monospace, monospace' }}>{it.time}</div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>{it.time}</div>
                         <div style={{ position: 'relative' }}>
                           <div style={{ width: 12, height: 12, borderRadius: '50%', background: accent, border: '3px solid #fff', boxShadow: '0 0 0 1.5px ' + accent, marginTop: 2 }}/>
                           {i < itinerary.length - 1 && <div style={{ position: 'absolute', left: 6, top: 16, bottom: -20, width: 1, background: 'rgba(10,10,10,0.12)' }}/>}
