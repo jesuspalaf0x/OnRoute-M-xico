@@ -5,6 +5,7 @@ import * as turf from '@turf/turf';
 import mapData from '../map.json';
 
 const I = window.Icons || {};
+const libraries = ['places'];
 
 const RAW_SUGGESTIONS = [
   { name: "Satori Tulum", addr: "Carretera Tulum-Boca Paila Km 7", zone: "Zona 2", x: 70, y: 60 },
@@ -62,7 +63,8 @@ export default function MapPickerModal({ onClose, onConfirm }) {
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+    libraries
   });
 
   const filtered = suggestions.filter((p) =>
