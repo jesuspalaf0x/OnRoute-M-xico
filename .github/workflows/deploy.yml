@@ -1,0 +1,46 @@
+name: Build and Deploy Holy Bakery
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'holybakery-app/**'
+      - '.github/workflows/deploy.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: holybakery-app/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./holybakery-app
+        run: npm ci
+
+      - name: Build Application
+        working-directory: ./holybakery-app
+        run: npm run build
+        env:
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+
+      - name: Deploy to cpanel-deploy branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./holybakery-app/dist
+          publish_branch: cpanel-deploy
+          commit_message: "Automated deployment: Holy Bakery build"
+          force_orphan: true

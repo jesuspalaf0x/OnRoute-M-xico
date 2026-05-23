@@ -1,0 +1,806 @@
+[
+  {
+    "id": 1,
+    "name": "Zona Centro Sur",
+    "local_price": 150,
+    "foreign_price": 200
+  },
+  {
+    "id": 2,
+    "name": "Colonia La Veleta",
+    "local_price": 185,
+    "foreign_price": 250
+  },
+  {
+    "id": 3,
+    "name": "Colonia Tumbenka 1",
+    "local_price": 150,
+    "foreign_price": 200
+  },
+  {
+    "id": 4,
+    "name": "Zona Centro Norte",
+    "local_price": 100,
+    "foreign_price": 150
+  },
+  {
+    "id": 5,
+    "name": "Colonia Villas Tulum",
+    "local_price": 185,
+    "foreign_price": 285
+  },
+  {
+    "id": 6,
+    "name": "Zona Chedraui",
+    "local_price": 185,
+    "foreign_price": 285
+  },
+  {
+    "id": 7,
+    "name": "Zona Arqueológica de Tulum",
+    "local_price": 250,
+    "foreign_price": 300
+  },
+  {
+    "id": 8,
+    "name": "Desarrollo Kaybé",
+    "local_price": 250,
+    "foreign_price": 300
+  },
+  {
+    "id": 9,
+    "name": "Zona Parque del Jaguar Museo",
+    "local_price": 250,
+    "foreign_price": 310
+  },
+  {
+    "id": 10,
+    "name": "Aldea Zama Zona 1",
+    "local_price": 200,
+    "foreign_price": 250
+  },
+  {
+    "id": 11,
+    "name": "Región 15 Zona 1",
+    "local_price": 250,
+    "foreign_price": 350
+  },
+  {
+    "id": 12,
+    "name": "Región 15 Zona 2",
+    "local_price": 275,
+    "foreign_price": 385
+  },
+  {
+    "id": 13,
+    "name": "Región 15 Zona 3",
+    "local_price": 300,
+    "foreign_price": 375
+  },
+  {
+    "id": 14,
+    "name": "Región 15 Zona 4",
+    "local_price": 350,
+    "foreign_price": 400
+  },
+  {
+    "id": 15,
+    "name": "Región 15 Zona 5",
+    "local_price": 350,
+    "foreign_price": 400
+  },
+  {
+    "id": 16,
+    "name": "Región 15 Zona 6",
+    "local_price": 375,
+    "foreign_price": 480
+  },
+  {
+    "id": 17,
+    "name": "Región 15 Zona 7",
+    "local_price": 420,
+    "foreign_price": 535
+  },
+  {
+    "id": 18,
+    "name": "Aldea Zama Zona 2",
+    "local_price": 250,
+    "foreign_price": 350
+  },
+  {
+    "id": 19,
+    "name": "Zona Hotelera 1",
+    "local_price": 300,
+    "foreign_price": 385
+  },
+  {
+    "id": 20,
+    "name": "Zona Hotelera 2",
+    "local_price": 400,
+    "foreign_price": 450
+  },
+  {
+    "id": 21,
+    "name": "Zona Hotelera 3",
+    "local_price": 450,
+    "foreign_price": 500
+  },
+  {
+    "id": 22,
+    "name": "Zona Hotelera 4",
+    "local_price": 500,
+    "foreign_price": 550
+  },
+  {
+    "id": 23,
+    "name": "Zona Hotelera 5",
+    "local_price": 550,
+    "foreign_price": 600
+  },
+  {
+    "id": 24,
+    "name": "Zona Hotelera 6",
+    "local_price": 600,
+    "foreign_price": 650
+  },
+  {
+    "id": 25,
+    "name": "Zona Hotelera 7",
+    "local_price": 650,
+    "foreign_price": 700
+  },
+  {
+    "id": 26,
+    "name": "Reserva de Sian Kaan 1",
+    "local_price": 750,
+    "foreign_price": 850
+  },
+  {
+    "id": 27,
+    "name": "Reserva de Sian Kaan 2",
+    "local_price": 850,
+    "foreign_price": 950
+  },
+  {
+    "id": 28,
+    "name": "Reserva de Sian Kaan 3",
+    "local_price": 985,
+    "foreign_price": 1050
+  },
+  {
+    "id": 29,
+    "name": "Reserva de Sian Kaan 4",
+    "local_price": 1050,
+    "foreign_price": 1250
+  },
+  {
+    "id": 30,
+    "name": "Reserva de Sian Kaan 5",
+    "local_price": 1100,
+    "foreign_price": 1450
+  },
+  {
+    "id": 31,
+    "name": "Reserva de Sian Kaan 6",
+    "local_price": 1300,
+    "foreign_price": 1650
+  },
+  {
+    "id": 32,
+    "name": "Reserva de Sian Kaan 7",
+    "local_price": 1500,
+    "foreign_price": 1820
+  },
+  {
+    "id": 33,
+    "name": "Parque del Jaguar 1",
+    "local_price": 300,
+    "foreign_price": 400
+  },
+  {
+    "id": 34,
+    "name": "Parque del jaguar 2",
+    "local_price": 350,
+    "foreign_price": 450
+  },
+  {
+    "id": 35,
+    "name": "Aldea Zama Zona 3",
+    "local_price": 200,
+    "foreign_price": 250
+  },
+  {
+    "id": 36,
+    "name": "Parque del Jaguar 3",
+    "local_price": 265,
+    "foreign_price": 315
+  },
+  {
+    "id": 37,
+    "name": "Zona Soriana Tulum",
+    "local_price": 225,
+    "foreign_price": 315
+  },
+  {
+    "id": 38,
+    "name": "Fraccionamiento Riviera Tulum",
+    "local_price": 200,
+    "foreign_price": 285
+  },
+  {
+    "id": 39,
+    "name": "Colonia Ejido Tulum",
+    "local_price": 125,
+    "foreign_price": 185
+  },
+  {
+    "id": 40,
+    "name": "Colonia Palmas Tulum",
+    "local_price": 125,
+    "foreign_price": 185
+  },
+  {
+    "id": 41,
+    "name": "Colonia Yaax Tulum",
+    "local_price": 150,
+    "foreign_price": 235
+  },
+  {
+    "id": 42,
+    "name": "Colonia Cristal",
+    "local_price": 175,
+    "foreign_price": 275
+  },
+  {
+    "id": 43,
+    "name": "Colonia Aldea Tulum",
+    "local_price": 250,
+    "foreign_price": 350
+  },
+  {
+    "id": 44,
+    "name": "Colonia Holistica",
+    "local_price": 275,
+    "foreign_price": 375
+  },
+  {
+    "id": 45,
+    "name": "Colonia Cenotes",
+    "local_price": 285,
+    "foreign_price": 385
+  },
+  {
+    "id": 46,
+    "name": "Colonia AJAL",
+    "local_price": 295,
+    "foreign_price": 395
+  },
+  {
+    "id": 47,
+    "name": "Colonia Diagonal",
+    "local_price": 305,
+    "foreign_price": 405
+  },
+  {
+    "id": 48,
+    "name": "Cenote Corazón",
+    "local_price": 340,
+    "foreign_price": 450
+  },
+  {
+    "id": 49,
+    "name": "Kaan Luum Lagoon",
+    "local_price": 370,
+    "foreign_price": 495
+  },
+  {
+    "id": 50,
+    "name": "Ejido 1",
+    "local_price": 450,
+    "foreign_price": 550
+  },
+  {
+    "id": 51,
+    "name": "Pino Suarez",
+    "local_price": 500,
+    "foreign_price": 600
+  },
+  {
+    "id": 52,
+    "name": "Laguna de Muyil",
+    "local_price": 550,
+    "foreign_price": 650
+  },
+  {
+    "id": 53,
+    "name": "Ejido 2",
+    "local_price": 355,
+    "foreign_price": 400
+  },
+  {
+    "id": 54,
+    "name": "Ejido 3",
+    "local_price": 385,
+    "foreign_price": 485
+  },
+  {
+    "id": 55,
+    "name": "Ejido 4",
+    "local_price": 420,
+    "foreign_price": 495
+  },
+  {
+    "id": 56,
+    "name": "Ejido 5",
+    "local_price": 490,
+    "foreign_price": 525
+  },
+  {
+    "id": 57,
+    "name": "Ejido 6",
+    "local_price": 520,
+    "foreign_price": 600
+  },
+  {
+    "id": 58,
+    "name": "Riviera Tulum Zona 2",
+    "local_price": 250,
+    "foreign_price": 350
+  },
+  {
+    "id": 59,
+    "name": "Colonia 2 de Julio",
+    "local_price": 265,
+    "foreign_price": 365
+  },
+  {
+    "id": 60,
+    "name": "Selva Norte",
+    "local_price": 275,
+    "foreign_price": 375
+  },
+  {
+    "id": 61,
+    "name": "Ejido 7",
+    "local_price": 285,
+    "foreign_price": 385
+  },
+  {
+    "id": 62,
+    "name": "Ejido 8",
+    "local_price": 275,
+    "foreign_price": 375
+  },
+  {
+    "id": 63,
+    "name": "Estación Tren Maya Tulum",
+    "local_price": 300,
+    "foreign_price": 350
+  },
+  {
+    "id": 64,
+    "name": "Zona de Mineria",
+    "local_price": 335,
+    "foreign_price": 395
+  },
+  {
+    "id": 65,
+    "name": "Ejido 9",
+    "local_price": 355,
+    "foreign_price": 415
+  },
+  {
+    "id": 66,
+    "name": "Cenote Zeemway",
+    "local_price": 370,
+    "foreign_price": 450
+  },
+  {
+    "id": 67,
+    "name": "Los Arboles Tulum",
+    "local_price": 390,
+    "foreign_price": 495
+  },
+  {
+    "id": 68,
+    "name": "Ejido 10",
+    "local_price": 420,
+    "foreign_price": 480
+  },
+  {
+    "id": 69,
+    "name": "Macario Gomez",
+    "local_price": 450,
+    "foreign_price": 520
+  },
+  {
+    "id": 70,
+    "name": "Francisco Uh May",
+    "local_price": 470,
+    "foreign_price": 585
+  },
+  {
+    "id": 71,
+    "name": "Francisco Uh May 2",
+    "local_price": 510,
+    "foreign_price": 635
+  },
+  {
+    "id": 72,
+    "name": "Macario Gomez Z 2",
+    "local_price": 510,
+    "foreign_price": 600
+  },
+  {
+    "id": 73,
+    "name": "Ejidio 11",
+    "local_price": 420,
+    "foreign_price": 485
+  },
+  {
+    "id": 74,
+    "name": "Ejido 12",
+    "local_price": 390,
+    "foreign_price": 495
+  },
+  {
+    "id": 75,
+    "name": "Ejido 13",
+    "local_price": 385,
+    "foreign_price": 465
+  },
+  {
+    "id": 76,
+    "name": "Ejido 14",
+    "local_price": 325,
+    "foreign_price": 415
+  },
+  {
+    "id": 77,
+    "name": "Ejido 15",
+    "local_price": 285,
+    "foreign_price": 350
+  },
+  {
+    "id": 78,
+    "name": "Ejido 16",
+    "local_price": 535,
+    "foreign_price": 675
+  },
+  {
+    "id": 79,
+    "name": "Ejido 17",
+    "local_price": 480,
+    "foreign_price": 635
+  },
+  {
+    "id": 80,
+    "name": "Ejido 18",
+    "local_price": 535,
+    "foreign_price": 675
+  },
+  {
+    "id": 81,
+    "name": "Ejido 19",
+    "local_price": 555,
+    "foreign_price": 700
+  },
+  {
+    "id": 82,
+    "name": "Ejido 20",
+    "local_price": 600,
+    "foreign_price": 750
+  },
+  {
+    "id": 83,
+    "name": "Ejido 21",
+    "local_price": 425,
+    "foreign_price": 495
+  },
+  {
+    "id": 84,
+    "name": "Ejido 22",
+    "local_price": 385,
+    "foreign_price": 465
+  },
+  {
+    "id": 85,
+    "name": "Ejido 23",
+    "local_price": 350,
+    "foreign_price": 450
+  },
+  {
+    "id": 86,
+    "name": "Cenote Dos Ojos 1",
+    "local_price": 950,
+    "foreign_price": 1050
+  },
+  {
+    "id": 87,
+    "name": "Ejido Dos Ojos 2",
+    "local_price": 850,
+    "foreign_price": 950
+  },
+  {
+    "id": 88,
+    "name": "Ejido Dos Ojos 3",
+    "local_price": 800,
+    "foreign_price": 900
+  },
+  {
+    "id": 89,
+    "name": "Ejido Dos Ojos 4",
+    "local_price": 750,
+    "foreign_price": 850
+  },
+  {
+    "id": 90,
+    "name": "Grand Bahia Principe Residencias",
+    "local_price": 750,
+    "foreign_price": 850
+  },
+  {
+    "id": 91,
+    "name": "Zona Norte Akumal",
+    "local_price": 650,
+    "foreign_price": 850
+  },
+  {
+    "id": 92,
+    "name": "Grand Palladium Norte",
+    "local_price": 700,
+    "foreign_price": 925
+  },
+  {
+    "id": 93,
+    "name": "Puerto Aventuras",
+    "local_price": 750,
+    "foreign_price": 1050
+  },
+  {
+    "id": 94,
+    "name": "Zona de Mineria Playa del Carmen",
+    "local_price": 800,
+    "foreign_price": 1125
+  },
+  {
+    "id": 95,
+    "name": "Playa del Carmen Norte 1",
+    "local_price": 950,
+    "foreign_price": 1230
+  },
+  {
+    "id": 96,
+    "name": "Playa del Carmen Norte 2",
+    "local_price": 1150,
+    "foreign_price": 1500
+  },
+  {
+    "id": 97,
+    "name": "Playa del Carmen Norte 3",
+    "local_price": 1350,
+    "foreign_price": 1650
+  },
+  {
+    "id": 98,
+    "name": "Playa del Carmen Norte 4",
+    "local_price": 1050,
+    "foreign_price": 1125
+  },
+  {
+    "id": 99,
+    "name": "Playa del Carmen Norte 5",
+    "local_price": 1150,
+    "foreign_price": 1500
+  },
+  {
+    "id": 100,
+    "name": "Playa del Carmen Norte 6",
+    "local_price": 1250,
+    "foreign_price": 1500
+  },
+  {
+    "id": 101,
+    "name": "Playa del Carmen Norte 7",
+    "local_price": 1350,
+    "foreign_price": 1500
+  },
+  {
+    "id": 102,
+    "name": "Playa del Carmen Norte 8",
+    "local_price": 1400,
+    "foreign_price": 1650
+  },
+  {
+    "id": 103,
+    "name": "Playa del Carmen Norte 9",
+    "local_price": 1450,
+    "foreign_price": 1650
+  },
+  {
+    "id": 104,
+    "name": "Playa del Camen Norte 10",
+    "local_price": 1500,
+    "foreign_price": 1730
+  },
+  {
+    "id": 105,
+    "name": "Mayakoba",
+    "local_price": 1400,
+    "foreign_price": 1730
+  },
+  {
+    "id": 106,
+    "name": "Princess Hotels & Resorts",
+    "local_price": 1400,
+    "foreign_price": 1550
+  },
+  {
+    "id": 107,
+    "name": "The Reef Coco Beach",
+    "local_price": 1350,
+    "foreign_price": 1400
+  },
+  {
+    "id": 108,
+    "name": "PlayaCar fase 2",
+    "local_price": 1125,
+    "foreign_price": 1300
+  },
+  {
+    "id": 109,
+    "name": "Xcaret",
+    "local_price": 990,
+    "foreign_price": 1125
+  },
+  {
+    "id": 110,
+    "name": "Paamul",
+    "local_price": 950,
+    "foreign_price": 1050
+  },
+  {
+    "id": 111,
+    "name": "Grand Palladium Riviera Resorts",
+    "local_price": 900,
+    "foreign_price": 1000
+  },
+  {
+    "id": 112,
+    "name": "Secrets Akumal",
+    "local_price": 850,
+    "foreign_price": 950
+  },
+  {
+    "id": 113,
+    "name": "Grand Bahía Principe Tulum",
+    "local_price": 800,
+    "foreign_price": 900
+  },
+  {
+    "id": 114,
+    "name": "Xel-Há",
+    "local_price": 750,
+    "foreign_price": 850
+  },
+  {
+    "id": 115,
+    "name": "Dreams Tulum",
+    "local_price": 500,
+    "foreign_price": 650
+  },
+  {
+    "id": 116,
+    "name": "Frente Soriana",
+    "local_price": 300,
+    "foreign_price": 350
+  },
+  {
+    "id": 117,
+    "name": "Zemway 2",
+    "local_price": 400,
+    "foreign_price": 485
+  },
+  {
+    "id": 118,
+    "name": "Zemway 3",
+    "local_price": 450,
+    "foreign_price": 495
+  },
+  {
+    "id": 119,
+    "name": "Los Arboles Este",
+    "local_price": 475,
+    "foreign_price": 520
+  },
+  {
+    "id": 120,
+    "name": "Ejido 24",
+    "local_price": 500,
+    "foreign_price": 580
+  },
+  {
+    "id": 121,
+    "name": "Ejido 25",
+    "local_price": 550,
+    "foreign_price": 620
+  },
+  {
+    "id": 122,
+    "name": "Residencial Manuel Antonio",
+    "local_price": 600,
+    "foreign_price": 850
+  },
+  {
+    "id": 123,
+    "name": "Ejido 26",
+    "local_price": 350,
+    "foreign_price": 400
+  },
+  {
+    "id": 124,
+    "name": "Ejido 27",
+    "local_price": 280,
+    "foreign_price": 335
+  },
+  {
+    "id": 125,
+    "name": "Ejido 28",
+    "local_price": 350,
+    "foreign_price": 400
+  },
+  {
+    "id": 126,
+    "name": "Laguna Privadas",
+    "local_price": 200,
+    "foreign_price": 300
+  },
+  {
+    "id": 127,
+    "name": "Aeropuerto Tulum",
+    "local_price": 900,
+    "foreign_price": 1500
+  },
+  {
+    "id": 128,
+    "name": "Vivienda Militares",
+    "local_price": 900,
+    "foreign_price": 1300
+  },
+  {
+    "id": 129,
+    "name": "Operaciones Militares",
+    "local_price": 900,
+    "foreign_price": 1300
+  },
+  {
+    "id": 130,
+    "name": "Punta Maroma",
+    "local_price": 1400,
+    "foreign_price": 1600
+  },
+  {
+    "id": 131,
+    "name": "Iberostar Playa Paraiso",
+    "local_price": 1500,
+    "foreign_price": 1700
+  },
+  {
+    "id": 132,
+    "name": "Puerto Morelos",
+    "local_price": 1600,
+    "foreign_price": 1800
+  },
+  {
+    "id": 133,
+    "name": "Reserva de Sian Kaan 8",
+    "local_price": 1700,
+    "foreign_price": 2100
+  },
+  {
+    "id": 134,
+    "name": "Amana Tulum",
+    "local_price": 250,
+    "foreign_price": 300
+  }
+]
