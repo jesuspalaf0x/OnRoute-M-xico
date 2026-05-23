@@ -4,6 +4,7 @@ import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import * as turf from '@turf/turf';
 import mapData from './map.json';
 import pricesData from './data/prices.json';
+import MapPickerModal from './components/MapPickerModal';
 
 const I = window.Icons;
 const libraries = ['places'];
@@ -201,12 +202,9 @@ function AdminLoginScreen({ goTo }) {
    COTIZADOR
 ============================================================= */
 function CotizadorScreen({ goTo }) {
-  const [tab, setTab] = useState("traslado");
   const [from, setFrom] = useState("Holy Bakery Tulum");
   const [to, setTo] = useState("");
   const [date, setDate] = useState("");
-  const [pax, setPax] = useState(2);
-  const [round, setRound] = useState(false);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -216,12 +214,15 @@ function CotizadorScreen({ goTo }) {
 
   const autocompleteRef = useRef(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [selectedMapPlace, setSelectedMapPlace] = useState(null);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
       setTo(place.formatted_address || place.name || "");
       setSelectedPlace(place);
+      setSelectedMapPlace(null);
     }
   };
 
@@ -235,9 +236,18 @@ function CotizadorScreen({ goTo }) {
       place_id: selectedPlace ? selectedPlace.place_id : null,
       formatted_address: selectedPlace ? (selectedPlace.formatted_address || to) : to,
       maps_link: selectedPlace ? selectedPlace.url : null,
+      is_out_of_zone: true,
     };
 
-    if (selectedPlace && selectedPlace.geometry) {
+    if (selectedMapPlace) {
+      resultState.destinationName = selectedMapPlace.name;
+      resultState.zoneName = selectedMapPlace.zone_name;
+      resultState.prices = selectedMapPlace.precios;
+      resultState.lat = selectedMapPlace.lat;
+      resultState.lng = selectedMapPlace.lng;
+      resultState.formatted_address = selectedMapPlace.address;
+      resultState.is_out_of_zone = selectedMapPlace.is_out_of_zone || selectedMapPlace.zone_name === "Sin zona";
+    } else if (selectedPlace && selectedPlace.geometry) {
       const lat = selectedPlace.geometry.location.lat();
       const lng = selectedPlace.geometry.location.lng();
       resultState.lat = lat;
@@ -258,11 +268,15 @@ function CotizadorScreen({ goTo }) {
 
       if (matchedZoneName) {
         resultState.zoneName = matchedZoneName;
+        resultState.is_out_of_zone = false;
         // Find price
         const priceObj = pricesData.find(p => p.name.trim().toLowerCase() === matchedZoneName.trim().toLowerCase());
         if (priceObj) {
           resultState.prices = priceObj;
         }
+      } else {
+        resultState.zoneName = "Sin zona";
+        resultState.is_out_of_zone = true;
       }
     }
 
@@ -279,46 +293,42 @@ function CotizadorScreen({ goTo }) {
           <div className="badge-row" style={{ display: "flex", gap: 8, marginTop: 16 }}>
             <span className="zone-chip"><I.Cake size={12} /> Origen fijo · Holy Bakery Tulum</span>
           </div>
-          <h1>Una entrega, <em>tres clics.</em></h1>
+          <h1><span style={{ color: "var(--ink)" }}>Una entrega,</span> <em>tres clics.</em></h1>
           <p>Cotiza al instante usando autocompletado de Google o el pin del mapa. Las tarifas se calculan por zona; las ubicaciones preferenciales aplican automáticamente.</p>
 
           <div className="points">
             <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <I.Pin size={18} />
-              <div>
-                <strong>Cobertura</strong>
-                <span className="muted">Tulum · Aldea Zama · Akumal · Puerto Aventuras · Playa del Carmen</span>
+              <div style={{ width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <I.Pin size={18} />
+                  <strong>Cobertura</strong>
+                </div>
+                <div className="muted">Tulum · Aldea Zama · Akumal · Puerto Aventuras · Playa del Carmen</div>
               </div>
             </div>
             <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <I.Star size={18} />
-              <div>
-                <strong>Tarifas especiales</strong>
-                <span className="muted">3 ubicaciones preferenciales activas: Casa Banana, Be Tulum, Mi Amor.</span>
+              <div style={{ width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <I.Star size={18} />
+                  <strong>Tarifas especiales</strong>
+                </div>
+                <div className="muted">3 ubicaciones preferenciales activas: Casa Banana, Be Tulum, Mi Amor.</div>
               </div>
             </div>
             <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <I.RefreshCcw size={18} />
-              <div>
-                <strong>Tipo de cambio</strong>
-                <span className="muted">$17.50 MXN/USD · actualizado por OnRoute hoy 9:14 a.m.</span>
+              <div style={{ width: "100%" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <I.RefreshCcw size={18} />
+                  <strong>Tipo de cambio</strong>
+                </div>
+                <div className="muted">$17.50 MXN/USD · actualizado por OnRoute hoy 9:14 a.m.</div>
               </div>
             </div>
           </div>
         </div>
 
         <div className="quote-card">
-          <div className="tabs" style={{ marginBottom: 22 }}>
-            <button className={tab === "traslado" ? "active" : ""} onClick={() => setTab("traslado")}>
-              <I.Truck size={16} /> Traslado
-            </button>
-            <button className={tab === "tour" ? "active" : ""} onClick={() => setTab("tour")}>
-              <I.Globe size={16} /> Tour
-            </button>
-            <button className={tab === "paquete" ? "active" : ""} onClick={() => setTab("paquete")}>
-              <I.Heart size={16} /> Paquete
-            </button>
-          </div>
+          {/* Tabs removed */}
 
           <div className="stack">
             <div>
@@ -330,7 +340,7 @@ function CotizadorScreen({ goTo }) {
             </div>
             <div>
               <label className="label">Hacia</label>
-              <div className="field">
+              <div className="field" style={{ position: "relative" }}>
                 <I.Pin size={18} className="icon" />
                 {isLoaded ? (
                   <Autocomplete
@@ -349,41 +359,36 @@ function CotizadorScreen({ goTo }) {
                 ) : (
                   <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="Cargando mapa..." />
                 )}
-                <button className="btn btn-soft btn-sm" title="Soltar pin en mapa"><I.Map size={14} /> Mapa</button>
+                <button type="button" className="btn btn-soft btn-sm" title="Soltar pin en mapa" style={{ position: "absolute", right: 12 }} onClick={() => setIsMapModalOpen(true)}>
+                  <I.Map size={14} /> Mapa
+                </button>
               </div>
             </div>
-            <div className="row row-2">
-              <div>
-                <label className="label">Fecha</label>
-                <div className="field">
-                  <I.Calendar size={18} className="icon" />
-                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} placeholder="dd/mm/aaaa" />
-                </div>
+            <div>
+              <label className="label">Fecha</label>
+              <div className="field">
+                <I.Calendar size={18} className="icon" />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} placeholder="dd/mm/aaaa" />
               </div>
-              <div>
-                <label className="label">Pasajeros</label>
-                <div className="field">
-                  <I.Users size={18} className="icon" />
-                  <input type="number" min="1" max="20" value={pax} onChange={(e) => setPax(e.target.value)} />
-                </div>
-              </div>
-            </div>
-            <div className="toggle-row">
-              <span style={{ fontWeight: 600 }}>Ida y vuelta</span>
-              <div className={"switch " + (round ? "on" : "")} onClick={() => setRound(!round)} />
             </div>
 
             <button className="btn btn-primary btn-lg btn-block" onClick={handleQuote}>
               Cotizar ahora <I.ArrowRight size={18} />
             </button>
-
-            <div className="guarantee">
-              <I.Shield size={18} />
-              <div><strong>Mejor precio garantizado.</strong> Si lo encuentras más barato, te igualamos la tarifa.</div>
-            </div>
           </div>
         </div>
       </div>
+      {isMapModalOpen && (
+        <MapPickerModal
+          onClose={() => setIsMapModalOpen(false)}
+          onConfirm={(placeObj) => {
+            setTo(`${placeObj.name}, ${placeObj.address}`);
+            setSelectedMapPlace(placeObj);
+            setSelectedPlace(null);
+            setIsMapModalOpen(false);
+          }}
+        />
+      )}
     </div>);
 
 }
@@ -392,7 +397,7 @@ function CotizadorScreen({ goTo }) {
    RESULTADO COTIZACIÓN
 ============================================================= */
 function ResultadoScreen({ goTo, quoteData }) {
-  const { destinationName, zoneName, prices, lat, lng, place_id, formatted_address, maps_link } = quoteData || {
+  const { destinationName, zoneName, prices, lat, lng, place_id, formatted_address, maps_link, is_out_of_zone } = quoteData || {
     destinationName: "No seleccionado",
     zoneName: "Fuera de polígonos",
     prices: null,
@@ -400,8 +405,11 @@ function ResultadoScreen({ goTo, quoteData }) {
     lng: 0,
     place_id: null,
     formatted_address: null,
-    maps_link: null
+    maps_link: null,
+    is_out_of_zone: true
   };
+
+  const isOutOfZone = is_out_of_zone || zoneName === "Sin zona" || zoneName === "Fuera de polígonos";
 
   const localPrice = prices ? prices.local_price : 0;
   const foreignPrice = prices ? prices.foreign_price : 0;
@@ -470,7 +478,7 @@ function ResultadoScreen({ goTo, quoteData }) {
           </div>
 
           <div>
-            {prices ? (
+            {!isOutOfZone && prices ? (
               <>
                 <div className="price-row">
                   <span className="lbl">Tarifa local / preferencial</span>
@@ -497,9 +505,24 @@ function ResultadoScreen({ goTo, quoteData }) {
             <button className="btn btn-soft" style={{ flex: 1 }} onClick={handleSaveDraft}>
               <I.Bookmark size={16} /> Guardar cotización
             </button>
-            <button className="btn btn-primary" style={{ flex: 2 }} onClick={() => goTo("reserva")}>
-              Reservar entrega <I.ArrowRight size={16} />
-            </button>
+            {isOutOfZone ? (
+              <button
+                className="btn btn-primary"
+                style={{ flex: 2, background: "var(--accent)", color: "white" }}
+                onClick={() => {
+                  const placeName = destinationName.split(',')[0];
+                  const message = `Hola administrador, necesito consultar la tarifa para entregar en: ${placeName}`;
+                  const waUrl = `https://wa.me/529841068542?text=${encodeURIComponent(message)}`;
+                  window.open(waUrl, "_blank");
+                }}
+              >
+                Consultar tarifa con administrador <I.ExternalLink size={16} style={{ marginLeft: 6 }} />
+              </button>
+            ) : (
+              <button className="btn btn-primary" style={{ flex: 2 }} onClick={() => goTo("reserva")}>
+                Reservar entrega <I.ArrowRight size={16} />
+              </button>
+            )}
           </div>
 
           <div className="divider"></div>
