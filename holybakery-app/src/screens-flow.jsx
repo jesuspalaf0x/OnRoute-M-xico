@@ -212,6 +212,23 @@ function CotizadorScreen({ goTo }) {
   });
 
   const autocompleteRef = useRef(null);
+  const autocompleteInputRef = useRef(null);
+
+  React.useEffect(() => {
+    // Forzar que el dropdown tenga el mismo ancho que el input
+    const observer = new MutationObserver(() => {
+      const pacContainer = document.querySelector('.pac-container');
+      const inputEl = autocompleteInputRef.current;
+      if (pacContainer && inputEl) {
+        const rect = inputEl.getBoundingClientRect();
+        pacContainer.style.width = `${rect.width}px`;
+        pacContainer.style.left = `${rect.left}px`;
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
@@ -376,10 +393,22 @@ function CotizadorScreen({ goTo }) {
                     style={{ flex: 1, border: "none", background: "transparent", outline: "none" }}
                   >
                     <input
+                      ref={autocompleteInputRef}
                       value={to}
                       onChange={(e) => setTo(e.target.value)}
                       placeholder="Hotel en Tulum, Playa del Carmen…"
-                      style={{ width: "100%", fontWeight: '500' }}
+                      style={{ 
+                        width: "calc(100% - 90px)", 
+                        fontWeight: '500',
+                        minWidth: 0,
+                        paddingRight: '8px',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'clip',
+                        border: 'none',
+                        outline: 'none',
+                        background: 'transparent'
+                      }}
                     />
                   </Autocomplete>
                 ) : (
