@@ -204,7 +204,6 @@ function AdminLoginScreen({ goTo }) {
 function CotizadorScreen({ goTo }) {
   const [from, setFrom] = useState("Holy Bakery Tulum");
   const [to, setTo] = useState("");
-  const [date, setDate] = useState("");
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -306,35 +305,41 @@ function CotizadorScreen({ goTo }) {
           <div className="badge-row" style={{ display: "flex", gap: 8, marginTop: 16 }}>
             <span className="zone-chip"><I.Cake size={12} /> Origen fijo · Holy Bakery Tulum</span>
           </div>
-          <h1><span style={{ color: "var(--ink)" }}>Una entrega,</span> <em>tres clics.</em></h1>
-          <p>Cotiza al instante usando autocompletado de Google o el pin del mapa. Las tarifas se calculan por zona; las ubicaciones preferenciales aplican automáticamente.</p>
+          <h1 style={{ textAlign: "left" }}><span style={{ color: "var(--ink)" }}>Una entrega,</span> <em>tres clics.</em></h1>
+          <p style={{ textAlign: "left" }}>Cotiza al instante usando autocompletado de Google o el pin del mapa. Las tarifas se calculan por zona; las ubicaciones preferenciales aplican automáticamente.</p>
 
           <div className="points">
             <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <div style={{ width: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <I.Pin size={18} />
-                  <strong>Cobertura</strong>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <I.Pin size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <p style={{ fontWeight: '700', margin: 0 }}>Cobertura</p>
+                  <p style={{ color: '#6c736f', margin: 0, fontSize: '13px' }}>
+                    Tulum · Aldea Zama · Akumal · Puerto Aventuras · Playa del Carmen
+                  </p>
                 </div>
-                <div className="muted">Tulum · Aldea Zama · Akumal · Puerto Aventuras · Playa del Carmen</div>
               </div>
             </div>
             <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <div style={{ width: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <I.Star size={18} />
-                  <strong>Tarifas especiales</strong>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <I.Star size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <p style={{ fontWeight: '700', margin: 0 }}>Tarifas especiales</p>
+                  <p style={{ color: '#6c736f', margin: 0, fontSize: '13px' }}>
+                    3 ubicaciones preferenciales activas: Casa Banana, Be Tulum, Mi Amor.
+                  </p>
                 </div>
-                <div className="muted">3 ubicaciones preferenciales activas: Casa Banana, Be Tulum, Mi Amor.</div>
               </div>
             </div>
             <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <div style={{ width: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <I.RefreshCcw size={18} />
-                  <strong>Tipo de cambio</strong>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <I.RefreshCcw size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <p style={{ fontWeight: '700', margin: 0 }}>Tipo de cambio</p>
+                  <p style={{ color: '#6c736f', margin: 0, fontSize: '13px' }}>
+                    $17.50 MXN/USD · actualizado por OnRoute hoy 9:14 a.m.
+                  </p>
                 </div>
-                <div className="muted">$17.50 MXN/USD · actualizado por OnRoute hoy 9:14 a.m.</div>
               </div>
             </div>
           </div>
@@ -377,13 +382,7 @@ function CotizadorScreen({ goTo }) {
                 </button>
               </div>
             </div>
-            <div>
-              <label className="label">Fecha</label>
-              <div className="field">
-                <I.Calendar size={18} className="icon" />
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} placeholder="dd/mm/aaaa" />
-              </div>
-            </div>
+
 
             <button className="btn btn-primary btn-lg btn-block" onClick={handleQuote}>
               Cotizar ahora <I.ArrowRight size={18} />
