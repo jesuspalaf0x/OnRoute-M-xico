@@ -383,38 +383,40 @@ function CotizadorScreen({ goTo }) {
             </div>
             <div>
               <label className="label" style={{ fontSize: '12px', letterSpacing: '1px', color: '#9ca3af', fontWeight: '600' }}>HACIA</label>
-              <div className="field" style={{ position: "relative", borderRadius: '12px', border: '1px solid #e5e7eb', padding: '12px 16px' }}>
-                <I.Pin size={18} color="#16a34a" className="icon" />
+              <div className="field hacia-field-container" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px', width: '100%', overflow: 'hidden', borderRadius: '12px', border: '1px solid #e5e7eb', height: '48px', boxSizing: 'border-box' }}>
+                <div className="hacia-icon-left" style={{ flexShrink: 0, color: '#16a34a', display: 'flex', alignItems: 'center' }}>
+                  <I.Pin size={18} color="#16a34a" />
+                </div>
                 {isLoaded ? (
                   <Autocomplete
                     onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
                     onPlaceChanged={handlePlaceChanged}
                     options={{ componentRestrictions: { country: "mx" } }}
-                    style={{ flex: 1, border: "none", background: "transparent", outline: "none" }}
+                    style={{ flex: 1, minWidth: 0, display: 'flex' }}
                   >
                     <input
                       ref={autocompleteInputRef}
                       value={to}
                       onChange={(e) => setTo(e.target.value)}
                       placeholder="Hotel en Tulum, Playa del Carmen…"
+                      className="hacia-input"
                       style={{ 
-                        width: "calc(100% - 90px)", 
-                        fontWeight: '500',
+                        flex: 1,
                         minWidth: 0,
-                        paddingRight: '8px',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'clip',
+                        width: '100%',
                         border: 'none',
                         outline: 'none',
-                        background: 'transparent'
+                        background: 'transparent',
+                        fontSize: '14px',
+                        color: '#0c1a12',
+                        fontWeight: '500'
                       }}
                     />
                   </Autocomplete>
                 ) : (
-                  <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="Cargando mapa..." />
+                  <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="Cargando mapa..." style={{ flex: 1, minWidth: 0, width: '100%', border: 'none', outline: 'none', background: 'transparent', fontWeight: '500' }} />
                 )}
-                <button type="button" className="btn btn-soft btn-sm" title="Soltar pin en mapa" style={{ position: "absolute", right: 8, background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '8px' }} onClick={() => setIsMapModalOpen(true)}>
+                <button type="button" className="btn btn-soft btn-sm hacia-mapa-btn" title="Soltar pin en mapa" style={{ flexShrink: 0, marginLeft: 'auto', background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '8px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '500' }} onClick={() => setIsMapModalOpen(true)}>
                   <I.Map size={14} /> Mapa
                 </button>
               </div>
