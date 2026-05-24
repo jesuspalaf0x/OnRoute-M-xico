@@ -8,14 +8,89 @@ const I = window.Icons || {};
 const libraries = ['places'];
 
 const FALLBACK_SUGGESTIONS = [
-  { name: "Casa Banana Restaurante", address: "Carretera Tulum-Boca Paila Km 8, Tulum", lat: 20.1940, lng: -87.4680, zone_name: "Especial", type: "preferential", flags: ['preferido'], is_out_of_zone: false, precios: { local_price: 400, foreign_price: 500 } },
-  { name: "Hotel Be Tulum", address: "Carretera Boca Paila Km 10, Tulum", lat: 20.1880, lng: -87.4700, zone_name: "Especial", type: "preferential", flags: ['preferido'], is_out_of_zone: false, precios: { local_price: 400, foreign_price: 500 } },
-  { name: "Mi Amor Boutique Hotel", address: "Carretera Tulum-Boca Paila Km 7.5, Tulum", lat: 20.1950, lng: -87.4660, zone_name: "Especial", type: "preferential", flags: ['preferido'], is_out_of_zone: false, precios: { local_price: 400, foreign_price: 500 } },
-  { name: "Holy Bakery Tulum", address: "Tulum, Quintana Roo", lat: 20.2114, lng: -87.4654, zone_name: "Zona 1", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 150, foreign_price: 200 } },
-  { name: "Satori Tulum", address: "Carretera Tulum-Boca Paila Km 7, Tulum", lat: 20.1920, lng: -87.4670, zone_name: "Zona 2", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 200, foreign_price: 280 } },
-  { name: "Aldea Zama", address: "Aldea Zama, Tulum, Quintana Roo", lat: 20.2050, lng: -87.4580, zone_name: "Zona 3", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 220, foreign_price: 300 } },
-  { name: "Centro Tulum", address: "Avenida Tulum, Centro, Tulum", lat: 20.2114, lng: -87.4654, zone_name: "Zona 1", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 150, foreign_price: 200 } },
-  { name: "Hotel Nômade Tulum", address: "Carretera Tulum-Boca Paila Km 9.5, Tulum", lat: 20.1967, lng: -87.4710, zone_name: "Zona 2", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 200, foreign_price: 280 } }
+  // ── ESPECIALES (tarifa preferencial del admin) ──────────────────
+  {
+    name: "Casa Banana Restaurante",
+    address: "Carr. Tulum-Boca Paila Km. 7.5, Tulum Beach, Zona Hotelera, 77780 Tulum, Q.R., Mexico",
+    lat: 20.150517209155122,
+    lng: -87.45899191909139,
+    zone: "Especial",
+    price_local: 400,
+    price_foreign: 500,
+    type: "preferential"
+  },
+
+  // ── FRECUENTES ──────────────────────────────────────────────────
+  {
+    name: "Ambre & Epices Jungle Hôtel & Spa",
+    address: "C. 3 Pte. Supermanzana 15 entre Calle 12 Sur, La Veleta, 77760 Tulum, Q.R., Mexico",
+    lat: 20.19156988970712,
+    lng: -87.47264740374735,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  },
+  {
+    name: "Casa Arka - Tulum",
+    address: "5GJP+CJ, 77765 Tulum, Q.R., Mexico",
+    lat: 20.18100616346909,
+    lng: -87.46337273827376,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  },
+  {
+    name: "Esencia Villas - Tulum",
+    address: "6G39+2J, La Veleta, 77762 Tulum, Q.R., Mexico",
+    lat: 20.202416352319727,
+    lng: -87.48194856663225,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  },
+  {
+    name: "Amari Tulum",
+    address: "XUL KAA - Uptown, 10 Avenida Nte. & Calle Palma, Supermanzana 11, 77762 Tulum, Q.R., Mexico",
+    lat: 20.2177592220285,
+    lng: -87.48762480959275,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  },
+  {
+    name: "Hotel Panamera",
+    address: "Carr. Tulum-Boca Paila Km 8.5, Tulum Beach, 77760 Tulum, Q.R., Mexico",
+    lat: 20.141216454848305,
+    lng: -87.46110970340646,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  },
+  {
+    name: "Soona Luxury Villas",
+    address: "Calle 31, C. 19 Colonia Tumben Kaa, 77760 Tulum, Q.R., Mexico",
+    lat: 20.214372632378034,
+    lng: -87.47289802856616,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  },
+  {
+    name: "Villa La Semilla",
+    address: "Lote 8 Fraccion VI, Bahia Soliman, 77780 Tulum, Q.R., Mexico",
+    lat: 20.285120524531926,
+    lng: -87.37783114856978,
+    zone: "Frecuente",
+    price_local: null,
+    price_foreign: null,
+    type: "frequent"
+  }
 ];
 
 const ORIGIN_COORDS = { lat: 20.2114, lng: -87.4654 };
@@ -244,9 +319,11 @@ export default function MapPickerModal({ onClose, onConfirm }) {
 
   const currentLat = pin.lat.toFixed(4);
   const currentLng = pin.lng.toFixed(4);
+  const pinZone = pin.place.zone || pin.place.zone_name;
   const zoneClass =
-    pin.place.zone_name === "Especial" ? "status-pagada" :
-    pin.place.zone_name === "Sin zona" ? "status-pendiente" :
+    pinZone === "Especial" ? "status-pagada" :
+    pinZone === "Frecuente" ? "status-frecuente" :
+    pinZone === "Sin zona" || pinZone === "Detectando..." ? "status-pendiente" :
     "status-confirmada";
 
   return (
@@ -299,23 +376,25 @@ export default function MapPickerModal({ onClose, onConfirm }) {
               )}
               {filtered.map((p) => {
                 const isActive = pin.place && pin.place.name === p.name;
-                const pillCls = p.zone_name === "Especial" ? "status-pagada"
-                              : p.zone_name === "Sin zona" ? "status-pendiente"
+                const currentZone = p.zone || p.zone_name;
+                const pillCls = currentZone === "Especial" ? "status-pagada"
+                              : currentZone === "Frecuente" ? "status-frecuente"
+                              : currentZone === "Sin zona" || currentZone === "Detectando..." ? "status-pendiente"
                               : "status-confirmada";
                 
-                const isPref = p.flags && p.flags.includes('preferido');
-                const isWarn = p.flags && p.flags.includes('advertencia');
+                const isPref = p.type === 'preferential' || (p.flags && p.flags.includes('preferido'));
+                const isWarn = currentZone === "Sin zona" || (p.flags && p.flags.includes('advertencia'));
 
                 return (
                   <button key={p.name} className={"mp-item " + (isActive ? "active" : "")} onClick={() => pickSuggestion(p)}>
                     <div className="mp-item-icon">
-                      {isPref ? (I.Star && <I.Star size={14}/>) : isWarn ? (I.AlertTriangle && <I.AlertTriangle size={14}/>) : (I.Pin && <I.Pin size={14}/>)}
+                      {isPref ? (I.Star && <I.Star size={14}/>) : isWarn ? (I.AlertTriangle && <I.AlertTriangle size={14}/>) : ((I.MapPin ? <I.MapPin size={14}/> : (I.Pin && <I.Pin size={14}/>)))}
                     </div>
                     <div className="mp-item-body">
                       <strong>{p.name}</strong>
                       <span>{p.address}</span>
                     </div>
-                    <span className={"status " + pillCls}>{p.zone_name}</span>
+                    <span className={"status " + pillCls}>{p.zone || p.zone_name}</span>
                   </button>
                 );
               })}
@@ -387,7 +466,7 @@ export default function MapPickerModal({ onClose, onConfirm }) {
               </div>
             </div>
             <div className="mp-foot-meta">
-              <span className={"status " + zoneClass}>{pin.place.zone_name}</span>
+              <span className={"status " + zoneClass}>{pin.place.zone || pin.place.zone_name}</span>
               <span className="mono mp-coords">{currentLat}, {currentLng}</span>
             </div>
           </div>

@@ -321,6 +321,7 @@
 .status-confirmada { background: #e0e8ff; color: #1d4ed8; }
 .status-pagada { background: #d4ebd9; color: #0e6a32; }
 .status-pendiente { background: #fef3c7; color: var(--warning); }
+.status-frecuente { background: #dbeafe; color: #1d4ed8; }
 .empty { padding: 32px; text-align: center; color: var(--muted); font-size: 13px; }
 .muted { color: var(--muted); }
 .mono { font-family: var(--font-mono); }
