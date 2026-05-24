@@ -1024,9 +1024,9 @@ function ReservaScreen({ goTo, quoteData }) {
    WHATSAPP CONFIRM
 ============================================================= */
 function WhatsAppScreen({ goTo, quoteData }) {
-  const { destinationName, lat, lng, phone, phone2, date, time, client, comments, cost, id } = quoteData || {};
+  const { destinationName, lat, lng, phone, phone2, date, time, client, comments, cost, id, maps_link } = quoteData || {};
   const shortDest = destinationName ? destinationName.split(',')[0] : "No seleccionado";
-  const mapsLink = lat && lng ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}` : "Enlace no disponible";
+  const mapsLink = maps_link || (lat && lng ? `https://www.google.com/maps?q=${lat},${lng}` : "Enlace no disponible");
 
   let dateStr = "Fecha no seleccionada";
   let timeStr = time ? time : "hora no seleccionada";

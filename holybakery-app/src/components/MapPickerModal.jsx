@@ -8,76 +8,14 @@ const I = window.Icons || {};
 const libraries = ['places'];
 
 const FALLBACK_SUGGESTIONS = [
-  {
-    name: "Holy Bakery Tulum (Origen)",
-    address: "Tulum, Q.R.",
-    lat: 20.2114,
-    lng: -87.4654,
-    zone_name: "Zona 1",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: []
-  },
-  {
-    name: "Casa Banana Restaurante",
-    address: "Carretera Tulum-Boca Paila Km 8",
-    lat: 20.1940,
-    lng: -87.4680,
-    zone_name: "Especial",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: ['preferido']
-  },
-  {
-    name: "Satori Tulum",
-    address: "Carretera Tulum-Boca Paila Km 7",
-    lat: 20.1920,
-    lng: -87.4670,
-    zone_name: "Zona 2",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: []
-  },
-  {
-    name: "Hotel Be Tulum",
-    address: "Carretera Boca Paila Km 10",
-    lat: 20.1880,
-    lng: -87.4700,
-    zone_name: "Especial",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: ['preferido']
-  },
-  {
-    name: "Mi Amor Boutique Hotel",
-    address: "Carretera Tulum-Boca Paila Km 7.5",
-    lat: 20.1950,
-    lng: -87.4660,
-    zone_name: "Especial",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: ['preferido']
-  },
-  {
-    name: "Aldea Zama",
-    address: "Aldea Zama, Tulum",
-    lat: 20.2050,
-    lng: -87.4580,
-    zone_name: "Zona 3",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: []
-  },
-  {
-    name: "Centro Tulum, Av. Tulum",
-    address: "Centro, Tulum",
-    lat: 20.2114,
-    lng: -87.4654,
-    zone_name: "Zona 1",
-    precios: { local_price: 0, foreign_price: 0 },
-    is_out_of_zone: false,
-    flags: []
-  }
+  { name: "Casa Banana Restaurante", address: "Carretera Tulum-Boca Paila Km 8, Tulum", lat: 20.1940, lng: -87.4680, zone_name: "Especial", type: "preferential", flags: ['preferido'], is_out_of_zone: false, precios: { local_price: 400, foreign_price: 500 } },
+  { name: "Hotel Be Tulum", address: "Carretera Boca Paila Km 10, Tulum", lat: 20.1880, lng: -87.4700, zone_name: "Especial", type: "preferential", flags: ['preferido'], is_out_of_zone: false, precios: { local_price: 400, foreign_price: 500 } },
+  { name: "Mi Amor Boutique Hotel", address: "Carretera Tulum-Boca Paila Km 7.5, Tulum", lat: 20.1950, lng: -87.4660, zone_name: "Especial", type: "preferential", flags: ['preferido'], is_out_of_zone: false, precios: { local_price: 400, foreign_price: 500 } },
+  { name: "Holy Bakery Tulum", address: "Tulum, Quintana Roo", lat: 20.2114, lng: -87.4654, zone_name: "Zona 1", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 150, foreign_price: 200 } },
+  { name: "Satori Tulum", address: "Carretera Tulum-Boca Paila Km 7, Tulum", lat: 20.1920, lng: -87.4670, zone_name: "Zona 2", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 200, foreign_price: 280 } },
+  { name: "Aldea Zama", address: "Aldea Zama, Tulum, Quintana Roo", lat: 20.2050, lng: -87.4580, zone_name: "Zona 3", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 220, foreign_price: 300 } },
+  { name: "Centro Tulum", address: "Avenida Tulum, Centro, Tulum", lat: 20.2114, lng: -87.4654, zone_name: "Zona 1", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 150, foreign_price: 200 } },
+  { name: "Hotel Nômade Tulum", address: "Carretera Tulum-Boca Paila Km 9.5, Tulum", lat: 20.1967, lng: -87.4710, zone_name: "Zona 2", type: "zone", flags: [], is_out_of_zone: false, precios: { local_price: 200, foreign_price: 280 } }
 ];
 
 const ORIGIN_COORDS = { lat: 20.2114, lng: -87.4654 };
@@ -92,6 +30,12 @@ export default function MapPickerModal({ onClose, onConfirm }) {
     place: FALLBACK_SUGGESTIONS[0] 
   });
   const [mapInstance, setMapInstance] = useState(null);
+
+  React.useEffect(() => {
+    if (mapInstance && pin.lat && pin.lng) {
+      mapInstance.panTo({ lat: pin.lat, lng: pin.lng });
+    }
+  }, [pin.lat, pin.lng, mapInstance]);
 
   React.useEffect(() => {
     fetch('https://onroutemx.com/wp-json/holybakery/v1/map-suggestions')
@@ -116,9 +60,62 @@ export default function MapPickerModal({ onClose, onConfirm }) {
     libraries
   });
 
-  const filtered = suggestions.filter((p) =>
+  const [dynamicSuggestions, setDynamicSuggestions] = useState([]);
+
+  React.useEffect(() => {
+    if (!mapInstance || !window.google) return;
+    const service = new window.google.maps.places.PlacesService(mapInstance);
+    service.nearbySearch({
+      location: ORIGIN_COORDS,
+      radius: 15000,
+      type: ['lodging', 'restaurant', 'establishment'],
+      keyword: 'hotel restaurant tulum'
+    }, (results, status) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+        const fetchSuggestions = results.slice(0, 8).map(place => ({
+          name: place.name,
+          address: place.vicinity,
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+          place_id: place.place_id,
+          zone_name: "Detectando...",
+          is_out_of_zone: false,
+          type: 'nearby'
+        }));
+        
+        const enhanced = fetchSuggestions.map(s => {
+          const pt = turf.point([s.lng, s.lat]);
+          let detectedZone = "Sin zona";
+          let isOutOfZone = true;
+          turf.featureEach(mapData, (feature) => {
+            if (feature.geometry && feature.geometry.type.includes('Polygon')) {
+              if (turf.booleanPointInPolygon(pt, feature)) {
+                detectedZone = feature.properties["Nombres de cuadrantes"] || "Zona Detectada";
+                isOutOfZone = false;
+              }
+            }
+          });
+          s.zone_name = detectedZone;
+          s.is_out_of_zone = isOutOfZone;
+          return s;
+        });
+
+        setDynamicSuggestions(enhanced);
+      }
+    });
+  }, [mapInstance]);
+
+  const allSuggestions = React.useMemo(() => {
+    if (dynamicSuggestions.length > 0) {
+      const preferenciales = suggestions.filter(s => s.type === 'preferential' || (s.flags && s.flags.includes('preferido')));
+      return [...preferenciales, ...dynamicSuggestions];
+    }
+    return suggestions;
+  }, [suggestions, dynamicSuggestions]);
+
+  const filtered = allSuggestions.filter((p) =>
     !query || p.name.toLowerCase().includes(query.toLowerCase()) ||
-    p.address.toLowerCase().includes(query.toLowerCase())
+    (p.address && p.address.toLowerCase().includes(query.toLowerCase()))
   );
 
   const onLoad = React.useCallback(function callback(map) {
@@ -364,8 +361,11 @@ export default function MapPickerModal({ onClose, onConfirm }) {
                   position={{ lat: pin.lat, lng: pin.lng }}
                   title={pin.place.name}
                   animation={window.google.maps.Animation.DROP}
+                  zIndex={100}
                   icon={{
-                    url: "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%230c1a12' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'%3E%3C/path%3E%3Ccircle cx='12' cy='10' r='3' fill='white'%3E%3C/circle%3E%3C/svg%3E"
+                    url: 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44"%3E%3Ccircle cx="18" cy="40" r="8" fill="rgba(22,163,74,0.4)"/%3E%3Crect x="2" y="2" width="32" height="32" rx="16" ry="16" fill="%230d2618" stroke="white" stroke-width="2"/%3E%3Cpath d="M18 10 C13.6 10 10 13.6 10 18 C10 23.4 18 32 18 32 C18 32 26 23.4 26 18 C26 13.6 22.4 10 18 10Z" fill="white"/%3E%3Ccircle cx="18" cy="18" r="3" fill="%230d2618"/%3E%3C/svg%3E',
+                    scaledSize: new window.google.maps.Size(36, 44),
+                    anchor: new window.google.maps.Point(18, 44)
                   }}
                 />
               </GoogleMap>
@@ -393,7 +393,12 @@ export default function MapPickerModal({ onClose, onConfirm }) {
           </div>
           <div className="mp-foot-actions">
             <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
-            <button className="btn btn-primary" onClick={() => onConfirm(pin.place)}>
+            <button className="btn btn-primary" onClick={() => {
+              const mapsLink = pin.place.place_id 
+                ? `https://www.google.com/maps/place/?q=place_id:${pin.place.place_id}`
+                : `https://www.google.com/maps?q=${pin.lat},${pin.lng}`;
+              onConfirm({ ...pin.place, lat: pin.lat, lng: pin.lng, maps_link: mapsLink });
+            }}>
               {I.Check && <I.Check size={16}/>} Usar esta ubicación
             </button>
           </div>
