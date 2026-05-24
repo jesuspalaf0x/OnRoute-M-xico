@@ -242,11 +242,28 @@ function CotizadorScreen({ goTo }) {
     if (selectedMapPlace) {
       resultState.destinationName = selectedMapPlace.name;
       resultState.zoneName = selectedMapPlace.zone_name;
-      resultState.prices = selectedMapPlace.precios;
       resultState.lat = selectedMapPlace.lat;
       resultState.lng = selectedMapPlace.lng;
       resultState.formatted_address = selectedMapPlace.address;
       resultState.is_out_of_zone = selectedMapPlace.is_out_of_zone || selectedMapPlace.zone_name === "Sin zona";
+      
+      if (resultState.is_out_of_zone) {
+        resultState.prices = null;
+      } else {
+        // Use map extracted prices if available
+        if (selectedMapPlace.precios && (selectedMapPlace.precios.local_price != null || selectedMapPlace.precios.foreign_price != null)) {
+          resultState.prices = {
+            local_price: selectedMapPlace.precios.local_price || 0,
+            foreign_price: selectedMapPlace.precios.foreign_price || 0
+          };
+        } else {
+          // Fallback to prices table
+          const priceObj = pricesData.find(p => p.name.trim().toLowerCase() === resultState.zoneName.trim().toLowerCase());
+          if (priceObj) {
+            resultState.prices = priceObj;
+          }
+        }
+      }
     } else if (selectedPlace && selectedPlace.geometry) {
       const lat = selectedPlace.geometry.location.lat();
       const lng = selectedPlace.geometry.location.lng();

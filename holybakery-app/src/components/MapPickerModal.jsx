@@ -1,45 +1,94 @@
 import React, { useState } from 'react';
 import './MapPickerModal.css';
-import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, MarkerF, Autocomplete } from '@react-google-maps/api';
 import * as turf from '@turf/turf';
 import mapData from '../map.json';
 
 const I = window.Icons || {};
 const libraries = ['places'];
 
-const RAW_SUGGESTIONS = [
-  { name: "Satori Tulum", addr: "Carretera Tulum-Boca Paila Km 7", zone: "Zona 2", x: 70, y: 60 },
-  { name: "Casa Banana Restaurante", addr: "Carretera Tulum-Boca Paila Km 8", zone: "Especial", x: 76, y: 68, pref: true },
-  { name: "Hotel Be Tulum", addr: "Carretera Boca Paila Km 10", zone: "Especial", x: 82, y: 78, pref: true },
-  { name: "Mi Amor Boutique Hotel", addr: "Carretera Tulum-Boca Paila Km 7.5", zone: "Especial", x: 74, y: 64, pref: true },
-  { name: "Aldea Zama Lote 14", addr: "Aldea Zama, Tulum", zone: "Zona 3", x: 44, y: 52 },
-  { name: "Centro Tulum, Av. Tulum 200", addr: "Centro, Tulum", zone: "Zona 1", x: 32, y: 38 },
-  { name: "Hotel Nômade Tulum", addr: "Carretera Tulum-Boca Paila Km 9.5", zone: "Zona 2", x: 80, y: 74 },
-  { name: "Akumal Beach Resort", addr: "Akumal, Q. Roo", zone: "Zona 4", x: 60, y: 18 },
-  { name: "Playa del Carmen Centro", addr: "Playa del Carmen, Q. Roo", zone: "Zona 5", x: 30, y: 8 },
-  { name: "Cenote Calavera", addr: "Carretera Tulum-Cobá Km 2", zone: "Sin zona", x: 22, y: 56, warn: true },
-  { name: "Cobá Casitas, casa 4", addr: "Cobá, Q. Roo", zone: "Zona 6", x: 12, y: 26, warn: true },
+const FALLBACK_SUGGESTIONS = [
+  {
+    name: "Holy Bakery Tulum (Origen)",
+    address: "Tulum, Q.R.",
+    lat: 20.2114,
+    lng: -87.4654,
+    zone_name: "Zona 1",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: []
+  },
+  {
+    name: "Casa Banana Restaurante",
+    address: "Carretera Tulum-Boca Paila Km 8",
+    lat: 20.1940,
+    lng: -87.4680,
+    zone_name: "Especial",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: ['preferido']
+  },
+  {
+    name: "Satori Tulum",
+    address: "Carretera Tulum-Boca Paila Km 7",
+    lat: 20.1920,
+    lng: -87.4670,
+    zone_name: "Zona 2",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: []
+  },
+  {
+    name: "Hotel Be Tulum",
+    address: "Carretera Boca Paila Km 10",
+    lat: 20.1880,
+    lng: -87.4700,
+    zone_name: "Especial",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: ['preferido']
+  },
+  {
+    name: "Mi Amor Boutique Hotel",
+    address: "Carretera Tulum-Boca Paila Km 7.5",
+    lat: 20.1950,
+    lng: -87.4660,
+    zone_name: "Especial",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: ['preferido']
+  },
+  {
+    name: "Aldea Zama",
+    address: "Aldea Zama, Tulum",
+    lat: 20.2050,
+    lng: -87.4580,
+    zone_name: "Zona 3",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: []
+  },
+  {
+    name: "Centro Tulum, Av. Tulum",
+    address: "Centro, Tulum",
+    lat: 20.2114,
+    lng: -87.4654,
+    zone_name: "Zona 1",
+    precios: { local_price: 0, foreign_price: 0 },
+    is_out_of_zone: false,
+    flags: []
+  }
 ];
-
-const FALLBACK_SUGGESTIONS = RAW_SUGGESTIONS.map(s => ({
-  name: s.name,
-  address: s.addr,
-  lat: 20.30 - (s.y / 100) * 0.45,
-  lng: -87.55 + (s.x / 100) * 0.30,
-  zone_name: s.zone,
-  precios: { local_price: 0, foreign_price: 0 },
-  is_out_of_zone: s.zone === "Sin zona",
-  flags: s.pref ? ['preferido'] : s.warn ? ['advertencia'] : []
-}));
 
 const ORIGIN_COORDS = { lat: 20.2114, lng: -87.4654 };
 
 export default function MapPickerModal({ onClose, onConfirm }) {
   const [query, setQuery] = useState("");
+  const [autocomplete, setAutocomplete] = useState(null);
   const [suggestions, setSuggestions] = useState(FALLBACK_SUGGESTIONS);
   const [pin, setPin] = useState({ 
-    lat: FALLBACK_SUGGESTIONS[0].lat, 
-    lng: FALLBACK_SUGGESTIONS[0].lng, 
+    lat: ORIGIN_COORDS.lat, 
+    lng: ORIGIN_COORDS.lng, 
     place: FALLBACK_SUGGESTIONS[0] 
   });
   const [mapInstance, setMapInstance] = useState(null);
@@ -91,11 +140,23 @@ export default function MapPickerModal({ onClose, onConfirm }) {
     const pt = turf.point([lng, lat]);
     let detectedZone = "Sin zona";
     let isOutOfZone = true;
+    let local_price = null;
+    let foreign_price = null;
+
     turf.featureEach(mapData, (feature) => {
       if (feature.geometry && feature.geometry.type.includes('Polygon')) {
         if (turf.booleanPointInPolygon(pt, feature)) {
           detectedZone = feature.properties["Nombres de cuadrantes"] || "Zona Detectada";
           isOutOfZone = false;
+          
+          local_price = feature.properties.price_local !== undefined ? feature.properties.price_local :
+                        feature.properties["Precio Local"] !== undefined ? feature.properties["Precio Local"] :
+                        feature.properties.local_price !== undefined ? feature.properties.local_price : null;
+                        
+          foreign_price = feature.properties.price_foreign !== undefined ? feature.properties.price_foreign :
+                          feature.properties["Precio Foraneo"] !== undefined ? feature.properties["Precio Foraneo"] :
+                          feature.properties["Precio Extranjero"] !== undefined ? feature.properties["Precio Extranjero"] :
+                          feature.properties.foreign_price !== undefined ? feature.properties.foreign_price : null;
         }
       }
     });
@@ -108,7 +169,8 @@ export default function MapPickerModal({ onClose, onConfirm }) {
         zone_name: detectedZone,
         is_out_of_zone: isOutOfZone,
         lat, lng,
-        custom: true
+        custom: true,
+        precios: { local_price, foreign_price }
       }
     });
 
@@ -159,6 +221,18 @@ export default function MapPickerModal({ onClose, onConfirm }) {
     updatePinFromCoords(e.latLng.lat(), e.latLng.lng());
   };
 
+  const handlePlaceChanged = () => {
+    if (autocomplete !== null) {
+      const place = autocomplete.getPlace();
+      if (place.geometry && place.geometry.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        updatePinFromCoords(lat, lng);
+        setQuery(place.name || place.formatted_address || "");
+      }
+    }
+  };
+
   const handlePinDragEnd = (e) => {
     if (!e.latLng) return;
     updatePinFromCoords(e.latLng.lat(), e.latLng.lng());
@@ -195,12 +269,27 @@ export default function MapPickerModal({ onClose, onConfirm }) {
           <aside className="mp-side">
             <div className="field">
               {I.Search && <I.Search size={16} className="icon"/>}
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Hotel, restaurante, dirección…"
-                autoFocus
-              />
+              {isLoaded ? (
+                <Autocomplete
+                  onLoad={setAutocomplete}
+                  onPlaceChanged={handlePlaceChanged}
+                  bounds={{ north: 21.5, south: 19.8, east: -86.7, west: -87.9 }}
+                >
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Hotel, restaurante, dirección…"
+                    autoFocus
+                  />
+                </Autocomplete>
+              ) : (
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Hotel, restaurante, dirección…"
+                  autoFocus
+                />
+              )}
             </div>
 
             <div className="mp-section-label">
@@ -253,6 +342,7 @@ export default function MapPickerModal({ onClose, onConfirm }) {
                   zoomControl: true,
                   streetViewControl: false,
                   mapTypeControl: false,
+                  mapTypeId: "hybrid",
                 }}
                 onLoad={onLoad}
                 onUnmount={onUnmount}
