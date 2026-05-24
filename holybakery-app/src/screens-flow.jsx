@@ -303,7 +303,7 @@ function CotizadorScreen({ goTo }) {
             <button className="btn" onClick={() => goTo("dashboard")} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '24px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', color: '#374151', fontSize: '14px', fontWeight: '500', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}><I.ChevronLeft size={16}/> Volver al panel</button>
           </div>
           <div className="badge-row" style={{ display: "flex", gap: 8, marginTop: 24 }}>
-            <span style={{ background: '#dcfce7', color: '#166534', padding: '6px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}><I.User size={14} /> Origen fijo - Holy Bakery Tulum</span>
+            <span style={{ background: '#dcfce7', color: '#166534', padding: '6px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}><I.Users size={14} /> Origen fijo - Holy Bakery Tulum</span>
           </div>
           <h1 style={{ textAlign: "left", fontSize: '56px', fontWeight: '700', lineHeight: '1.1', marginTop: '16px', color: '#111827' }}>
             Una entrega,<br/><span style={{ color: "#16a34a", fontStyle: "normal" }}>tres clics.</span>
@@ -316,7 +316,7 @@ function CotizadorScreen({ goTo }) {
             <div className="point card-tight" style={{ background: "white", borderRadius: "16px", padding: "16px", marginBottom: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "none" }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#e0fae9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <I.MapPin size={20} color="#16a34a" />
+                  <I.Pin size={20} color="#16a34a" />
                 </div>
                 <div>
                   <p style={{ fontWeight: '600', margin: 0, color: '#111827', fontSize: '15px', textAlign: 'left' }}>Cobertura</p>
@@ -367,7 +367,7 @@ function CotizadorScreen({ goTo }) {
             <div>
               <label className="label" style={{ fontSize: '12px', letterSpacing: '1px', color: '#9ca3af', fontWeight: '600' }}>HACIA</label>
               <div className="field" style={{ position: "relative", borderRadius: '12px', border: '1px solid #e5e7eb', padding: '12px 16px' }}>
-                <I.MapPin size={18} color="#16a34a" className="icon" />
+                <I.Pin size={18} color="#16a34a" className="icon" />
                 {isLoaded ? (
                   <Autocomplete
                     onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
