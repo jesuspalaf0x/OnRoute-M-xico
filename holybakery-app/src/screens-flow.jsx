@@ -213,67 +213,69 @@ function CotizadorScreen({ goTo }) {
   });
 
   const autocompleteRef = useRef(null);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [selectedMapPlace, setSelectedMapPlace] = useState(null);
+  const [selectedDestination, setSelectedDestination] = useState(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const handlePlaceChanged = () => {
     if (autocompleteRef.current !== null) {
       const place = autocompleteRef.current.getPlace();
       setTo(place.formatted_address || place.name || "");
-      setSelectedPlace(place);
-      setSelectedMapPlace(null);
+      setSelectedDestination({
+        type: 'places',
+        name: place.name || place.formatted_address,
+        formatted_address: place.formatted_address || place.name,
+        lat: place.geometry?.location?.lat(),
+        lng: place.geometry?.location?.lng(),
+        place_id: place.place_id,
+        url: place.url
+      });
     }
   };
 
   const handleQuote = () => {
+    if (!selectedDestination || !selectedDestination.lat || !selectedDestination.lng) {
+      alert('Por favor selecciona una ubicación de entrega válida.');
+      return;
+    }
+
     let resultState = {
       destinationName: to,
       zoneName: "Fuera de polígonos",
       prices: null,
-      lat: null,
-      lng: null,
-      place_id: selectedPlace ? selectedPlace.place_id : null,
-      formatted_address: selectedPlace ? (selectedPlace.formatted_address || to) : to,
-      maps_link: selectedPlace ? selectedPlace.url : null,
+      lat: selectedDestination.lat,
+      lng: selectedDestination.lng,
+      place_id: selectedDestination.place_id || null,
+      formatted_address: selectedDestination.formatted_address || selectedDestination.address || to,
+      maps_link: selectedDestination.maps_link || selectedDestination.url || null,
       is_out_of_zone: true,
     };
 
-    if (selectedMapPlace) {
-      resultState.destinationName = selectedMapPlace.name;
-      resultState.zoneName = selectedMapPlace.zone_name;
-      resultState.lat = selectedMapPlace.lat;
-      resultState.lng = selectedMapPlace.lng;
-      resultState.formatted_address = selectedMapPlace.address;
-      resultState.is_out_of_zone = selectedMapPlace.is_out_of_zone || selectedMapPlace.zone_name === "Sin zona";
-      
-      if (resultState.is_out_of_zone) {
-        resultState.prices = null;
-      } else {
-        // Use map extracted prices if available
-        if (selectedMapPlace.precios && (selectedMapPlace.precios.local_price != null || selectedMapPlace.precios.foreign_price != null)) {
+    if (selectedDestination.type === 'map') {
+      const zoneName = selectedDestination.zone || selectedDestination.zone_name || "Sin zona";
+      resultState.destinationName = selectedDestination.name;
+      resultState.zoneName = zoneName;
+      resultState.is_out_of_zone = selectedDestination.is_out_of_zone || zoneName === "Sin zona";
+
+      if (!resultState.is_out_of_zone) {
+        if (selectedDestination.price_local != null || selectedDestination.price_foreign != null) {
           resultState.prices = {
-            local_price: selectedMapPlace.precios.local_price || 0,
-            foreign_price: selectedMapPlace.precios.foreign_price || 0
+            local_price: selectedDestination.price_local || 0,
+            foreign_price: selectedDestination.price_foreign || 0
+          };
+        } else if (selectedDestination.precios && (selectedDestination.precios.local_price != null || selectedDestination.precios.foreign_price != null)) {
+          resultState.prices = {
+            local_price: selectedDestination.precios.local_price || 0,
+            foreign_price: selectedDestination.precios.foreign_price || 0
           };
         } else {
-          // Fallback to prices table
-          const priceObj = pricesData.find(p => p.name.trim().toLowerCase() === resultState.zoneName.trim().toLowerCase());
-          if (priceObj) {
-            resultState.prices = priceObj;
-          }
+          const priceObj = pricesData.find(p => p.name.trim().toLowerCase() === zoneName.trim().toLowerCase());
+          if (priceObj) resultState.prices = priceObj;
         }
       }
-    } else if (selectedPlace && selectedPlace.geometry) {
-      const lat = selectedPlace.geometry.location.lat();
-      const lng = selectedPlace.geometry.location.lng();
-      resultState.lat = lat;
-      resultState.lng = lng;
-
-      const point = turf.point([lng, lat]);
+    } else {
+      const point = turf.point([selectedDestination.lng, selectedDestination.lat]);
       let matchedZoneName = null;
 
-      // Find which polygon the point is in
       for (const feature of mapData.features) {
         if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
           if (turf.booleanPointInPolygon(point, feature)) {
@@ -286,14 +288,8 @@ function CotizadorScreen({ goTo }) {
       if (matchedZoneName) {
         resultState.zoneName = matchedZoneName;
         resultState.is_out_of_zone = false;
-        // Find price
         const priceObj = pricesData.find(p => p.name.trim().toLowerCase() === matchedZoneName.trim().toLowerCase());
-        if (priceObj) {
-          resultState.prices = priceObj;
-        }
-      } else {
-        resultState.zoneName = "Sin zona";
-        resultState.is_out_of_zone = true;
+        if (priceObj) resultState.prices = priceObj;
       }
     }
 
@@ -400,8 +396,10 @@ function CotizadorScreen({ goTo }) {
           onClose={() => setIsMapModalOpen(false)}
           onConfirm={(placeObj) => {
             setTo(`${placeObj.name}, ${placeObj.address}`);
-            setSelectedMapPlace(placeObj);
-            setSelectedPlace(null);
+            setSelectedDestination({
+              type: 'map',
+              ...placeObj
+            });
             setIsMapModalOpen(false);
           }}
         />
