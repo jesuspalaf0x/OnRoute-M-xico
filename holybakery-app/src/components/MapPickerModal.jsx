@@ -457,18 +457,16 @@ export default function MapPickerModal({ onClose, onConfirm }) {
         </div>
 
         <div className="mp-foot">
-          <div className="mp-foot-info">
-            <div className="mp-foot-pin">
-              <div className="mp-foot-pin-dot">{I.Pin && <I.Pin size={14}/>}</div>
-              <div>
-                <strong>{pin.place.name}</strong>
-                <span className="muted">{pin.place.address}</span>
-              </div>
+          <div className="mp-foot-pin">
+            <div className="mp-foot-pin-dot">{I.Pin && <I.Pin size={14}/>}</div>
+            <div className="mp-foot-pin-text">
+              <strong>{pin.place.name}</strong>
+              <span className="muted">{pin.place.address}</span>
             </div>
-            <div className="mp-foot-meta">
-              <span className={"status " + zoneClass}>{pin.place.zone || pin.place.zone_name}</span>
-              <span className="mono mp-coords">{currentLat}, {currentLng}</span>
-            </div>
+          </div>
+          <div className="mp-foot-meta">
+            <span className={"status " + zoneClass}>{pin.place.zone || pin.place.zone_name}</span>
+            <span className="mp-coords">{currentLat}, {currentLng}</span>
           </div>
           <div className="mp-foot-actions">
             <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
