@@ -296,47 +296,57 @@ function CotizadorScreen({ goTo }) {
   };
 
   return (
-    <div className="cotizador-page">
+    <div className="cotizador-page" style={{ background: '#f4f9f4', minHeight: '100vh', paddingTop: '40px' }}>
       <div className="cotizador-grid">
         <div className="cotizador-side">
           <div className="badge-row" style={{ display: "flex", gap: 8 }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => goTo("dashboard")} style={{padding:0, color: "var(--ink-light)"}}><I.ArrowLeft size={16}/> Volver al panel</button>
+            <button className="btn" onClick={() => goTo("dashboard")} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '24px', padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '8px', color: '#374151', fontSize: '14px', fontWeight: '500', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}><I.ChevronLeft size={16}/> Volver al panel</button>
           </div>
-          <div className="badge-row" style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            <span className="zone-chip"><I.Cake size={12} /> Origen fijo · Holy Bakery Tulum</span>
+          <div className="badge-row" style={{ display: "flex", gap: 8, marginTop: 24 }}>
+            <span style={{ background: '#dcfce7', color: '#166534', padding: '6px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}><I.User size={14} /> Origen fijo - Holy Bakery Tulum</span>
           </div>
-          <h1 style={{ textAlign: "left" }}><span style={{ color: "var(--ink)" }}>Una entrega,</span> <em>tres clics.</em></h1>
-          <p style={{ textAlign: "left" }}>Cotiza al instante usando autocompletado de Google o el pin del mapa. Las tarifas se calculan por zona; las ubicaciones preferenciales aplican automáticamente.</p>
+          <h1 style={{ textAlign: "left", fontSize: '56px', fontWeight: '700', lineHeight: '1.1', marginTop: '16px', color: '#111827' }}>
+            Una entrega,<br/><span style={{ color: "#16a34a", fontStyle: "normal" }}>tres clics.</span>
+          </h1>
+          <p style={{ textAlign: "left", color: '#6b7280', fontSize: '16px', lineHeight: '1.5', marginTop: '16px', maxWidth: '440px' }}>
+            Cotiza al instante usando autocompletado de Google o el pin del mapa. Las tarifas se calculan por zona; las ubicaciones preferenciales aplican automáticamente.
+          </p>
 
-          <div className="points">
-            <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <I.Pin size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+          <div className="points" style={{ marginTop: '32px' }}>
+            <div className="point card-tight" style={{ background: "white", borderRadius: "16px", padding: "16px", marginBottom: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "none" }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#e0fae9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <I.MapPin size={20} color="#16a34a" />
+                </div>
                 <div>
-                  <p style={{ fontWeight: '700', margin: 0 }}>Cobertura</p>
-                  <p style={{ color: '#6c736f', margin: 0, fontSize: '13px' }}>
+                  <p style={{ fontWeight: '600', margin: 0, color: '#111827', fontSize: '15px', textAlign: 'left' }}>Cobertura</p>
+                  <p style={{ color: '#6b7280', margin: 0, fontSize: '13px', textAlign: 'left' }}>
                     Tulum · Aldea Zama · Akumal · Puerto Aventuras · Playa del Carmen
                   </p>
                 </div>
               </div>
             </div>
-            <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <I.Star size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div className="point card-tight" style={{ background: "white", borderRadius: "16px", padding: "16px", marginBottom: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "none" }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#e0fae9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <I.Star size={20} color="#16a34a" />
+                </div>
                 <div>
-                  <p style={{ fontWeight: '700', margin: 0 }}>Tarifas especiales</p>
-                  <p style={{ color: '#6c736f', margin: 0, fontSize: '13px' }}>
+                  <p style={{ fontWeight: '600', margin: 0, color: '#111827', fontSize: '15px', textAlign: 'left' }}>Tarifas especiales</p>
+                  <p style={{ color: '#6b7280', margin: 0, fontSize: '13px', textAlign: 'left' }}>
                     3 ubicaciones preferenciales activas: Casa Banana, Be Tulum, Mi Amor.
                   </p>
                 </div>
               </div>
             </div>
-            <div className="point card-tight" style={{ background: "var(--surface)" }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <I.RefreshCcw size={18} color="#16a34a" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div className="point card-tight" style={{ background: "white", borderRadius: "16px", padding: "16px", marginBottom: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", border: "none" }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#e0fae9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <I.RefreshCcw size={20} color="#16a34a" />
+                </div>
                 <div>
-                  <p style={{ fontWeight: '700', margin: 0 }}>Tipo de cambio</p>
-                  <p style={{ color: '#6c736f', margin: 0, fontSize: '13px' }}>
+                  <p style={{ fontWeight: '600', margin: 0, color: '#111827', fontSize: '15px', textAlign: 'left' }}>Tipo de cambio</p>
+                  <p style={{ color: '#6b7280', margin: 0, fontSize: '13px', textAlign: 'left' }}>
                     $17.50 MXN/USD · actualizado por OnRoute hoy 9:14 a.m.
                   </p>
                 </div>
@@ -345,21 +355,19 @@ function CotizadorScreen({ goTo }) {
           </div>
         </div>
 
-        <div className="quote-card">
-          {/* Tabs removed */}
-
+        <div className="quote-card" style={{ background: 'white', padding: '32px', borderRadius: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', border: 'none' }}>
           <div className="stack">
             <div>
-              <label className="label">Desde</label>
-              <div className="field">
-                <I.Send size={18} className="icon" />
-                <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="Hotel, Airbnb, Aeropuerto…" />
+              <label className="label" style={{ fontSize: '12px', letterSpacing: '1px', color: '#9ca3af', fontWeight: '600' }}>DESDE</label>
+              <div className="field" style={{ borderRadius: '12px', border: '1px solid #e5e7eb', padding: '12px 16px' }}>
+                <I.Send size={18} color="#16a34a" className="icon" />
+                <input value={from} onChange={(e) => setFrom(e.target.value)} placeholder="Hotel, Airbnb, Aeropuerto…" style={{ fontWeight: '500' }} />
               </div>
             </div>
             <div>
-              <label className="label">Hacia</label>
-              <div className="field" style={{ position: "relative" }}>
-                <I.Pin size={18} className="icon" />
+              <label className="label" style={{ fontSize: '12px', letterSpacing: '1px', color: '#9ca3af', fontWeight: '600' }}>HACIA</label>
+              <div className="field" style={{ position: "relative", borderRadius: '12px', border: '1px solid #e5e7eb', padding: '12px 16px' }}>
+                <I.MapPin size={18} color="#16a34a" className="icon" />
                 {isLoaded ? (
                   <Autocomplete
                     onLoad={(autocomplete) => (autocompleteRef.current = autocomplete)}
@@ -371,22 +379,40 @@ function CotizadorScreen({ goTo }) {
                       value={to}
                       onChange={(e) => setTo(e.target.value)}
                       placeholder="Hotel en Tulum, Playa del Carmen…"
-                      style={{ width: "100%" }}
+                      style={{ width: "100%", fontWeight: '500' }}
                     />
                   </Autocomplete>
                 ) : (
                   <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="Cargando mapa..." />
                 )}
-                <button type="button" className="btn btn-soft btn-sm" title="Soltar pin en mapa" style={{ position: "absolute", right: 12 }} onClick={() => setIsMapModalOpen(true)}>
+                <button type="button" className="btn btn-soft btn-sm" title="Soltar pin en mapa" style={{ position: "absolute", right: 8, background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '8px' }} onClick={() => setIsMapModalOpen(true)}>
                   <I.Map size={14} /> Mapa
                 </button>
               </div>
             </div>
 
-
-            <button className="btn btn-primary btn-lg btn-block" onClick={handleQuote}>
+            <button className="btn btn-primary btn-lg btn-block" onClick={handleQuote} style={{ background: '#0d2618', borderRadius: '12px', padding: '16px', fontWeight: '600', fontSize: '16px', marginTop: '8px' }}>
               Cotizar ahora <I.ArrowRight size={18} />
             </button>
+            
+            <div style={{ background: '#f3f4f6', borderRadius: '16px', overflow: 'hidden', marginTop: '16px', height: '180px', position: 'relative' }}>
+              <div className="map-canvas" style={{ width: '100%', height: '100%', borderRadius: 0, border: 'none', padding: 0 }}>
+                <svg viewBox="0 0 460 460" preserveAspectRatio="xMidYMid slice" style={{ width: '100%', height: '100%', display: 'block' }}>
+                  <path d="M 40 120 Q 130 60 230 80 Q 330 100 380 180 Q 360 260 280 280 Q 180 290 100 240 Q 30 200 40 120 Z" fill="rgba(22,163,74,0.10)" stroke="rgba(22,163,74,0.4)" strokeDasharray="4 4" />
+                  <path d="M 200 250 Q 290 230 360 280 Q 380 360 300 380 Q 220 380 200 320 Z" fill="rgba(37,99,235,0.08)" stroke="rgba(37,99,235,0.4)" strokeDasharray="4 4" />
+                  <path d="M 130 160 C 200 200, 240 240, 320 320" fill="none" stroke="#0d2618" strokeWidth="2.5" strokeDasharray="6 5" />
+                  <g transform="translate(120, 150)">
+                    <circle r="22" fill="rgba(22,163,74,0.18)" />
+                    <circle r="11" fill="#16a34a" stroke="white" strokeWidth="3" />
+                  </g>
+                  <g transform="translate(330, 330)">
+                    <circle r="22" fill="rgba(13,38,24,0.16)" />
+                    <path d="M 0 -16 C -10 -16 -16 -10 -16 0 C -16 8 -8 14 0 22 C 8 14 16 8 16 0 C 16 -10 10 -16 0 -16 Z" fill="#0d2618" />
+                    <circle r="5" fill="white" />
+                  </g>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
