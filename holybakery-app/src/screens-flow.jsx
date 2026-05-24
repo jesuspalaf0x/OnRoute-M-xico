@@ -296,7 +296,7 @@ function CotizadorScreen({ goTo }) {
   };
 
   return (
-    <div className="cotizador-page" style={{ background: '#f4f9f4', minHeight: '100vh', paddingTop: '40px' }}>
+    <div className="cotizador-page" style={{ background: '#f4f3ef', minHeight: '100vh', paddingTop: '40px' }}>
       <div className="cotizador-grid">
         <div className="cotizador-side">
           <div className="badge-row" style={{ display: "flex", gap: 8 }}>
