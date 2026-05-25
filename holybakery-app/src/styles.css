@@ -903,13 +903,22 @@ input, select, textarea { font-family: inherit; }
 .campo-textarea {
   width: 100%;
   resize: vertical;
-  padding: 12px;
-  border: 1px solid #e7e7e2;
-  border-radius: 10px;
-  font-size: 14px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  font-size: 14.5px;
   font-family: "Manrope", sans-serif;
-  color: #0c1a12;
-  background: #ffffff;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+  min-height: 100px;
+}
+
+.campo-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(22,163,74,0.10);
+  background: var(--surface);
 }
 
 .campo-textarea::placeholder {

@@ -966,9 +966,7 @@ function ReservaScreen({ goTo, quoteData }) {
               </div>
               <div>
                 <label className="label">Comentarios e instrucciones</label>
-                <div className="field field-textarea">
-                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder="Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery." className="campo-textarea" style={{ paddingTop: 10, paddingBottom: 10 }} />
-                </div>
+                <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder="Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery." className="campo-textarea" />
                 <div className="adjuntos-area" style={{ marginTop: 16 }}>
                   <div className="adjuntos-info">
                     <I.Paperclip size={18} className="adjuntos-icono" />
