@@ -541,14 +541,14 @@ function ResultadoMapa({ origin, destination }) {
           <MarkerF 
             position={origin} 
             label={{ text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
-            icon={{ path: 0, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+            icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
           />
         )}
         {!directions && destination && destination.lat && (
           <MarkerF 
             position={destination} 
             label={{ text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
-            icon={{ path: 0, scale: 8, fillColor: '#0d2618', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+            icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#0d2618', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
           />
         )}
         {directions && (
@@ -564,7 +564,7 @@ function ResultadoMapa({ origin, destination }) {
               markerOptions: {
                 origin: {
                   icon: {
-                    path: 0,
+                    path: window.google.maps.SymbolPath.CIRCLE,
                     scale: 8,
                     fillColor: '#16a34a',
                     fillOpacity: 1,
@@ -575,7 +575,7 @@ function ResultadoMapa({ origin, destination }) {
                 },
                 destination: {
                   icon: {
-                    path: 0,
+                    path: window.google.maps.SymbolPath.CIRCLE,
                     scale: 8,
                     fillColor: '#0d2618',
                     fillOpacity: 1,
