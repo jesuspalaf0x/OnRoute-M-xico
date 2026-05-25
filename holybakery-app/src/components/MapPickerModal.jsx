@@ -208,7 +208,7 @@ export default function MapPickerModal({ onClose, onConfirm }) {
     setMapInstance(null);
   }, []);
 
-  const updatePinFromCoords = async (lat, lng) => {
+  const updatePinFromCoords = async (lat, lng, predefinedPlace = null) => {
     const pt = turf.point([lng, lat]);
     let detectedZone = "Sin zona";
     let isOutOfZone = true;
@@ -235,18 +235,25 @@ export default function MapPickerModal({ onClose, onConfirm }) {
 
     setPin({
       lat, lng,
-      place: {
+      place: predefinedPlace ? {
+        ...predefinedPlace,
+        zone_name: detectedZone,
+        is_out_of_zone: isOutOfZone,
+        lat, lng,
+        precios: { local_price, foreign_price }
+      } : {
         name: "Punto seleccionado en mapa",
         address: "Cargando dirección...",
         zone_name: detectedZone,
         is_out_of_zone: isOutOfZone,
         lat, lng,
         custom: true,
+        source: 'manual',
         precios: { local_price, foreign_price }
       }
     });
 
-    if (window.google && window.google.maps) {
+    if (window.google && window.google.maps && !predefinedPlace) {
       const geocoder = new window.google.maps.Geocoder();
       const geocodePromise = new Promise((resolve) => {
         geocoder.geocode({ location: { lat, lng } }, (results, status) => {
@@ -274,7 +281,7 @@ export default function MapPickerModal({ onClose, onConfirm }) {
           }
         };
       });
-    } else {
+    } else if (!predefinedPlace) {
       setPin(prev => {
         if (prev.lat !== lat || prev.lng !== lng) return prev;
         return {
@@ -299,7 +306,15 @@ export default function MapPickerModal({ onClose, onConfirm }) {
       if (place.geometry && place.geometry.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
-        updatePinFromCoords(lat, lng);
+        
+        const selectedPlace = {
+          name: place.name,
+          address: place.formatted_address || place.vicinity || `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
+          place_id: place.place_id,
+          source: 'autocomplete'
+        };
+        
+        updatePinFromCoords(lat, lng, selectedPlace);
         setQuery(place.name || place.formatted_address || "");
       }
     }
