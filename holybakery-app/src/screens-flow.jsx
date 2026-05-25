@@ -966,8 +966,8 @@ function ReservaScreen({ goTo, quoteData }) {
               </div>
               <div>
                 <label className="label">Comentarios e instrucciones</label>
-                <div className="field field-textarea" style={{ border: 'none', padding: 0 }}>
-                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder={`Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.\nEj. El delivery de este servicio ya está pagado.\nEj. Contactar al cliente cuando estés en camino.`} className="campo-textarea" />
+                <div className="field field-textarea">
+                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder={`Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.\nEj. El delivery de este servicio ya está pagado.\nEj. Contactar al cliente cuando estés en camino.`} className="campo-textarea" style={{ paddingTop: 10, paddingBottom: 10 }} />
                 </div>
                 <div className="adjuntos-area" style={{ marginTop: 16 }}>
                   <div className="adjuntos-info">
@@ -1115,7 +1115,7 @@ function ReservaScreen({ goTo, quoteData }) {
           </div>
         </div>
 
-        <aside className="stack" style={{ alignContent: 'start' }}>
+        <aside className="stack" style={{ alignContent: 'start', marginTop: 38 }}>
           <div className="section-card" style={{ padding: 0, overflow: "hidden" }}>
             <div style={{ padding: "18px 22px", borderBottom: "1px solid var(--line)" }}>
               <h3>Resumen de la reserva</h3>
@@ -1179,9 +1179,9 @@ function ReservaScreen({ goTo, quoteData }) {
             </div>
           </div>
           
-          <div className="section-card" style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-soft-2)" }}>
-            <div className="flex" style={{ gap: 10 }}>
-              <I.Shield size={18} style={{ color: "var(--accent)" }} />
+          <div className="section-card" style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-soft-2)", textAlign: "left" }}>
+            <div className="flex" style={{ gap: 10, alignItems: "flex-start", justifyContent: "flex-start" }}>
+              <I.Shield size={18} style={{ color: "var(--accent)", flexShrink: 0, marginTop: 2 }} />
               <div>
                 <strong style={{ color: "var(--accent)" }}>Bloqueo automático</strong>
                 <div style={{ fontSize: 12.5, color: "#0e5a2c", marginTop: 4 }}>

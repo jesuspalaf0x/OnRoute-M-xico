@@ -807,6 +807,9 @@ input, select, textarea { font-family: inherit; }
   display: flex;
   align-items: center;
 }
+.field.custom-picker-wrapper {
+  padding: 0;
+}
 
 .custom-picker-wrapper .icon {
   position: absolute;
