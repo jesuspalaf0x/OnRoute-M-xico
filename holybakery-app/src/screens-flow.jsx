@@ -1,6 +1,6 @@
 // Login + Cotizador + Resultado + Reserva + WhatsApp screens
-import React, { useState, useRef } from 'react';
-import { useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import React, { useState, useRef, useEffect } from 'react';
+import { useJsApiLoader, Autocomplete, GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
 import * as turf from '@turf/turf';
 import mapData from './map.json';
 import pricesData from './data/prices.json';
@@ -467,6 +467,117 @@ function CotizadorScreen({ goTo }) {
 /* =============================================================
    RESULTADO COTIZACIÓN
 ============================================================= */
+
+const HOLY_BAKERY_ORIGIN = {
+  lat: 20.2114,
+  lng: -87.4654,
+  name: 'Holy Bakery Tulum'
+};
+
+function ResultadoMapa({ origin, destination }) {
+  const [directions, setDirections] = useState(null);
+  const [routeInfo, setRouteInfo] = useState(null);
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+    libraries
+  });
+
+  useEffect(() => {
+    if (!isLoaded || !origin || !destination) return;
+    if (!origin.lat || !destination.lat) return;
+
+    const directionsService = new window.google.maps.DirectionsService();
+
+    directionsService.route({
+      origin: { lat: origin.lat, lng: origin.lng },
+      destination: { lat: destination.lat, lng: destination.lng },
+      travelMode: window.google.maps.TravelMode.DRIVING,
+      region: 'MX'
+    }, (result, status) => {
+      if (status === 'OK') {
+        setDirections(result);
+        const leg = result.routes[0].legs[0];
+        setRouteInfo({
+          distance: leg.distance.text,
+          duration: leg.duration.text
+        });
+      }
+    });
+  }, [isLoaded, origin, destination]);
+
+  if (!isLoaded) return <div className="mapa-loading">Cargando mapa...</div>;
+
+  return (
+    <div className="resultado-mapa-container">
+      {routeInfo && (
+        <div className="ruta-info-badge">
+          <span className="ruta-distancia">{routeInfo.distance}</span>
+          <span className="ruta-separador">·</span>
+          <span className="ruta-duracion">{routeInfo.duration}</span>
+        </div>
+      )}
+
+      <GoogleMap
+        mapContainerStyle={{ width: '100%', height: '100%' }}
+        zoom={13}
+        mapTypeId="roadmap"
+        options={{
+          disableDefaultUI: true,
+          zoomControl: false,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false,
+          gestureHandling: 'none',
+          styles: [
+            { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+            { featureType: 'transit', stylers: [{ visibility: 'off' }] }
+          ]
+        }}
+      >
+        {directions && (
+          <DirectionsRenderer
+            directions={directions}
+            options={{
+              suppressMarkers: false,
+              polylineOptions: {
+                strokeColor: '#16a34a',
+                strokeWeight: 4,
+                strokeOpacity: 0.85
+              },
+              markerOptions: {
+                origin: {
+                  icon: {
+                    path: window.google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: '#16a34a',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                  },
+                  label: { text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }
+                },
+                destination: {
+                  icon: {
+                    path: window.google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: '#0d2618',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                  },
+                  label: { text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }
+                }
+              }
+            }}
+          />
+        )}
+      </GoogleMap>
+    </div>
+  );
+}
+
 function ResultadoScreen({ goTo, quoteData }) {
   const { destinationName, zoneName, prices, lat, lng, place_id, formatted_address, maps_link, is_out_of_zone } = quoteData || {
     destinationName: "No seleccionado",
@@ -526,13 +637,13 @@ function ResultadoScreen({ goTo, quoteData }) {
     <div className="cotizador-page">
       <div className="result-grid">
         <div className="card card-pad">
-          <div className="flex-between" style={{ marginBottom: 18 }}>
-            <div>
-              <span className="zone-chip">{zoneName}</span>
-              <h2 style={{ margin: "10px 0 4px", fontSize: 24, letterSpacing: "-0.02em" }}>{destinationName.split(',')[0]}</h2>
-              <div className="muted" style={{ fontSize: 13 }}>{destinationName}</div>
-            </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => goTo("cotizador")}><I.ChevronLeft size={14} /> Editar</button>
+          <div className="resultado-header">
+            <span className="zone-chip resultado-zona-pill">{zoneName}</span>
+            <h1 className="resultado-titulo">{destinationName.split(',')[0]}</h1>
+            <p className="resultado-direccion">{formatted_address || destinationName}</p>
+            <button className="resultado-editar-link" onClick={() => goTo("cotizador")}>
+              ← Cambiar ubicación
+            </button>
           </div>
 
           <div className="row row-2" style={{ marginBottom: 16 }}>
@@ -607,36 +718,11 @@ function ResultadoScreen({ goTo, quoteData }) {
           </div>
         </div>
 
-        <div className="map-card">
-          <div className="map-canvas">
-            <svg viewBox="0 0 460 460" preserveAspectRatio="xMidYMid slice">
-              {/* abstract zone polygons */}
-              <path d="M 40 120 Q 130 60 230 80 Q 330 100 380 180 Q 360 260 280 280 Q 180 290 100 240 Q 30 200 40 120 Z"
-              fill="rgba(22,163,74,0.10)" stroke="rgba(22,163,74,0.4)" strokeDasharray="4 4" />
-              <path d="M 200 250 Q 290 230 360 280 Q 380 360 300 380 Q 220 380 200 320 Z"
-              fill="rgba(124,58,237,0.08)" stroke="rgba(124,58,237,0.4)" strokeDasharray="4 4" />
-
-              {/* route line */}
-              <path d="M 130 160 C 200 200, 240 240, 320 320" fill="none"
-              stroke="#0d2618" strokeWidth="2.5" strokeDasharray="6 5" />
-
-              {/* origin pin */}
-              <g transform="translate(120, 150)">
-                <circle r="22" fill="rgba(22,163,74,0.18)" />
-                <circle r="11" fill="#16a34a" stroke="white" strokeWidth="3" />
-              </g>
-              <text x="100" y="135" fontSize="11" fontWeight="700" fill="#0c1a12" fontFamily="Manrope">Holy Bakery</text>
-
-              {/* destination pin */}
-              <g transform="translate(330, 330)">
-                <circle r="22" fill="rgba(13,38,24,0.16)" />
-                <path d="M 0 -16 C -10 -16 -16 -10 -16 0 C -16 8 -8 14 0 22 C 8 14 16 8 16 0 C 16 -10 10 -16 0 -16 Z"
-                fill="#0d2618" />
-                <circle r="5" fill="white" />
-              </g>
-              <text x="345" y="328" fontSize="11" fontWeight="700" fill="#0c1a12" fontFamily="Manrope">Satori Tulum</text>
-            </svg>
-          </div>
+        <div className="map-card" style={{ padding: 0 }}>
+          <ResultadoMapa 
+            origin={HOLY_BAKERY_ORIGIN} 
+            destination={{ lat, lng }} 
+          />
         </div>
       </div>
     </div>);
