@@ -833,23 +833,29 @@ input, select, textarea { font-family: inherit; }
   z-index: 1;
 }
 
-.custom-picker {
+.field.custom-picker-wrapper .custom-picker {
   appearance: none;
   -webkit-appearance: none;
   width: 100%;
-  padding: 0 40px 0 42px; /* padding for icons */
   background: transparent;
   border: none;
   font-family: inherit;
   font-size: 14px;
-  color: var(--text-main);
   outline: none;
   cursor: pointer;
   position: relative;
   z-index: 2;
 }
 
-.custom-picker::-webkit-calendar-picker-indicator {
+.field.custom-picker-wrapper .custom-picker[type="date"] {
+  padding: 0 40px 0 42px !important;
+}
+
+.field.custom-picker-wrapper .custom-picker[type="time"] {
+  padding: 0 110px 0 42px !important;
+}
+
+.field.custom-picker-wrapper .custom-picker::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 0;
   left: 0;
