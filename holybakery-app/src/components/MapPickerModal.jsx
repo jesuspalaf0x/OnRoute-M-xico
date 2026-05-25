@@ -93,7 +93,7 @@ const FALLBACK_SUGGESTIONS = [
   }
 ];
 
-const ORIGIN_COORDS = { lat: 20.2114, lng: -87.4654 };
+const ORIGIN_COORDS = { lat: 20.199855674419318, lng: -87.46304053252388 };
 
 export default function MapPickerModal({ onClose, onConfirm }) {
   const [query, setQuery] = useState("");

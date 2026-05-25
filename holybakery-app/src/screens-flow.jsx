@@ -469,8 +469,8 @@ function CotizadorScreen({ goTo }) {
 ============================================================= */
 
 const HOLY_BAKERY_ORIGIN = {
-  lat: 20.2114,
-  lng: -87.4654,
+  lat: 20.199855674419318,
+  lng: -87.46304053252388,
   name: 'Holy Bakery Tulum'
 };
 
@@ -639,7 +639,7 @@ function ResultadoScreen({ goTo, quoteData }) {
             <div className="card-tight" style={{ background: "var(--surface-2)", borderRadius: 12 }}>
               <div className="muted" style={{ fontSize: 11.5, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Origen</div>
               <div style={{ fontWeight: 700, marginTop: 4 }}><I.Cake size={14} /> Holy Bakery Tulum</div>
-              <div className="mono muted" style={{ fontSize: 11.5, marginTop: 4 }}>20.2118, -87.4654</div>
+              <div className="mono muted" style={{ fontSize: 11.5, marginTop: 4 }}>20.1998, -87.4630</div>
             </div>
             <div className="card-tight" style={{ background: "var(--surface-2)", borderRadius: 12 }}>
               <div className="muted" style={{ fontSize: 11.5, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Destino</div>
