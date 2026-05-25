@@ -537,14 +537,12 @@ function ResultadoMapa({ origin, destination }) {
           ]
         }}
       >
-        {!directions && (
-          <MarkerF 
-            position={origin} 
-            label={{ text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
-            icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
-          />
-        )}
-        {!directions && destination && destination.lat && (
+        <MarkerF 
+          position={origin} 
+          label={{ text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
+          icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+        />
+        {destination && destination.lat && (
           <MarkerF 
             position={destination} 
             label={{ text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
@@ -555,35 +553,11 @@ function ResultadoMapa({ origin, destination }) {
           <DirectionsRenderer
             directions={directions}
             options={{
-              suppressMarkers: false,
+              suppressMarkers: true,
               polylineOptions: {
                 strokeColor: '#16a34a',
                 strokeWeight: 4,
-                strokeOpacity: 0.85
-              },
-              markerOptions: {
-                origin: {
-                  icon: {
-                    path: window.google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: '#16a34a',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2
-                  },
-                  label: { text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }
-                },
-                destination: {
-                  icon: {
-                    path: window.google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: '#0d2618',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2
-                  },
-                  label: { text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }
-                }
+                strokeOpacity: 0.8
               }
             }}
           />
