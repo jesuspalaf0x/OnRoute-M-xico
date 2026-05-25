@@ -537,27 +537,53 @@ function ResultadoMapa({ origin, destination }) {
           ]
         }}
       >
-        <MarkerF 
-          position={origin} 
-          label={{ text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
-          icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
-        />
-        {destination && destination.lat && (
+        {!directions && (
+          <MarkerF 
+            position={origin} 
+            label={{ text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
+            icon={{ path: 0, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+          />
+        )}
+        {!directions && destination && destination.lat && (
           <MarkerF 
             position={destination} 
             label={{ text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
-            icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#0d2618', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+            icon={{ path: 0, scale: 8, fillColor: '#0d2618', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
           />
         )}
         {directions && (
           <DirectionsRenderer
             directions={directions}
             options={{
-              suppressMarkers: true,
+              suppressMarkers: false,
               polylineOptions: {
                 strokeColor: '#16a34a',
                 strokeWeight: 4,
                 strokeOpacity: 0.85
+              },
+              markerOptions: {
+                origin: {
+                  icon: {
+                    path: 0,
+                    scale: 8,
+                    fillColor: '#16a34a',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                  },
+                  label: { text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }
+                },
+                destination: {
+                  icon: {
+                    path: 0,
+                    scale: 8,
+                    fillColor: '#0d2618',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2
+                  },
+                  label: { text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }
+                }
               }
             }}
           />
