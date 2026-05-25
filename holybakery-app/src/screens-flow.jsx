@@ -868,7 +868,7 @@ function ReservaScreen({ goTo, quoteData }) {
                   <label className="label">Fecha de entrega</label>
                   <div className="field">
                     <I.Calendar size={18} className="icon" />
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split('T')[0]} style={{ appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer' }} />
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split('T')[0]} style={{ cursor: 'pointer' }} />
                   </div>
                 </div>
                 <div>
@@ -967,10 +967,13 @@ function ReservaScreen({ goTo, quoteData }) {
                 </div>
               </div>
               <div>
-                <label className="label">Comentarios e instrucciones</label>
-                <div className="field field-textarea" style={{ border: 'none', padding: 0 }}>
-                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder={`Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.\nEj. El delivery de este servicio ya está pagado.\nEj. Contactar al cliente cuando estés en camino.`} className="campo-textarea" />
+                <label className="label" style={{ marginBottom: 4 }}>Comentarios e instrucciones</label>
+                <div style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.5, marginBottom: 8 }}>
+                  Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.<br/>
+                  Ej. El delivery de este servicio ya está pagado.<br/>
+                  Ej. Contactar al cliente cuando estés en camino.
                 </div>
+                <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={3} className="campo-textarea" style={{ marginBottom: 16 }} />
                 <div className="adjuntos-area">
                   <div className="adjuntos-info">
                     <I.Paperclip size={18} className="adjuntos-icono" />
@@ -1117,7 +1120,7 @@ function ReservaScreen({ goTo, quoteData }) {
           </div>
         </div>
 
-        <aside className="stack">
+        <aside className="stack" style={{ alignContent: 'start' }}>
           <div className="section-card" style={{ padding: 0, overflow: "hidden" }}>
             <div style={{ padding: "18px 22px", borderBottom: "1px solid var(--line)" }}>
               <h3>Resumen de la reserva</h3>
@@ -1128,13 +1131,16 @@ function ReservaScreen({ goTo, quoteData }) {
                 <span className="lbl">Origen</span>
                 <span style={{ fontWeight: 700 }}>Holy Bakery Tulum</span>
               </div>
-              <div className="price-row" style={{ padding: "10px 0", alignItems: "flex-start" }}>
+              <div className="price-row" style={{ padding: "10px 0" }}>
                 <span className="lbl">Destino</span>
-                <div className="resumen-valor-stack">
-                  <span className="resumen-valor-nombre" style={{ fontWeight: 700 }}>{destinationName.split(',')[0]}</span>
-                  {lat && lng && <span className="resumen-valor-coords">{lat.toFixed(4)}, {lng.toFixed(4)}</span>}
-                </div>
+                <span style={{ fontWeight: 700 }}>{destinationName.split(',')[0]}</span>
               </div>
+              {lat && lng && (
+                <div className="price-row" style={{ padding: "10px 0" }}>
+                  <span className="lbl">Coordenadas</span>
+                  <span className="mono muted" style={{ fontSize: 13, fontWeight: 600 }}>{lat.toFixed(4)}, {lng.toFixed(4)}</span>
+                </div>
+              )}
               <div className="price-row" style={{ padding: "10px 0" }}>
                 <span className="lbl">Cuándo</span>
                 <span style={{ fontWeight: 700 }}>
