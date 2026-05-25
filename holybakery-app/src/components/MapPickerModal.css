@@ -284,6 +284,7 @@
 .mp-foot-pin-text {
   overflow: hidden;
   min-width: 0;
+  text-align: left;
 }
 .mp-foot-pin-text strong {
   font-weight: 600;
@@ -293,6 +294,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  text-align: left;
 }
 .mp-foot-pin-text span.muted {
   font-size: 11px;
@@ -301,6 +303,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  text-align: left;
 }
 .mp-foot-meta {
   display: flex;
