@@ -1,6 +1,6 @@
 // Login + Cotizador + Resultado + Reserva + WhatsApp screens
 import React, { useState, useRef, useEffect } from 'react';
-import { useJsApiLoader, Autocomplete, GoogleMap, DirectionsRenderer } from '@react-google-maps/api';
+import { useJsApiLoader, Autocomplete, GoogleMap, DirectionsRenderer, MarkerF } from '@react-google-maps/api';
 import * as turf from '@turf/turf';
 import mapData from './map.json';
 import pricesData from './data/prices.json';
@@ -522,6 +522,7 @@ function ResultadoMapa({ origin, destination }) {
       <GoogleMap
         mapContainerStyle={{ width: '100%', height: '100%' }}
         zoom={13}
+        center={origin}
         mapTypeId="roadmap"
         options={{
           disableDefaultUI: true,
@@ -536,39 +537,27 @@ function ResultadoMapa({ origin, destination }) {
           ]
         }}
       >
+        <MarkerF 
+          position={origin} 
+          label={{ text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
+          icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#16a34a', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+        />
+        {destination && destination.lat && (
+          <MarkerF 
+            position={destination} 
+            label={{ text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }} 
+            icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#0d2618', fillOpacity: 1, strokeColor: '#ffffff', strokeWeight: 2 }} 
+          />
+        )}
         {directions && (
           <DirectionsRenderer
             directions={directions}
             options={{
-              suppressMarkers: false,
+              suppressMarkers: true,
               polylineOptions: {
                 strokeColor: '#16a34a',
                 strokeWeight: 4,
                 strokeOpacity: 0.85
-              },
-              markerOptions: {
-                origin: {
-                  icon: {
-                    path: window.google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: '#16a34a',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2
-                  },
-                  label: { text: 'A', color: '#fff', fontSize: '11px', fontWeight: '700' }
-                },
-                destination: {
-                  icon: {
-                    path: window.google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: '#0d2618',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2
-                  },
-                  label: { text: 'B', color: '#fff', fontSize: '11px', fontWeight: '700' }
-                }
               }
             }}
           />
