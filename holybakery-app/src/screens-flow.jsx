@@ -737,15 +737,24 @@ function ReservaScreen({ goTo, quoteData }) {
   const foreignPrice = prices ? prices.foreign_price : 0;
 
   const [employee, setEmployee] = useState(2);
-  const [date, setDate] = useState("2026-05-09");
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState("18:15");
   const [costType, setCostType] = useState("foreign");
   const [costCustom, setCostCustom] = useState("");
-  const [client, setClient] = useState("Miranda Reyes");
-  const [phone, setPhone] = useState("+1 881 123 4567");
+  const [client, setClient] = useState("");
+  const [phone, setPhone] = useState("");
   const [phone2, setPhone2] = useState("");
-  const [comments, setComments] = useState("Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.");
+  const [comments, setComments] = useState("");
   const [files, setFiles] = useState([]);
+
+  const formatTo12h = (time24) => {
+    if (!time24) return '';
+    const [hours, minutes] = time24.split(':');
+    const h = parseInt(hours);
+    const ampm = h >= 12 ? 'p.m.' : 'a.m.';
+    const h12 = h % 12 || 12;
+    return `${h12}:${minutes} ${ampm}`;
+  };
 
   const handleFileChange = (e) => {
     const selected = Array.from(e.target.files);
@@ -806,9 +815,12 @@ function ReservaScreen({ goTo, quoteData }) {
     <div className="cotizador-page">
       <div className="reserva-grid">
         <div className="stack">
-          <div className="hint-bar">
-            <I.Info size={16} />
-            <div>Datos prellenados desde la cotización <span className="kbd">{destinationName.split(',')[0]}</span> · {zoneName} · ${foreignPrice.toFixed(2)} MXN extranjero.</div>
+          <button className="volver-link" onClick={() => goTo("resultado", quoteData)}>
+            ← Volver al resultado
+          </button>
+          <div className="banner-prellenado">
+            <I.Info size={16} className="banner-prellenado-icon" />
+            <div className="banner-prellenado-texto">Datos prellenados desde la cotización <strong>{destinationName.split(',')[0]}</strong> · {zoneName} · ${foreignPrice.toFixed(2)} MXN extranjero.</div>
           </div>
 
           <div className="section-card">
@@ -856,7 +868,7 @@ function ReservaScreen({ goTo, quoteData }) {
                   <label className="label">Fecha de entrega</label>
                   <div className="field">
                     <I.Calendar size={18} className="icon" />
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split('T')[0]} style={{ appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer' }} />
                   </div>
                 </div>
                 <div>
@@ -864,7 +876,7 @@ function ReservaScreen({ goTo, quoteData }) {
                   <div className="field">
                     <I.Clock size={18} className="icon" />
                     <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-                    <span className="muted" style={{ fontSize: 12 }}>6:15 p.m.</span>
+                    <span className="muted" style={{ fontSize: 12, minWidth: '60px', textAlign: 'right' }}>{formatTo12h(time)}</span>
                   </div>
                 </div>
               </div>
@@ -903,7 +915,7 @@ function ReservaScreen({ goTo, quoteData }) {
                 <label className="label">Nombre del cliente</label>
                 <div className="field">
                   <I.Users size={18} className="icon" />
-                  <input value={client} onChange={(e) => setClient(e.target.value)} placeholder="Opcional" />
+                  <input value={client} onChange={(e) => setClient(e.target.value)} placeholder="Ej. Miranda Reyes" className="campo-input" />
                 </div>
               </div>
               <div className="row row-2">
@@ -911,7 +923,7 @@ function ReservaScreen({ goTo, quoteData }) {
                   <label className="label">Teléfono principal</label>
                   <div className="field">
                     <I.Phone size={18} className="icon" />
-                    <input value={phone} onChange={(e) => setPhone(e.target.value)} onBlur={() => setPhone(normalizeToE164(phone))} />
+                    <input value={phone} onChange={(e) => setPhone(e.target.value)} onBlur={() => setPhone(normalizeToE164(phone))} placeholder="Ej. +1 881 123 4567" className="campo-input" />
                     {p1.valid && <I.Check size={16} style={{ color: "var(--accent)" }} />}
                   </div>
                   {p1.missingCode && (
@@ -934,7 +946,7 @@ function ReservaScreen({ goTo, quoteData }) {
                   <label className="label">Teléfono secundario</label>
                   <div className="field">
                     <I.Phone size={18} className="icon" />
-                    <input value={phone2} onChange={(e) => setPhone2(e.target.value)} onBlur={() => setPhone2(normalizeToE164(phone2))} placeholder="Opcional" />
+                    <input value={phone2} onChange={(e) => setPhone2(e.target.value)} onBlur={() => setPhone2(normalizeToE164(phone2))} placeholder="Opcional" className="campo-input" />
                     {p2.valid && <I.Check size={16} style={{ color: "var(--accent)" }} />}
                   </div>
                   {p2.missingCode && (
@@ -956,32 +968,34 @@ function ReservaScreen({ goTo, quoteData }) {
               </div>
               <div>
                 <label className="label">Comentarios e instrucciones</label>
-                <div className="field field-textarea">
-                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={3} />
+                <div className="field field-textarea" style={{ border: 'none', padding: 0 }}>
+                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder={`Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.\nEj. El delivery de este servicio ya está pagado.\nEj. Contactar al cliente cuando estés en camino.`} className="campo-textarea" />
                 </div>
-                <div className="upload-zone">
-                  <I.Paperclip size={18} />
-                  <div>
-                    <strong>Adjuntar imágenes o PDFs</strong>
-                    <div className="muted" style={{ fontSize: 12 }}>Hasta 3 archivos · 5 MB c/u · JPG, PNG, PDF</div>
+                <div className="adjuntos-area">
+                  <div className="adjuntos-info">
+                    <I.Paperclip size={18} className="adjuntos-icono" />
+                    <div>
+                      <p className="adjuntos-texto-titulo">Adjuntar imágenes o PDFs</p>
+                      <p className="adjuntos-texto-sub">Hasta 3 archivos · 5 MB c/u · JPG, PNG, PDF</p>
+                    </div>
                   </div>
-                  <div className="files" style={{display: "flex", flexDirection: "column", gap: "8px", width: "100%"}}>
+                  {files.length < 3 && (
+                    <label className="btn btn-soft btn-sm" style={{cursor: "pointer", margin: 0}}>
+                      <I.Plus size={12} /> Subir
+                      <input type="file" multiple accept="image/jpeg,image/png,application/pdf" style={{display: "none"}} onChange={handleFileChange} />
+                    </label>
+                  )}
+                </div>
+                {files.length > 0 && (
+                  <div className="files" style={{display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "-6px"}}>
                     {files.map((f, i) => (
-                      <span key={i} className="chip" style={{display: "flex", justifyContent: "space-between", alignItems: "center", width: "fit-content", gap: 8}}>
-                        <span><I.Image size={12} /> {f.name}</span>
-                        <button type="button" className="btn btn-ghost btn-sm" onClick={() => removeFile(i)} style={{padding: 2, height: 'auto', minHeight: 0}}>
-                          ✕
-                        </button>
+                      <span key={i} className="adjunto-chip">
+                        <I.Image size={12} /> {f.name}
+                        <button type="button" className="lnk" onClick={() => removeFile(i)} style={{ marginLeft: 4 }}>✕</button>
                       </span>
                     ))}
-                    {files.length < 3 && (
-                      <label className="btn btn-soft btn-sm" style={{cursor: "pointer", width: "fit-content", margin: 0}}>
-                        <I.Plus size={12} /> Subir
-                        <input type="file" multiple accept="image/jpeg,image/png,application/pdf" style={{display: "none"}} onChange={handleFileChange} />
-                      </label>
-                    )}
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -1114,13 +1128,19 @@ function ReservaScreen({ goTo, quoteData }) {
                 <span className="lbl">Origen</span>
                 <span style={{ fontWeight: 700 }}>Holy Bakery Tulum</span>
               </div>
-              <div className="price-row" style={{ padding: "10px 0" }}>
+              <div className="price-row" style={{ padding: "10px 0", alignItems: "flex-start" }}>
                 <span className="lbl">Destino</span>
-                <span style={{ fontWeight: 700 }}>{destinationName.split(',')[0]}</span>
+                <div className="resumen-valor-stack">
+                  <span className="resumen-valor-nombre" style={{ fontWeight: 700 }}>{destinationName.split(',')[0]}</span>
+                  {lat && lng && <span className="resumen-valor-coords">{lat.toFixed(4)}, {lng.toFixed(4)}</span>}
+                </div>
               </div>
               <div className="price-row" style={{ padding: "10px 0" }}>
                 <span className="lbl">Cuándo</span>
-                <span style={{ fontWeight: 700 }}>Sáb 9 may · 6:15 p.m.</span>
+                <span style={{ fontWeight: 700 }}>
+                  {date ? new Date(date + "T" + (time || "00:00")).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }).replace(/^\w/, c => c.toUpperCase()).replace(',', '') : "Fecha pendiente"}
+                  {time ? ` · ${formatTo12h(time)}` : ""}
+                </span>
               </div>
               <div className="price-row featured" style={{ padding: "10px 0" }}>
                 <span className="lbl">Total</span>
@@ -1130,6 +1150,30 @@ function ReservaScreen({ goTo, quoteData }) {
                 <span className="lbl">Equivalente</span>
                 <span className="val muted" style={{ fontSize: 14, fontWeight: 600 }}>~${(cost/17.50).toFixed(2)} USD</span>
               </div>
+              {client && (
+                <div className="price-row" style={{ padding: "10px 0" }}>
+                  <span className="lbl">Cliente</span>
+                  <span style={{ fontWeight: 700 }}>{client}</span>
+                </div>
+              )}
+              {phone && (
+                <div className="price-row" style={{ padding: "10px 0" }}>
+                  <span className="lbl">Teléfono</span>
+                  <span style={{ fontWeight: 700 }}>{phone}</span>
+                </div>
+              )}
+              {phone2 && (
+                <div className="price-row" style={{ padding: "10px 0" }}>
+                  <span className="lbl">Tel. secundario</span>
+                  <span style={{ fontWeight: 700 }}>{phone2}</span>
+                </div>
+              )}
+              {comments && (
+                <div className="price-row" style={{ padding: "10px 0" }}>
+                  <span className="lbl">Comentarios</span>
+                  <span style={{ fontWeight: 700, maxWidth: 180, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{comments}</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="section-card" style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-soft-2)" }}>
