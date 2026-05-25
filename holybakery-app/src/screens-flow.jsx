@@ -818,10 +818,6 @@ function ReservaScreen({ goTo, quoteData }) {
           <button className="volver-link" onClick={() => goTo("resultado", quoteData)}>
             ← Volver al resultado
           </button>
-          <div className="banner-prellenado">
-            <I.Info size={16} className="banner-prellenado-icon" />
-            <div className="banner-prellenado-texto">Datos prellenados desde la cotización <strong>{destinationName.split(',')[0]}</strong> · {zoneName} · ${foreignPrice.toFixed(2)} MXN extranjero.</div>
-          </div>
 
           <div className="section-card">
             <div className="flex-between" style={{ marginBottom: 18 }}>
@@ -866,17 +862,19 @@ function ReservaScreen({ goTo, quoteData }) {
               <div className="row row-2">
                 <div>
                   <label className="label">Fecha de entrega</label>
-                  <div className="field">
+                  <div className="field custom-picker-wrapper">
                     <I.Calendar size={18} className="icon" />
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split('T')[0]} style={{ cursor: 'pointer' }} />
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split('T')[0]} className="custom-picker" />
+                    <I.ChevronDown size={16} className="right-icon" />
                   </div>
                 </div>
                 <div>
                   <label className="label">Hora</label>
-                  <div className="field">
+                  <div className="field custom-picker-wrapper">
                     <I.Clock size={18} className="icon" />
-                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="custom-picker" />
                     <span className="muted" style={{ fontSize: 12, minWidth: '60px', textAlign: 'right' }}>{formatTo12h(time)}</span>
+                    <I.ChevronDown size={16} className="right-icon" />
                   </div>
                 </div>
               </div>
@@ -967,14 +965,11 @@ function ReservaScreen({ goTo, quoteData }) {
                 </div>
               </div>
               <div>
-                <label className="label" style={{ marginBottom: 4 }}>Comentarios e instrucciones</label>
-                <div style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.5, marginBottom: 8 }}>
-                  Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.<br/>
-                  Ej. El delivery de este servicio ya está pagado.<br/>
-                  Ej. Contactar al cliente cuando estés en camino.
+                <label className="label">Comentarios e instrucciones</label>
+                <div className="field field-textarea" style={{ border: 'none', padding: 0 }}>
+                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder={`Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery.\nEj. El delivery de este servicio ya está pagado.\nEj. Contactar al cliente cuando estés en camino.`} className="campo-textarea" />
                 </div>
-                <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={3} className="campo-textarea" style={{ marginBottom: 16 }} />
-                <div className="adjuntos-area">
+                <div className="adjuntos-area" style={{ marginTop: 16 }}>
                   <div className="adjuntos-info">
                     <I.Paperclip size={18} className="adjuntos-icono" />
                     <div>
@@ -1124,9 +1119,9 @@ function ReservaScreen({ goTo, quoteData }) {
           <div className="section-card" style={{ padding: 0, overflow: "hidden" }}>
             <div style={{ padding: "18px 22px", borderBottom: "1px solid var(--line)" }}>
               <h3>Resumen de la reserva</h3>
-              <p className="desc" style={{ margin: 0 }}>Lo que verá el admin por WhatsApp.</p>
+              <p className="desc" style={{ marginTop: 2 }}>Lo que verá el admin por WhatsApp.</p>
             </div>
-            <div style={{ padding: 22 }} className="stack">
+            <div className="stack" style={{ gap: 0, padding: "10px 22px 22px" }}>
               <div className="price-row" style={{ padding: "10px 0" }}>
                 <span className="lbl">Origen</span>
                 <span style={{ fontWeight: 700 }}>Holy Bakery Tulum</span>
@@ -1144,18 +1139,19 @@ function ReservaScreen({ goTo, quoteData }) {
               <div className="price-row" style={{ padding: "10px 0" }}>
                 <span className="lbl">Cuándo</span>
                 <span style={{ fontWeight: 700 }}>
-                  {date ? new Date(date + "T" + (time || "00:00")).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }).replace(/^\w/, c => c.toUpperCase()).replace(',', '') : "Fecha pendiente"}
-                  {time ? ` · ${formatTo12h(time)}` : ""}
+                  {date ? new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) : 'Sin fecha'} · {time ? formatTo12h(time) : 'Sin hora'}
                 </span>
               </div>
-              <div className="price-row featured" style={{ padding: "10px 0" }}>
-                <span className="lbl">Total</span>
-                <span className="val">${cost.toFixed(2)} MXN</span>
+              <div className="price-row" style={{ padding: "16px 0 10px", marginTop: 10, borderTop: "1px dashed var(--line)" }}>
+                <span className="lbl" style={{ fontSize: 13 }}>Total</span>
+                <span style={{ fontSize: 22, fontWeight: 800, color: "var(--accent)" }}>${cost.toFixed(2)} MXN</span>
               </div>
-              <div className="price-row" style={{ padding: "10px 0" }}>
-                <span className="lbl">Equivalente</span>
-                <span className="val muted" style={{ fontSize: 14, fontWeight: 600 }}>~${(cost/17.50).toFixed(2)} USD</span>
-              </div>
+              {cost > 0 && (
+                <div className="price-row" style={{ padding: "10px 0" }}>
+                  <span className="lbl">Equivalente</span>
+                  <span style={{ fontWeight: 700, opacity: 0.6 }}>~${(cost / 17.5).toFixed(2)} USD</span>
+                </div>
+              )}
               {client && (
                 <div className="price-row" style={{ padding: "10px 0" }}>
                   <span className="lbl">Cliente</span>
@@ -1182,6 +1178,7 @@ function ReservaScreen({ goTo, quoteData }) {
               )}
             </div>
           </div>
+          
           <div className="section-card" style={{ background: "var(--accent-soft)", border: "1px solid var(--accent-soft-2)" }}>
             <div className="flex" style={{ gap: 10 }}>
               <I.Shield size={18} style={{ color: "var(--accent)" }} />
@@ -1192,6 +1189,11 @@ function ReservaScreen({ goTo, quoteData }) {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="banner-prellenado" style={{ marginTop: 0 }}>
+            <I.Info size={16} className="banner-prellenado-icon" />
+            <div className="banner-prellenado-texto">Datos prellenados desde la cotización <strong>{destinationName.split(',')[0]}</strong> · {zoneName} · ${cost.toFixed(2)} MXN extranjero.</div>
           </div>
         </aside>
       </div>

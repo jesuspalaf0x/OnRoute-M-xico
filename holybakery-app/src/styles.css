@@ -799,8 +799,63 @@ input, select, textarea { font-family: inherit; }
 }
 
 .reserva-grid aside .section-card:last-child {
-  width: fit-content;
-  max-width: 320px;
+  /* removed width constraint */
+}
+
+.custom-picker-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.custom-picker-wrapper .icon {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.custom-picker-wrapper .right-icon {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  color: #6b7280;
+  z-index: 1;
+}
+
+.custom-picker-wrapper .muted {
+  position: absolute;
+  right: 36px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.custom-picker {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding: 0 40px 0 42px; /* padding for icons */
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-main);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.custom-picker::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .banner-prellenado {
