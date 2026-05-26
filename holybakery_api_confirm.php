@@ -404,7 +404,7 @@ function hb_approve_tariff(WP_REST_Request $request) {
 
 function hb_debug_db() {
     global $wpdb;
-    $c = $wpdb->get_results("DESCRIBE cancellation_requests", ARRAY_A);
-    $t = $wpdb->get_results("DESCRIBE tariff_change_requests", ARRAY_A);
+    $c = $wpdb->get_col("DESCRIBE cancellation_requests");
+    $t = $wpdb->get_col("DESCRIBE tariff_change_requests");
     return rest_ensure_response(['c' => $c, 't' => $t]);
 }
