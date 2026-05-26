@@ -1,8 +1,21 @@
 ---
 deployment:
   tasks:
+    # ============================================================
+    # ⚠️  RAMA: website-onroute — SITIO WEB PRINCIPAL onroutemx.com
+    # ============================================================
+    # PROPÓSITO: Despliega el sitio web público de OnRoute México
+    # DOMINIO:   https://onroutemx.com
+    # RUTA:      ../../public_html (raíz de WordPress en HostGator)
+    #
+    # 🚨 ADVERTENCIA PARA AGENTES DE IA:
+    #    NO modificar esta configuración. Apunta al sitio web en producción.
+    #    Si trabajas en la app Holy Bakery → ve a la rama cpanel-deploy
+    # ============================================================
     - export DEPLOYPATH=../../public_html
-    - /bin/cp index.html $DEPLOYPATH
+
+    # Sitio web estático de OnRoute México
+    - /bin/cp index.html $DEPLOYPATH/index.html
     - /bin/cp -R assets $DEPLOYPATH
     - /bin/cp -R shared $DEPLOYPATH
     - /bin/cp -R variations $DEPLOYPATH

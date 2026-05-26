@@ -1,0 +1,19 @@
+# AGENTE DE IA — LEE ESTO PRIMERO ANTES DE HACER CUALQUIER CAMBIO
+# ================================================================
+#
+# Este repositorio tiene DOS proyectos separados en ramas diferentes:
+#
+#   RAMA: website-onroute  →  Sitio web onroutemx.com  ← NO TOCAR SIN AUTORIZACIÓN
+#   RAMA: cpanel-deploy    →  App Holy Bakery (holybakery.onroutemx.com) ← Proyecto activo
+#
+# Si tu tarea es la APP DE HOLY BAKERY → trabaja en cpanel-deploy
+# Si tu tarea es el SITIO WEB → solicita confirmación explícita al usuario primero
+#
+# ARCHIVOS CRÍTICOS (no modificar sin autorización):
+#   - index.html         → Página principal del sitio web de OnRoute México
+#   - .cpanel.yml        → Configura qué se sube a onroutemx.com (PELIGROSO si se modifica)
+#   - assets/            → CSS/JS del sitio web en producción
+#   - shared/            → Componentes del cotizador de traslados
+#
+# DOMINIO PROTEGIDO: https://onroutemx.com
+# ================================================================
