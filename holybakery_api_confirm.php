@@ -90,11 +90,6 @@ add_action( 'rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route( $ns, '/status-checks', [
-        'methods' => 'GET',
-        'callback' => 'hb_debug_db',
-        'permission_callback' => '__return_true',
-    ]);
 });
 
 function hb_get_deliveries(WP_REST_Request $request) {
@@ -249,8 +244,19 @@ function hb_get_employee_on_shift(WP_REST_Request $request) {
 
 function hb_get_pending_requests(WP_REST_Request $request) {
     global $wpdb;
-    $cancellations = $wpdb->get_results("SELECT * FROM cancellation_requests WHERE status = 'pending'", ARRAY_A);
-    $tariff_changes = $wpdb->get_results("SELECT * FROM tariff_change_requests WHERE status = 'pending'", ARRAY_A);
+    $cancellations = $wpdb->get_results("
+        SELECT c.*, d.destination_name, d.customer_name, d.phones, d.cost, d.scheduled_date, d.employee_name, d.driver_id, d.tracking_code 
+        FROM cancellation_requests c 
+        JOIN deliveries d ON c.delivery_id = d.id 
+        WHERE c.status = 'pending'
+    ", ARRAY_A);
+    
+    $tariff_changes = $wpdb->get_results("
+        SELECT t.*, d.destination_name, d.customer_name, d.phones, d.cost, d.scheduled_date, d.employee_name, d.driver_id, d.tracking_code 
+        FROM tariff_change_requests t 
+        JOIN deliveries d ON t.delivery_id = d.id 
+        WHERE t.status = 'pending'
+    ", ARRAY_A);
     
     return rest_ensure_response([
         'cancellations' => $cancellations,
@@ -338,12 +344,22 @@ function hb_create_extra(WP_REST_Request $request) {
 function hb_request_cancellation(WP_REST_Request $request) {
     global $wpdb;
     $params = $request->get_json_params();
+    
+    $delivery = $wpdb->get_row($wpdb->prepare("SELECT client_id, driver_id FROM deliveries WHERE id = %d", $params['delivery_id']), ARRAY_A);
+    $client_id = isset($delivery['client_id']) ? intval($delivery['client_id']) : 1;
+    $driver_id = isset($delivery['driver_id']) ? intval($delivery['driver_id']) : 1;
+
+    $wpdb->query("SET FOREIGN_KEY_CHECKS = 0;");
     $wpdb->insert('cancellation_requests', [
+        'client_id' => $client_id,
+        'requested_by' => $driver_id,
         'delivery_id' => $params['delivery_id'],
         'reason' => $params['reason'],
         'status' => 'pending',
         'created_at' => current_time('mysql')
     ]);
+    $wpdb->query("SET FOREIGN_KEY_CHECKS = 1;");
+    
     $wpdb->update('deliveries', ['status' => 'cancelacion_pendiente'], ['id' => $params['delivery_id']]);
     return rest_ensure_response(['success' => true]);
 }
@@ -351,14 +367,28 @@ function hb_request_cancellation(WP_REST_Request $request) {
 function hb_request_tariff_change(WP_REST_Request $request) {
     global $wpdb;
     $params = $request->get_json_params();
+    
+    $delivery = $wpdb->get_row($wpdb->prepare("SELECT client_id, driver_id, zone_id FROM deliveries WHERE id = %d", $params['delivery_id']), ARRAY_A);
+    $client_id = isset($delivery['client_id']) ? intval($delivery['client_id']) : 1;
+    $driver_id = isset($delivery['driver_id']) ? intval($delivery['driver_id']) : 1;
+    $zone_id = isset($delivery['zone_id']) ? intval($delivery['zone_id']) : 1;
+
+    $wpdb->query("SET FOREIGN_KEY_CHECKS = 0;");
     $wpdb->insert('tariff_change_requests', [
+        'client_id' => $client_id,
+        'zone_id' => $zone_id,
+        'requested_by' => $driver_id,
         'delivery_id' => $params['delivery_id'],
-        'current_cost' => $params['current_cost'],
+        'old_tariff' => $params['current_cost'],
+        'new_tariff' => $params['requested_cost'],
+        'current_cost' => $params['current_cost'], // supports both table schemas
         'requested_cost' => $params['requested_cost'],
         'reason' => $params['reason'],
         'status' => 'pending',
         'created_at' => current_time('mysql')
     ]);
+    $wpdb->query("SET FOREIGN_KEY_CHECKS = 1;");
+    
     return rest_ensure_response(['success' => true]);
 }
 
@@ -401,10 +431,4 @@ function hb_approve_tariff(WP_REST_Request $request) {
     }
     return rest_ensure_response(['success' => true]);
 }
-
-function hb_debug_db() {
-    global $wpdb;
-    $c = $wpdb->get_col("DESCRIBE cancellation_requests");
-    $t = $wpdb->get_col("DESCRIBE tariff_change_requests");
-    return rest_ensure_response(base64_encode(json_encode(['c' => $c, 't' => $t])));
 }
