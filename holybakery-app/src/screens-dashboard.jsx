@@ -290,7 +290,8 @@ function EmpReservas() {
     queryParams.append("status[]", filter);
   }
   
-  const { data: deliveriesData, loading } = useApi(`/deliveries?${queryParams.toString()}`, {total:0, items:[]});
+  const { data: deliveriesData, loading, setData } = useApi(`/deliveries?${queryParams.toString()}`, {total:0, items:[]});
+  const [activeReqDelivery, setActiveReqDelivery] = useStateD(null);
 
   const list = deliveriesData?.items || [];
   const pending = list.filter(d => !d.paid && d.status !== "cancelada" && d.status !== "cancelacion_pendiente").reduce((s,d) => s + (d.cost || 0), 0);
@@ -342,12 +343,9 @@ function EmpReservas() {
                 <td><StatusPill s={d.status}/></td>
                 <td>
                   <div className="flex gap-8">
-                    <a className="btn btn-ghost btn-sm" title="Solicitar cambio de tarifa" href={`https://wa.me/529841068542?text=Hola,%20necesito%20solicitar%20un%20cambio%20de%20tarifa%20para%20la%20reserva%20con%20ID%20${d.id}.`} target="_blank" rel="noreferrer">
-                      <ID.Edit size={12}/>
-                    </a>
-                    <a className="btn btn-ghost btn-sm" title="Solicitar cancelación" href={`https://wa.me/529841068542?text=Hola,%20necesito%20cancelar%20la%20reserva%20con%20ID%20${d.id}.`} target="_blank" rel="noreferrer">
-                      <ID.WhatsApp size={12}/>
-                    </a>
+                    <button className="btn btn-ghost btn-sm flex" onClick={() => setActiveReqDelivery(d)} style={{gap: 6}}>
+                      <ID.Settings size={12}/> Solicitudes
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -361,6 +359,99 @@ function EmpReservas() {
           </div>
         )}
       </div>
+
+      {activeReqDelivery && (
+        <div className="mp-backdrop" onClick={() => setActiveReqDelivery(null)}>
+          <div className="mp-modal" style={{ maxWidth: "540px", height: "auto" }} onClick={(e) => e.stopPropagation()}>
+            <div className="mp-header">
+              <div>
+                <h3 className="mp-title">Solicitudes para Reserva</h3>
+                <p className="mp-sub">ID: <strong>{activeReqDelivery.tracking_code || `DLV-${activeReqDelivery.id}`}</strong> · {activeReqDelivery.destinationName || activeReqDelivery.destination}</p>
+              </div>
+              <button className="mp-close" onClick={() => setActiveReqDelivery(null)}><ID.X size={16}/></button>
+            </div>
+            
+            <div className="mp-body" style={{ display: "flex", flexDirection: "column", padding: "20px", gap: "20px", overflowY: "auto" }}>
+              
+              <div style={{ padding: "16px", background: "var(--surface-2)", borderRadius: "12px", border: "1px solid var(--line)" }}>
+                <h4 style={{ margin: "0 0 4px", fontSize: "14px", fontWeight: "700" }}>🚫 Cancelación</h4>
+                <p className="muted" style={{ fontSize: "12.5px", margin: "0 0 12px" }}>Solicita la cancelación formal de la entrega en el sistema.</p>
+                <div className="flex gap-8" style={{ marginTop: "8px" }}>
+                  <button className="btn btn-primary btn-sm" style={{ flex: 1, height: "36px", padding: "0 12px", fontSize: "13px" }} onClick={async () => {
+                    if (confirm("¿Estás seguro de solicitar la cancelación de esta entrega?")) {
+                      const res = await fetch(`${API_BASE}/cancellation-requests`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ delivery_id: activeReqDelivery.id, reason: "Cliente canceló" })
+                      });
+                      if (res.ok) {
+                        setData({
+                          ...deliveriesData,
+                          items: list.map(item => item.id === activeReqDelivery.id ? { ...item, status: 'cancelacion_pendiente' } : item)
+                        });
+                        alert("Solicitud de cancelación registrada con éxito.");
+                        setActiveReqDelivery(null);
+                      }
+                    }
+                  }}>
+                    Solicitar cancelación
+                  </button>
+                  <a className="btn btn-ghost btn-sm" style={{ height: "36px", padding: "0 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }} href={`https://wa.me/529841068542?text=Hola,%20necesito%20cancelar%20la%20reserva%20con%20ID%20${activeReqDelivery.tracking_code || activeReqDelivery.id}.`} target="_blank" rel="noreferrer">
+                    <ID.WhatsApp size={14}/> Notificar por WhatsApp
+                  </a>
+                </div>
+              </div>
+
+              <div style={{ padding: "16px", background: "var(--surface-2)", borderRadius: "12px", border: "1px solid var(--line)" }}>
+                <h4 style={{ margin: "0 0 4px", fontSize: "14px", fontWeight: "700" }}>💰 Cambio de tarifa</h4>
+                <p className="muted" style={{ fontSize: "12.5px", margin: "0 0 12px" }}>Solicita un ajuste en la tarifa asignada por el sistema. Costo actual: <strong>{fmtMXN(activeReqDelivery.cost)}</strong></p>
+                
+                <div className="stack" style={{ gap: "10px", marginBottom: "12px" }}>
+                  <div className="field" style={{ height: "40px" }}>
+                    <input type="number" id="reqCostInput" placeholder="Ingresa el costo solicitado" className="campo-input" style={{ fontSize: "13px", border: "0", outline: "0", background: "transparent", width: "100%" }} />
+                  </div>
+                  <div className="field" style={{ height: "40px" }}>
+                    <input type="text" id="reqReasonInput" placeholder="Motivo (ej. Cambio de destino, lluvia...)" className="campo-input" style={{ fontSize: "13px", border: "0", outline: "0", background: "transparent", width: "100%" }} />
+                  </div>
+                </div>
+                
+                <div className="flex gap-8">
+                  <button className="btn btn-primary btn-sm" style={{ flex: 1, height: "36px", padding: "0 12px", fontSize: "13px" }} onClick={async () => {
+                    const reqCost = parseFloat(document.getElementById("reqCostInput")?.value);
+                    const reqReason = document.getElementById("reqReasonInput")?.value || "Ajuste de tarifa";
+                    if (isNaN(reqCost) || reqCost <= 0) {
+                      alert("Por favor ingresa un costo solicitado válido mayor a cero.");
+                      return;
+                    }
+                    const res = await fetch(`${API_BASE}/tariff-change-requests`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        delivery_id: activeReqDelivery.id,
+                        current_cost: activeReqDelivery.cost,
+                        requested_cost: reqCost,
+                        reason: reqReason
+                      })
+                    });
+                    if (res.ok) {
+                      alert("Solicitud de cambio de tarifa registrada con éxito.");
+                      setActiveReqDelivery(null);
+                    } else {
+                      alert("Error al registrar la solicitud.");
+                    }
+                  }}>
+                    Solicitar cambio de tarifa
+                  </button>
+                  <a className="btn btn-ghost btn-sm" style={{ height: "36px", padding: "0 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }} href={`https://wa.me/529841068542?text=Hola,%20necesito%20solicitar%20un%20cambio%20de%20tarifa%20para%20la%20reserva%20con%20ID%20${activeReqDelivery.tracking_code || activeReqDelivery.id}.`} target="_blank" rel="noreferrer">
+                    <ID.WhatsApp size={14}/> Notificar por WhatsApp
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

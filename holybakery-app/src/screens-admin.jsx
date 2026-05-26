@@ -151,8 +151,17 @@ function AdminReservas() {
   }, []);
 
   const updateStatus = async (id, status, extra = {}) => {
-    await apiFetch(`/admin/deliveries/${id}/status`, "PATCH", { status, ...extra });
-    fetchDeliveries();
+    try {
+      const res = await apiFetch(`/admin/deliveries/${id}/status`, "PATCH", { status, ...extra });
+      if (res && res.success) {
+        fetchDeliveries();
+      } else {
+        await apiFetch(`/deliveries/${id}`, "PUT", { status, ...extra });
+        fetchDeliveries();
+      }
+    } catch (e) {
+      console.error("Error updating status:", e);
+    }
   };
 
   return (
@@ -287,69 +296,207 @@ const SummaryCard = ({ label, value, sub, tone }) => (
 
 /* ============ ADMIN — CANCELACIONES ============ */
 function AdminCancelaciones() {
-  const [cancellations, setCancellations] = useStateA([]);
+  const [requests, setRequests] = useStateA([]);
+  const [activeTariffRequest, setActiveTariffRequest] = useStateA(null);
+  const [newTariffCost, setNewTariffCost] = useStateA("");
 
-  const fetchCancellations = async () => {
-    const res = await apiFetch("/deliveries?status=cancelacion_pendiente");
-    if (res && Array.isArray(res)) setCancellations(res);
-    else setCancellations(window.MOCK.DELIVERIES.filter(d => d.status === "cancelacion_pendiente"));
+  const fetchRequests = async () => {
+    const res = await apiFetch("/admin/pending-requests");
+    if (res) {
+      const cancellations = (res.cancellations || []).map(c => ({
+        ...c,
+        type: "cancellation",
+        labelType: "Cancelación",
+        cost: c.cost,
+        destination: c.destination_name || "Sin destino",
+        employee: c.employee_name || `Empleado ${c.driver_id || ""}`,
+        date: c.scheduled_date || c.created_at,
+        tracking: c.tracking_code || `DLV-${c.delivery_id}`
+      }));
+      
+      const tariff_changes = (res.tariff_changes || []).map(t => ({
+        ...t,
+        type: "tariff_change",
+        labelType: "Cambio de tarifa",
+        cost: t.cost,
+        destination: t.destination_name || "Sin destino",
+        employee: t.employee_name || `Empleado ${t.driver_id || ""}`,
+        date: t.scheduled_date || t.created_at,
+        tracking: t.tracking_code || `DLV-${t.delivery_id}`
+      }));
+      
+      setRequests([...cancellations, ...tariff_changes]);
+    } else {
+      // Fallback fallback to empty
+      setRequests([]);
+    }
   };
 
-  useEffect(() => { fetchCancellations(); }, []);
+  useEffect(() => { fetchRequests(); }, []);
 
-  const handleApprove = async (id) => {
-    await apiFetch(`/deliveries/${id}`, "PUT", { status: "cancelada" });
-    fetchCancellations();
+  const handleApproveCancellation = async (req) => {
+    if (confirm("¿Confirmas la aprobación de esta cancelación?")) {
+      await apiFetch(`/cancellation-requests/${req.id}`, "PATCH", { action: "approve", admin_id: 1 });
+      fetchRequests();
+    }
   };
 
-  const handleReject = async (id) => {
-    await apiFetch(`/deliveries/${id}`, "PUT", { status: "confirmada" });
-    fetchCancellations();
+  const handleRejectRequest = async (req) => {
+    if (confirm(`¿Confirmas rechazar esta solicitud de ${req.labelType.toLowerCase()}?`)) {
+      const endpoint = req.type === "cancellation" 
+        ? `/cancellation-requests/${req.id}` 
+        : `/tariff-change-requests/${req.id}`;
+      await apiFetch(endpoint, "PATCH", { action: "reject", admin_id: 1 });
+      fetchRequests();
+    }
+  };
+
+  const handleApproveTariffClick = (req) => {
+    setActiveTariffRequest(req);
+    setNewTariffCost(req.requested_cost || req.new_tariff || "");
+  };
+
+  const handleConfirmTariffApproval = async () => {
+    const costVal = parseFloat(newTariffCost);
+    if (isNaN(costVal) || costVal <= 0) {
+      alert("Por favor ingresa una tarifa válida mayor a cero.");
+      return;
+    }
+    await apiFetch(`/tariff-change-requests/${activeTariffRequest.id}`, "PATCH", { 
+      action: "approve", 
+      cost: costVal, 
+      admin_id: 1 
+    });
+    setActiveTariffRequest(null);
+    fetchRequests();
   };
 
   return (
     <>
       <div className="page-header">
-        <div><h1>Solicitudes de cancelación</h1><p>Aprueba o rechaza. Las aprobadas pasan a estado <em>cancelada</em>.</p></div>
+        <div>
+          <h1>Bandeja de solicitudes</h1>
+          <p>Aprueba o rechaza cancelaciones y cambios de tarifa en tiempo real.</p>
+        </div>
       </div>
 
       <div className="stack">
-        {cancellations.length === 0 ? (
-          <div className="empty section-card">No hay otras solicitudes abiertas.</div>
-        ) : cancellations.map(c => (
-          <div className="section-card" key={c.id}>
+        {requests.length === 0 ? (
+          <div className="empty section-card">No hay otras solicitudes abiertas en este momento.</div>
+        ) : requests.map(req => (
+          <div className="section-card" key={req.type + req.id}>
             <div className="flex" style={{gap: 14, alignItems:"flex-start"}}>
-              <div style={{width: 44, height: 44, borderRadius: 12, background:"#fef3c7", color:"var(--warning)", display:"grid", placeItems:"center"}}><IA.ShieldX size={20}/></div>
+              <div style={{
+                width: 44, 
+                height: 44, 
+                borderRadius: 12, 
+                background: req.type === "cancellation" ? "var(--danger-soft)" : "var(--accent-soft)", 
+                color: req.type === "cancellation" ? "var(--danger)" : "var(--accent)", 
+                display:"grid", 
+                placeItems:"center"
+              }}>
+                {req.type === "cancellation" ? <IA.ShieldX size={20}/> : <IA.RefreshCcw size={20}/>}
+              </div>
               <div style={{flex:1}}>
                 <div className="flex-between">
                   <div>
-                    <strong style={{fontSize: 15}}>{c.id} · {c.destination}</strong>
-                    <div className="muted" style={{fontSize: 12.5}}>Solicitado por {c.employee} · {c.date}</div>
+                    <strong style={{fontSize: 15}}>{req.tracking} · {req.destination}</strong>
+                    <div className="muted" style={{fontSize: 12.5}}>
+                      Solicitado por {req.employee || "Empleado"} · {req.date}
+                    </div>
                   </div>
-                  <span className="status status-pendiente">Pendiente</span>
+                  <span className={`status status-pendiente`}>{req.labelType}</span>
                 </div>
+                
                 <div className="card-tight" style={{background:"var(--surface-2)", borderRadius:10, marginTop: 12, fontSize: 13}}>
-                  <strong>Motivo del empleado:</strong> "El cliente canceló porque la entrega ya no aplica."
+                  <strong>Detalle de la solicitud:</strong> "{req.reason || "Sin especificar"}"
                 </div>
+                
                 <div className="row" style={{gridTemplateColumns:"repeat(4, 1fr)", gap: 12, marginTop: 14}}>
-                  <Mini label="Costo" value={fmtMXN_A(c.cost)}/>
-                  <Mini label="Zona" value={c.zone}/>
-                  <Mini label="Cliente" value={c.client || "N/A"}/>
-                  <Mini label="Fecha entrega" value={c.date}/>
+                  <Mini label="Costo original" value={fmtMXN_A(req.cost || req.old_tariff || 0)}/>
+                  {req.type === "tariff_change" && (
+                    <Mini label="Costo solicitado" value={fmtMXN_A(req.requested_cost || req.new_tariff || 0)}/>
+                  )}
+                  <Mini label="Zona" value="Local/Cobertura"/>
+                  <Mini label="Cliente" value={req.customer_name || req.client || "N/A"}/>
+                  <Mini label="Fecha entrega" value={req.date}/>
                 </div>
+                
                 <div className="flex-end" style={{marginTop: 14}}>
-                  <button className="btn btn-ghost">Solicitar más info</button>
-                  <button className="btn btn-soft" onClick={() => handleReject(c.id)}>Rechazar</button>
-                  <button className="btn btn-primary" onClick={() => handleApprove(c.id)}><IA.Check size={14}/> Aprobar cancelación</button>
+                  <button className="btn btn-soft btn-sm" onClick={() => handleRejectRequest(req)}>Rechazar</button>
+                  {req.type === "cancellation" ? (
+                    <button className="btn btn-primary btn-sm" onClick={() => handleApproveCancellation(req)}>
+                      <IA.Check size={14}/> Aprobar cancelación
+                    </button>
+                  ) : (
+                    <button className="btn btn-accent btn-sm" onClick={() => handleApproveTariffClick(req)}>
+                      <IA.Check size={14}/> Aprobar cambio de tarifa
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {activeTariffRequest && (
+        <div className="mp-backdrop" onClick={() => setActiveTariffRequest(null)}>
+          <div className="mp-modal" style={{ maxWidth: "460px", height: "auto" }} onClick={(e) => e.stopPropagation()}>
+            <div className="mp-header">
+              <div>
+                <h3 className="mp-title">Aprobar Cambio de Tarifa</h3>
+                <p className="mp-sub">Ingresa la tarifa autorizada para <strong>{activeTariffRequest.tracking}</strong></p>
+              </div>
+              <button className="mp-close" onClick={() => setActiveTariffRequest(null)}><IA.X size={16}/></button>
+            </div>
+            
+            <div className="mp-body" style={{ display: "flex", flexDirection: "column", padding: "20px", gap: "16px", overflowY: "auto" }}>
+              <div>
+                <label className="label">Costo actual</label>
+                <div className="mono" style={{ fontSize: "16px", fontWeight: "700", marginBottom: "12px" }}>
+                  {fmtMXN_A(activeTariffRequest.cost || activeTariffRequest.old_tariff || 0)}
+                </div>
+              </div>
+              
+              <div>
+                <label className="label">Costo solicitado</label>
+                <div className="mono" style={{ fontSize: "16px", fontWeight: "700", color: "var(--warning)", marginBottom: "12px" }}>
+                  {fmtMXN_A(activeTariffRequest.requested_cost || activeTariffRequest.new_tariff || 0)}
+                </div>
+              </div>
+              
+              <div>
+                <label className="label">Tarifa autorizada ($ MXN)</label>
+                <div className="field">
+                  <IA.DollarSign size={18} className="icon"/>
+                  <input 
+                    type="number" 
+                    value={newTariffCost} 
+                    onChange={e => setNewTariffCost(e.target.value)} 
+                    placeholder="0.00" 
+                    className="campo-input"
+                    style={{ fontSize: "14px", border: "0", outline: "0", background: "transparent", width: "100%" }}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-8" style={{ marginTop: "8px" }}>
+                <button className="btn btn-ghost btn-sm" style={{ flex: 1 }} onClick={() => setActiveTariffRequest(null)}>
+                  Cancelar
+                </button>
+                <button className="btn btn-accent btn-sm" style={{ flex: 1 }} onClick={handleConfirmTariffApproval}>
+                  Confirmar Aprobación
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
 const Mini = ({ label, value }) => (
   <div style={{padding:"10px 12px", background:"var(--surface-2)", borderRadius:10}}>
     <div className="muted" style={{fontSize:11, textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:700}}>{label}</div>
