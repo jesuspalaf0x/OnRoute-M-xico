@@ -30,6 +30,7 @@ $plugin_file = $base_dir . '/wp-content/plugins/holybakery_api_confirm.php';
 
 // Let's search for the repository folder to find the new holybakery_api_confirm.php
 $repo_paths = [
+    '../holybakery-live/holybakery_api_confirm.php',
     '../repositories/OnRoute-M-xico/holybakery_api_confirm.php',
     '../../repositories/OnRoute-M-xico/holybakery_api_confirm.php',
     '../OnRoute-M-xico/holybakery_api_confirm.php',
@@ -42,27 +43,6 @@ foreach ($repo_paths as $rp) {
     if (file_exists($rp)) {
         $source_file = $rp;
         break;
-    }
-}
-
-if (empty($source_file)) {
-    // If not found in relative paths, let's try to search recursively one level up
-    $parent_dir = dirname($base_dir);
-    try {
-        $dir_iterator = new RecursiveDirectoryIterator($parent_dir);
-        $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getFilename() === 'holybakery_api_confirm.php') {
-                // Check if it has our Version 3.1 header
-                $header = file_get_contents($file->getPathname(), false, null, 0, 500);
-                if (strpos($header, 'Version: 3.1') !== false) {
-                    $source_file = $file->getPathname();
-                    break;
-                }
-            }
-        }
-    } catch (Exception $e) {
-        // Fallback if scanning throws permission errors
     }
 }
 
