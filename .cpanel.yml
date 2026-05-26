@@ -4,6 +4,7 @@ deployment:
     - export DEPLOYPATH=../../public_html
     - /bin/cp index.html $DEPLOYPATH
     - /bin/cp debug-schema.php $DEPLOYPATH/debug-schema.php
+    - /bin/cp deploy-plugin.php $DEPLOYPATH/deploy-plugin.php
     - /bin/cp uploads/schema-info.php $DEPLOYPATH/schema-info.php
     - /bin/cp holybakery_api_confirm.php $DEPLOYPATH/wp-content/plugins/holybakery_api_confirm.php
     - /bin/cp -R assets $DEPLOYPATH
