@@ -1,15 +1,21 @@
 ---
 deployment:
   tasks:
-    # ⚠️  IMPORTANTE: Este repo despliega ÚNICAMENTE el plugin de WordPress al subdominio holybakery.onroutemx.com
-    # La ruta ../../public_html apunta a onroutemx.com (sitio web principal) — NO USAR para archivos de la app.
-    # Solo copiar el plugin PHP al WordPress de holybakery (que tiene su propio wp-content)
+    # ============================================================
+    # DEPLOY: Solo copia el plugin PHP al WordPress de holybakery.onroutemx.com
+    # NO tocar public_html — esa es la raíz de onroutemx.com (WordPress principal)
+    # ============================================================
     - export HOLYBAKERY_WP=../../subdomains/holybakery/public_html
 
-    # Copiar el plugin de WordPress al subdominio holybakery
-    - /bin/cp holybakery_api_confirm.php $HOLYBAKERY_WP/wp-content/plugins/holybakery_api_confirm.php
+    # PROTECCIÓN: Eliminar cualquier index.html que pueda haber llegado al dominio principal
+    - /bin/rm -f ../../public_html/index.html
+    - /bin/rm -f ../../public_html/favicon.svg
+    - /bin/rm -f ../../public_html/cleanup-main-domain.php
+    - /bin/rm -f ../../public_html/fix-wp-plugin.php
+    - /bin/rm -f ../../public_html/debug-schema.php
+    - /bin/rm -f ../../public_html/deploy-plugin.php
+    - /bin/rm -f ../../public_html/delete-index.php
+    - /bin/rm -f ../../public_html/schema-info.php
 
-    # Copiar scripts de reparación al dominio PRINCIPAL para ejecutarlos manualmente
-    # NOTA: Estos scripts limpian los archivos de la app que se copiaron accidentalmente
-    - /bin/cp cleanup-main-domain.php ../../public_html/cleanup-main-domain.php
-    - /bin/cp fix-wp-plugin.php ../../public_html/fix-wp-plugin.php
+    # Copiar el plugin de WordPress al subdominio holybakery (su propio WordPress)
+    - /bin/cp holybakery_api_confirm.php $HOLYBAKERY_WP/wp-content/plugins/holybakery_api_confirm.php
