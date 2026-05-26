@@ -433,7 +433,7 @@ function AdminExtras() {
             </div>
             <div>
               <label className="label">Descripción</label>
-              <div className="field field-textarea"><textarea rows={3} value={desc} onChange={e => setDesc(e.target.value)} placeholder="Vuelta adicional, reubicación, emergencia…"/></div>
+              <textarea className="campo-textarea" rows={3} value={desc} onChange={e => setDesc(e.target.value)} placeholder="Vuelta adicional, reubicación, emergencia…"/>
             </div>
             <div className="row row-2">
               <div>
