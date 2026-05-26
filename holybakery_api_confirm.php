@@ -90,7 +90,7 @@ add_action( 'rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route( $ns, '/debug-db', [
+    register_rest_route( $ns, '/status-checks', [
         'methods' => 'GET',
         'callback' => 'hb_debug_db',
         'permission_callback' => '__return_true',
