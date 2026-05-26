@@ -3,7 +3,7 @@
 #
 # Este repositorio tiene DOS proyectos separados en ramas diferentes:
 #
-#   RAMA: website-onroute  →  Sitio web onroutemx.com  ← NO TOCAR SIN AUTORIZACIÓN
+#   RAMA: website-onroute-v2  →  Sitio web onroutemx.com  ← NO TOCAR SIN AUTORIZACIÓN
 #   RAMA: cpanel-deploy    →  App Holy Bakery (holybakery.onroutemx.com) ← Proyecto activo
 #
 # Si tu tarea es la APP DE HOLY BAKERY → trabaja en cpanel-deploy

@@ -2,7 +2,7 @@
 
 ## 🚨 ADVERTENCIA PARA AGENTES DE IA Y DESARROLLADORES
 
-**Esta rama (`website-onroute`) contiene el sitio web público y de producción de OnRoute México.**
+**Esta rama (`website-onroute-v2`) contiene el sitio web público y de producción de OnRoute México.**
 
 > [!CAUTION]
 > **NO modifiques, borres ni sobrescribas ningún archivo de esta rama sin autorización explícita del propietario.**
@@ -16,7 +16,7 @@ Este repositorio contiene **DOS proyectos completamente separados** en distintas
 
 | Rama | Proyecto | Dominio | ¿Modificable? |
 |---|---|---|---|
-| `website-onroute` | **Sitio web público OnRoute México** | `onroutemx.com` | ⛔ Solo con autorización |
+| `website-onroute-v2` | **Sitio web público OnRoute México** | `onroutemx.com` | ⛔ Solo con autorización |
 | `cpanel-deploy` | Plugin API de Holy Bakery | `holybakery.onroutemx.com` | ✅ Proyecto activo |
 | `main` | Rama mixta (no usar para deploy) | — | ⚠️ No deployar |
 
@@ -50,7 +50,7 @@ El **sitio web de OnRoute México** — empresa de traslados turísticos en la R
 
 - **URL:** https://onroutemx.com
 - **Hosting:** HostGator cPanel — `public_html/`
-- **Deploy:** cPanel Git Version Control → rama `website-onroute` → Deploy HEAD Commit
+- **Deploy:** cPanel Git Version Control → rama `website-onroute-v2` → Deploy HEAD Commit
 
 ---
 

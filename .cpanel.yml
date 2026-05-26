@@ -2,7 +2,7 @@
 deployment:
   tasks:
     # ============================================================
-    # ⚠️  RAMA: website-onroute — SITIO WEB PRINCIPAL onroutemx.com
+    # ⚠️  RAMA: website-onroute-v2 — SITIO WEB PRINCIPAL onroutemx.com
     # ============================================================
     # PROPÓSITO: Despliega el sitio web público de OnRoute México
     # DOMINIO:   https://onroutemx.com
