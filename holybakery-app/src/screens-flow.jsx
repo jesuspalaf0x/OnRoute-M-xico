@@ -1242,7 +1242,7 @@ Comentarios: ${commentsDisplay}`;
       const token = sessionStorage.getItem("wp_token");
       try {
         await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${id}`, {
-          method: "POST", // assuming POST or PUT to update
+          method: "PUT", // assuming POST or PUT to update
           headers: {
             "Content-Type": "application/json",
             "Authorization": token ? `Bearer ${token}` : ""

@@ -149,16 +149,18 @@ function hb_create_delivery(WP_REST_Request $request) {
     $params = $request->get_json_params();
 
     $data = [
-        'client_id' => isset($params['client_id']) ? $params['client_id'] : 1,
-        'client_name' => sanitize_text_field($params['client_name']),
-        'client_phone' => sanitize_text_field($params['client_phone']),
-        'destination_name' => sanitize_text_field($params['destination_name']),
-        'delivery_date' => sanitize_text_field($params['delivery_date']),
-        'delivery_time' => sanitize_text_field($params['delivery_time']),
-        'cost' => floatval($params['cost']),
+        'client_id' => 1,
+        'client_name' => sanitize_text_field($params['client'] ?? ''),
+        'client_phone' => sanitize_text_field($params['phone'] ?? ''),
+        'client_phone2' => sanitize_text_field($params['phone2'] ?? ''),
+        'destination_name' => sanitize_text_field($params['destinationName'] ?? ''),
+        'delivery_date' => sanitize_text_field($params['date'] ?? ''),
+        'delivery_time' => sanitize_text_field($params['time'] ?? ''),
+        'cost' => floatval($params['cost'] ?? 0),
         'cost_type' => sanitize_text_field($params['cost_type'] ?? 'local'),
         'status' => sanitize_text_field($params['status'] ?? 'confirmada'),
-        'employee_id' => intval($params['employee_id'] ?? 1),
+        'employee_id' => intval($params['employee_id'] ?? 2),
+        'comments' => sanitize_textarea_field($params['comments'] ?? ''),
         'created_at' => current_time('mysql'),
     ];
 
@@ -190,7 +192,12 @@ function hb_update_delivery(WP_REST_Request $request) {
     if (isset($params['client_name'])) $data_to_update['client_name'] = $params['client_name'];
     if (isset($params['client_phone'])) $data_to_update['client_phone'] = $params['client_phone'];
     if (isset($params['client_phone2'])) $data_to_update['client_phone2'] = $params['client_phone2'];
-    if (isset($params['status'])) $data_to_update['status'] = $params['status'];
+    if (isset($params['status'])) {
+        $data_to_update['status'] = $params['status'];
+        if ($params['status'] === 'confirmada') {
+            $data_to_update['confirmed_at'] = current_time('mysql');
+        }
+    }
     
     if (!empty($data_to_update)) {
         $wpdb->update('deliveries', $data_to_update, ['id' => $id]);
