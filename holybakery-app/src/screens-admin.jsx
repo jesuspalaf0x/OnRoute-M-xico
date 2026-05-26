@@ -7,7 +7,7 @@ const IA = window.Icons;
 const { fmtMXN: fmtMXN_A } = window.fmt;
 const StatusPillA = window.EmpScreens.StatusPill;
 
-const API_BASE = "https://onroutemx.com/wp-json/holybakery/v1";
+const API_BASE = "https://onroutemx.com/wp-json/hb/v1";
 async function apiFetch(endpoint, method = "GET", body = null) {
   const token = sessionStorage.getItem("wp_token_admin") || sessionStorage.getItem("wp_token");
   const headers = { "Content-Type": "application/json" };
@@ -28,17 +28,32 @@ function AdminPanel() {
   const [kpis, setKpis] = useStateA({ total: 147, credit: 3180, collected: 5420, requests: 1, extras: 2 });
   const [zonesData, setZonesData] = useStateA(window.MOCK.ZONES.slice(0,5));
 
+  const fetchDashboard = async () => {
+    const pendReq = await apiFetch("/admin/pending-requests");
+    const credSum = await apiFetch("/admin/credit-summary");
+
+    if (pendReq) {
+      const formatted = [
+        ...(pendReq.cancellations || []).map(c => ({ id: c.id, dlv_id: c.delivery_id, type: "Cancelación", desc: `Motivo: ${c.reason}`, cta: "Aprobar", raw: c })),
+        ...(pendReq.tariff_changes || []).map(t => ({ id: t.id, dlv_id: t.delivery_id, type: "Cambio de tarifa", desc: `De $${t.current_cost} a $${t.requested_cost}`, cta: "Aprobar", raw: t }))
+      ];
+      setApprovals(formatted);
+    }
+    if (credSum) {
+      setKpis({ total: credSum.total_reservations, credit: credSum.total_pendiente, collected: credSum.total_acumulado, requests: ((pendReq?.cancellations?.length || 0) + (pendReq?.tariff_changes?.length || 0)), extras: credSum.extras_mes });
+    }
+  };
+
   useEffect(() => {
-    apiFetch("/dashboard/admin").then(res => {
-      if (res && res.approvals) setApprovals(res.approvals);
-      if (res && res.kpis) setKpis(res.kpis);
-      if (res && res.zones) setZonesData(res.zones);
-    });
+    fetchDashboard();
+    const interval = setInterval(fetchDashboard, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handleAction = async (id, action) => {
-    await apiFetch(`/deliveries/${id}/approve`, "POST", { action });
-    setApprovals(approvals.filter(a => a.id !== id));
+  const handleAction = async (item, action) => {
+    const endpoint = item.type === "Cancelación" ? `/cancellation-requests/${item.id}` : `/tariff-change-requests/${item.id}`;
+    await apiFetch(endpoint, "PATCH", { action, admin_id: 1 });
+    fetchDashboard();
   };
 
   return (
@@ -70,15 +85,9 @@ function AdminPanel() {
           </div>
           <div className="stack">
             {approvals.length > 0 ? approvals.map(a => (
-              <ApprovalRow key={a.id} icon={a.type === "cancelacion" ? <IA.ShieldX size={16}/> : <IA.RefreshCcw size={16}/>} title={`${a.type} · ${a.id}`} desc={a.desc} cta="Aprobar" onApprove={() => handleAction(a.id, "approve")} onReject={() => handleAction(a.id, "reject")} />
+              <ApprovalRow key={a.type + a.id} icon={a.type === "Cancelación" ? <IA.ShieldX size={16}/> : <IA.RefreshCcw size={16}/>} title={`${a.type} · ${a.dlv_id}`} desc={a.desc} cta="Aprobar" onApprove={() => handleAction(a, "approve")} onReject={() => handleAction(a, "reject")} />
             )) : (
               <div className="muted" style={{fontSize: 13}}>No hay solicitudes pendientes.</div>
-            )}
-            {approvals.length === 0 && (
-              <>
-                <ApprovalRow icon={<IA.ShieldX size={16}/>} title="Cancelación · DLV-036" desc="Akumal Beach Resort · Lucía Hernández solicitó. Motivo: cliente canceló." cta="Revisar" onApprove={() => {}} onReject={() => {}} />
-                <ApprovalRow icon={<IA.RefreshCcw size={16}/>} title="Cambio a tarifa local · DLV-042" desc="Diana Domínguez · Satori Tulum · de $280 → $200" cta="Aprobar" onApprove={() => {}} onReject={() => {}} />
-              </>
             )}
           </div>
         </div>
@@ -131,8 +140,8 @@ function AdminReservas() {
 
   const fetchDeliveries = async () => {
     const res = await apiFetch("/deliveries");
-    if (res && Array.isArray(res)) setDeliveries(res);
-    else setDeliveries(window.MOCK.DELIVERIES); // fallback for demo
+    if (res && res.items) setDeliveries(res.items);
+    else setDeliveries([]);
   };
 
   useEffect(() => {
@@ -142,7 +151,7 @@ function AdminReservas() {
   }, []);
 
   const updateStatus = async (id, status, extra = {}) => {
-    await apiFetch(`/deliveries/${id}`, "PUT", { status, ...extra });
+    await apiFetch(`/admin/deliveries/${id}/status`, "PATCH", { status, ...extra });
     fetchDeliveries();
   };
 
@@ -194,9 +203,9 @@ function AdminPagos() {
   const [selectedIds, setSelectedIds] = useStateA([]);
 
   const fetchDeliveries = async () => {
-    const res = await apiFetch("/deliveries");
-    if (res && Array.isArray(res)) setDeliveries(res);
-    else setDeliveries(window.MOCK.DELIVERIES);
+    const res = await apiFetch("/deliveries?status[]=entregada&status[]=pagada&limit=500");
+    if (res && res.items) setDeliveries(res.items);
+    else setDeliveries([]);
   };
 
   useEffect(() => { fetchDeliveries(); }, []);
@@ -214,7 +223,7 @@ function AdminPagos() {
 
   const markSelectedAsPaid = async () => {
     for (const id of selectedIds) {
-      await apiFetch(`/deliveries/${id}`, "PUT", { status: "pagada", paid: true });
+      await apiFetch(`/admin/deliveries/${id}/status`, "PATCH", { status: "pagada", paid: true });
     }
     setSelectedIds([]);
     fetchDeliveries();
@@ -356,9 +365,9 @@ function AdminExtras() {
   const [linked, setLinked] = useStateA("");
 
   const fetchExtras = async () => {
-    const res = await apiFetch("/extras");
-    if (res && Array.isArray(res)) setExtras(res);
-    else setExtras(window.MOCK.EXTRAS);
+    const res = await apiFetch("/admin/extra-services");
+    if (res && res.items) setExtras(res.items);
+    else setExtras([]);
   };
 
   useEffect(() => { fetchExtras(); }, []);
@@ -366,18 +375,19 @@ function AdminExtras() {
   const handleAdd = async () => {
     if (!desc || !cost) return;
     const newExtra = {
-      linked: linked || null,
+      delivery_id: linked || null,
       description: desc,
-      employee: "Admin",
       cost: Number(cost),
-      date: new Date().toISOString()
+      service_date: new Date().toISOString().split('T')[0],
+      service_time: new Date().toTimeString().split(' ')[0],
+      added_by_admin_id: 1
     };
-    const res = await apiFetch("/extras", "POST", newExtra);
-    if (res && res.id) {
+    const res = await apiFetch("/admin/extra-services", "POST", newExtra);
+    if (res && res.success) {
       fetchExtras();
     } else {
       // Optimistic update for demo if API fails
-      setExtras([{ id: "EXT-" + Math.floor(Math.random() * 1000), ...newExtra, date: new Date().toLocaleDateString('es-MX') }, ...extras]);
+      setExtras([{ id: "EXT-" + Math.floor(Math.random() * 1000), ...newExtra, date: newExtra.service_date }, ...extras]);
     }
     setDesc("");
     setCost("");

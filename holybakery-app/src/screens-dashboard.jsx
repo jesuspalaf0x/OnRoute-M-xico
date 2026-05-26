@@ -9,9 +9,9 @@ const { fmtMXN, fmtUSD, fmtNum } = window.fmt;
 /* =============================================================
    API HOOK
 ============================================================= */
-const API_BASE = "https://onroutemx.com/wp-json/holybakery/v1";
+const API_BASE = "https://onroutemx.com/wp-json/hb/v1";
 
-const useApi = (endpoint, defaultData = null) => {
+const useApi = (endpoint, defaultData = null, pollInterval = null) => {
   const [data, setData] = useStateD(defaultData);
   const [loading, setLoading] = useStateD(true);
   const [error, setError] = useStateD(null);
@@ -19,7 +19,6 @@ const useApi = (endpoint, defaultData = null) => {
   React.useEffect(() => {
     let isMounted = true;
     const fetchApi = async () => {
-      setLoading(true);
       try {
         const token = sessionStorage.getItem("wp_token") || sessionStorage.getItem("wp_token_admin");
         const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -32,14 +31,24 @@ const useApi = (endpoint, defaultData = null) => {
           setError(null);
         }
       } catch (e) {
-        if (isMounted) setError(e.message);
+        if (isMounted && (!data || !data.items)) setError(e.message);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
+    
     fetchApi();
-    return () => { isMounted = false; };
-  }, [endpoint]);
+    
+    let intervalId;
+    if (pollInterval) {
+      intervalId = setInterval(fetchApi, pollInterval);
+    }
+    
+    return () => { 
+      isMounted = false; 
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [endpoint, pollInterval]);
 
   return { data, setData, loading, error };
 };
@@ -140,20 +149,30 @@ const StatusPill = ({ s }) => (
    EMPLOYEE — RESUMEN
 ============================================================= */
 function EmpResumen({ goTo }) {
-  const { data: deliveries, loading } = useApi("/deliveries", []);
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Cancun" }));
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const dLast = new Date(y, now.getMonth() + 1, 0).getDate();
+  const dateFrom = `${y}-${m}-01`;
+  const dateTo = `${y}-${m}-${dLast}`;
 
-  // Calculate metrics
-  const validDeliveries = Array.isArray(deliveries) ? deliveries : [];
-  const entregadas = validDeliveries.filter(d => d.status === "entregada" || d.status === "pagada");
-  const numEntregadas = entregadas.length;
-  const pendienteCobro = validDeliveries.filter(d => d.status === "entregada" && !d.paid).reduce((acc, d) => acc + (d.cost || 0), 0);
-  const numPendiente = validDeliveries.filter(d => d.status === "entregada" && !d.paid).length;
-  const yaPagadas = validDeliveries.filter(d => d.status === "pagada").reduce((acc, d) => acc + (d.cost || 0), 0);
-  const numPagadas = validDeliveries.filter(d => d.status === "pagada").length;
-  const enAdeudo = validDeliveries.filter(d => d.status === "entregada" && !d.paid).length;
-  const borradores = validDeliveries.filter(d => d.status === "borrador").length;
+  const { data: mesData, loading: l1 } = useApi(`/deliveries?status[]=entregada&status[]=pagada&date_from=${dateFrom}&date_to=${dateTo}`, {total:0, items:[]}, 45000);
+  const { data: pendientesData, loading: l2 } = useApi(`/deliveries?status[]=entregada`, {total:0, items:[]}, 45000);
+  const { data: pagadasData, loading: l3 } = useApi(`/deliveries?status[]=pagada&date_from=${dateFrom}&date_to=${dateTo}`, {total:0, items:[]}, 45000);
+  const { data: borradorData, loading: l4 } = useApi(`/deliveries?status[]=borrador`, {total:0, items:[]}, 45000);
+  const { data: empData, loading: lEmp } = useApi(`/employees/on-shift`, null, 45000);
+  const { data: upcomingData, loading: lUp } = useApi(`/deliveries?limit=5`, {total:0, items:[]}, 45000);
 
-  const upcoming = validDeliveries.filter(d => d.status !== "borrador" && d.status !== "cancelada").slice(0, 5);
+  const numEntregadas = mesData?.total || 0;
+  const pendienteCobro = (pendientesData?.items || []).reduce((acc, d) => acc + (d.cost || 0), 0);
+  const numPendiente = pendientesData?.total || 0;
+  const yaPagadas = (pagadasData?.items || []).reduce((acc, d) => acc + (d.cost || 0), 0);
+  const numPagadas = pagadasData?.total || 0;
+  const enAdeudo = pendientesData?.total || 0;
+  const borradores = borradorData?.total || 0;
+
+  const upcoming = (upcomingData?.items || []).filter(d => d.status !== "borrador" && d.status !== "cancelada").slice(0, 5);
+  const loading = l1 || l2 || l3 || l4;
 
   return (
     <>
@@ -229,11 +248,19 @@ function EmpResumen({ goTo }) {
             <h3>Empleado en turno</h3>
             <p className="desc">Detección automática por horario.</p>
             <div className="card-tight" style={{background:"var(--accent-soft)", borderRadius:12, display:"flex", gap:12, alignItems:"center"}}>
-              <div style={{width:40, height:40, borderRadius:"50%", background:"var(--accent)", color:"white", display:"grid", placeItems:"center", fontWeight:800}}>DD</div>
-              <div>
-                <strong>Diana Domínguez</strong>
-                <div className="muted" style={{fontSize:12}}>Repostería · 3:00 p.m. – 8:30 p.m.</div>
-              </div>
+              {lEmp ? <div className="muted">Cargando...</div> : (empData && empData.employee) ? (
+                <>
+                  <div style={{width:40, height:40, borderRadius:"50%", background:"var(--accent)", color:"white", display:"grid", placeItems:"center", fontWeight:800}}>
+                    {empData.employee.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <strong>{empData.employee.name}</strong>
+                    <div className="muted" style={{fontSize:12}}>{empData.employee.role} · {empData.employee.shift_start.substring(0,5)} – {empData.employee.shift_end.substring(0,5)}</div>
+                  </div>
+                </>
+              ) : (
+                <div className="muted">Sin empleado en turno actualmente</div>
+              )}
             </div>
           </div>
           <div className="section-card">
@@ -255,11 +282,18 @@ function EmpResumen({ goTo }) {
 ============================================================= */
 function EmpReservas() {
   const [filter, setFilter] = useStateD("todos");
-  const { data: deliveries, loading } = useApi("/deliveries", []);
+  
+  // Create dynamic URL query based on filter
+  const queryParams = new URLSearchParams();
+  queryParams.append("limit", "50");
+  if (filter !== "todos") {
+    queryParams.append("status[]", filter);
+  }
+  
+  const { data: deliveriesData, loading } = useApi(`/deliveries?${queryParams.toString()}`, {total:0, items:[]});
 
-  const validDeliveries = Array.isArray(deliveries) ? deliveries : [];
-  const list = filter === "todos" ? validDeliveries : validDeliveries.filter(d => d.status === filter);
-  const pending = validDeliveries.filter(d => !d.paid && d.status !== "cancelada" && d.status !== "cancelacion_pendiente").reduce((s,d) => s + (d.cost || 0), 0);
+  const list = deliveriesData?.items || [];
+  const pending = list.filter(d => !d.paid && d.status !== "cancelada" && d.status !== "cancelacion_pendiente").reduce((s,d) => s + (d.cost || 0), 0);
 
   return (
     <>
@@ -322,7 +356,7 @@ function EmpReservas() {
         </table>
         {!loading && (
           <div className="table-foot">
-            <span className="muted">Mostrando {list.length} de {validDeliveries.length} reservas</span>
+            <span className="muted">Mostrando {list.length} de {deliveriesData?.total || list.length} reservas</span>
             <span><strong>Pendiente acumulado:</strong> <span className="money" style={{color:"var(--warning)"}}>{fmtMXN(pending)}</span></span>
           </div>
         )}
@@ -335,9 +369,9 @@ function EmpReservas() {
    EMPLOYEE — GUARDADAS
 ============================================================= */
 function EmpGuardadas() {
-  const { data: deliveries, loading, setData } = useApi("/deliveries", []);
+  const { data: deliveriesData, loading, setData } = useApi("/deliveries?status[]=borrador", {total:0, items:[]});
   
-  const drafts = Array.isArray(deliveries) ? deliveries.filter(d => d.status === "borrador") : [];
+  const drafts = deliveriesData?.items || [];
 
   const handleEdit = (d) => {
     alert(`Editando borrador: ${d.id}`);
@@ -355,10 +389,10 @@ function EmpGuardadas() {
         body: JSON.stringify({ status: "confirmada" })
       });
       if (res.ok) {
-        setData(deliveries.map(d => d.id === id ? { ...d, status: "confirmada" } : d));
+        setData({ ...deliveriesData, items: drafts.map(d => d.id === id ? { ...d, status: "confirmada" } : d) });
       } else {
         console.warn("API Error, updating UI anyway for prototype demo");
-        setData(deliveries.map(d => d.id === id ? { ...d, status: "confirmada" } : d));
+        setData({ ...deliveriesData, items: drafts.map(d => d.id === id ? { ...d, status: "confirmada" } : d) });
       }
     } catch(e) {
       console.error(e);
@@ -374,10 +408,10 @@ function EmpGuardadas() {
         headers: { "Authorization": token ? `Bearer ${token}` : "" }
       });
       if (res.ok) {
-        setData(deliveries.filter(d => d.id !== id));
+        setData({ ...deliveriesData, items: drafts.filter(d => d.id !== id) });
       } else {
         console.warn("API Error, updating UI anyway for prototype demo");
-        setData(deliveries.filter(d => d.id !== id));
+        setData({ ...deliveriesData, items: drafts.filter(d => d.id !== id) });
       }
     } catch(e) {
       console.error(e);

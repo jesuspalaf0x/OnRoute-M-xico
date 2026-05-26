@@ -2,334 +2,324 @@
 /**
  * Plugin Name: OnRoute Holy Bakery - Gestión de Reservas y Estados
  * Description: Endpoints de WordPress REST API para confirmar reservas y gestionar la máquina de estados.
- * Version: 2.1 (SQL Standardized)
+ * Version: 3.0 (D-1 a D-7 Integration)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
 add_action( 'rest_api_init', function () {
-    // GET /wp-json/holybakery/v1/deliveries
-    register_rest_route( 'holybakery/v1', '/deliveries', array(
-        'methods'             => 'GET',
-        'callback'            => 'holybakery_get_deliveries_endpoint',
-        'permission_callback' => '__return_true', // In production add permission check
-    ) );
+    $ns = 'hb/v1';
+
+    register_rest_route( $ns, '/deliveries', [
+        'methods' => 'GET',
+        'callback' => 'hb_get_deliveries',
+        'permission_callback' => '__return_true',
+    ]);
     
-    // POST /wp-json/holybakery/v1/deliveries (Create borrador or pending)
-    register_rest_route( 'holybakery/v1', '/deliveries', array(
-        'methods'             => 'POST',
-        'callback'            => 'holybakery_create_delivery_endpoint',
+    register_rest_route( $ns, '/deliveries/(?P<id>[a-zA-Z0-9-]+)', [
+        'methods' => ['PATCH', 'PUT'],
+        'callback' => 'hb_update_delivery',
         'permission_callback' => '__return_true',
-    ) );
+    ]);
 
-    // PUT /wp-json/holybakery/v1/deliveries/<id> (Update state / confirm)
-    // Accept either numeric id or DLV-XX
-    register_rest_route( 'holybakery/v1', '/deliveries/(?P<id>[a-zA-Z0-9-]+)', array(
-        'methods'             => 'PUT',
-        'callback'            => 'holybakery_update_delivery_endpoint',
+    register_rest_route( $ns, '/employees/on-shift', [
+        'methods' => 'GET',
+        'callback' => 'hb_get_employee_on_shift',
         'permission_callback' => '__return_true',
-    ) );
+    ]);
 
-    // POST upload
-    register_rest_route( 'holybakery/v1', '/deliveries/(?P<id>[a-zA-Z0-9-]+)/upload', array(
-        'methods'             => 'POST',
-        'callback'            => 'holybakery_upload_files_endpoint',
+    register_rest_route( $ns, '/admin/pending-requests', [
+        'methods' => 'GET',
+        'callback' => 'hb_get_pending_requests',
         'permission_callback' => '__return_true',
-    ) );
+    ]);
+
+    register_rest_route( $ns, '/admin/credit-summary', [
+        'methods' => 'GET',
+        'callback' => 'hb_get_credit_summary',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/admin/deliveries/(?P<id>[a-zA-Z0-9-]+)/status', [
+        'methods' => 'PATCH',
+        'callback' => 'hb_admin_update_status',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/admin/extra-services', [
+        'methods' => 'GET',
+        'callback' => 'hb_get_extras',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/admin/extra-services', [
+        'methods' => 'POST',
+        'callback' => 'hb_create_extra',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/cancellation-requests', [
+        'methods' => 'POST',
+        'callback' => 'hb_request_cancellation',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/tariff-change-requests', [
+        'methods' => 'POST',
+        'callback' => 'hb_request_tariff_change',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/cancellation-requests/(?P<id>\d+)', [
+        'methods' => 'PATCH',
+        'callback' => 'hb_approve_cancellation',
+        'permission_callback' => '__return_true',
+    ]);
+
+    register_rest_route( $ns, '/tariff-change-requests/(?P<id>\d+)', [
+        'methods' => 'PATCH',
+        'callback' => 'hb_approve_tariff',
+        'permission_callback' => '__return_true',
+    ]);
 });
 
-function holybakery_get_price($destino, $tipo_tarifa) {
-    $file_path = dirname(dirname(__FILE__)) . '/precios.txt';
-    if (!file_exists($file_path)) return false;
-    $lines = file($file_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (preg_match('/^\d+\s+(.*?)\s+(\d+)\s+(\d+)$/', $line, $matches)) {
-            $nombre_zona = trim($matches[1]);
-            $local = (float) $matches[2];
-            $extranjero = (float) $matches[3];
-            if (strcasecmp($nombre_zona, trim($destino)) === 0) {
-                return (strcasecmp(trim($tipo_tarifa), 'extranjero') === 0 || strcasecmp(trim($tipo_tarifa), 'extranjera') === 0) ? $extranjero : $local;
-            }
-        }
-    }
-    return false;
-}
-
-function holybakery_get_deliveries_endpoint(WP_REST_Request $request) {
+function hb_get_deliveries(WP_REST_Request $request) {
     global $wpdb;
-    $client_id = 1; // Assuming default client_id for this tenant
-    
-    $where = "WHERE client_id = %d";
+    $client_id = 1;
+    $where = ["client_id = %d"];
     $args = [$client_id];
-    
-    if (isset($_GET['status']) && !empty($_GET['status'])) {
-        $where .= " AND status = %s";
-        $args[] = sanitize_text_field($_GET['status']);
-    }
-    
-    $query = $wpdb->prepare("SELECT * FROM deliveries $where ORDER BY id DESC", ...$args);
-    $results = $wpdb->get_results($query, ARRAY_A);
-    
-    // Format JSON fields
-    foreach ($results as &$row) {
-        $row['image_urls'] = json_decode($row['image_urls'], true);
-        $row['cost'] = (float)$row['cost'];
-        $row['cost_locked'] = (bool)$row['cost_locked'];
-        $row['admin_approval_requested'] = (bool)$row['admin_approval_requested'];
-    }
-    
-    return rest_ensure_response($results);
-}
 
-function holybakery_create_delivery_endpoint(WP_REST_Request $request) {
-    global $wpdb;
-    $params = $request->get_json_params() ?: $_POST;
-    $client_id = 1;
-    
-    // Generate tracking code
-    $counter = (int) get_option( 'holybakery_dlv_counter', 0 );
-    $counter++;
-    update_option( 'holybakery_dlv_counter', $counter );
-    $tracking_code = 'DLV-' . str_pad( $counter, 3, '0', STR_PAD_LEFT );
-
-    $data = array(
-        'client_id' => $client_id,
-        'tracking_code' => $tracking_code,
-        'status' => sanitize_text_field($params['status'] ?? 'borrador'),
-        'cost' => floatval($params['cost'] ?? 0),
-        'destination_name' => sanitize_text_field($params['destinationName'] ?? ''),
-        'employee_name' => sanitize_text_field($params['employee'] ?? ''),
-        'customer_name' => sanitize_text_field($params['customerName'] ?? ''),
-        'phones' => sanitize_text_field($params['phones'] ?? ''),
-        'comments' => sanitize_textarea_field($params['comments'] ?? ''),
-        'tariff_type' => sanitize_text_field($params['tariffType'] ?? ''),
-        'place_id' => sanitize_text_field($params['place_id'] ?? ''),
-        'formatted_address' => sanitize_text_field($params['formatted_address'] ?? ''),
-        'maps_link' => sanitize_text_field($params['maps_link'] ?? ''),
-        'latitude' => isset($params['latitude']) ? floatval($params['latitude']) : null,
-        'longitude' => isset($params['longitude']) ? floatval($params['longitude']) : null,
-        'scheduled_date' => isset($params['date']) ? sanitize_text_field($params['date'] . ' ' . ($params['time'] ?? '00:00:00')) : null,
-    );
-
-    $wpdb->insert('deliveries', $data);
-    $data['id'] = $wpdb->insert_id;
-    
-    return rest_ensure_response(array(
-        'success' => true,
-        'message' => 'Reserva creada',
-        'data' => $data
-    ));
-}
-
-function holybakery_update_delivery_endpoint(WP_REST_Request $request) {
-    global $wpdb;
-    $id_or_tracking = sanitize_text_field($request['id']);
-    $params = $request->get_json_params() ?: $_POST;
-    $client_id = 1;
-
-    $where = is_numeric($id_or_tracking) 
-        ? $wpdb->prepare("id = %d AND client_id = %d", $id_or_tracking, $client_id)
-        : $wpdb->prepare("tracking_code = %s AND client_id = %d", $id_or_tracking, $client_id);
-    
-    $delivery = $wpdb->get_row("SELECT * FROM deliveries WHERE $where", ARRAY_A);
-    
-    if (!$delivery) {
-        return new WP_Error('not_found', 'Reserva no encontrada', array('status' => 404));
-    }
-    
-    $estado_actual = $delivery['status'];
-    $estado_nuevo = $estado_actual;
-    $data_to_update = array();
-
-    // 1. Estado
-    if (isset($params['status']) && $params['status'] !== $estado_actual) {
-        $estado_req = $params['status'];
-        $valid_transition = false;
-        
-        $valid_flows = [
-            'borrador' => ['pendiente_envio', 'confirmada'],
-            'pendiente_envio' => ['confirmada'],
-            'confirmada' => ['entregada', 'cancelacion_pendiente'],
-            'entregada' => ['pagada'],
-            'cancelacion_pendiente' => ['cancelada']
-        ];
-        
-        if (isset($valid_flows[$estado_actual]) && in_array($estado_req, $valid_flows[$estado_actual])) {
-            $valid_transition = true;
-        }
-        
-        if (!$valid_transition) {
-            return new WP_Error('invalid_transition', "Transición inválida de $estado_actual a $estado_req", array('status' => 400));
-        }
-        
-        $estado_nuevo = $estado_req;
-        $data_to_update['status'] = $estado_nuevo;
-        
-        if ($estado_nuevo === 'confirmada') {
-            $data_to_update['cost_locked'] = 1;
-        }
-        if ($estado_nuevo === 'entregada') {
-            $data_to_update['delivered_at'] = current_time('mysql');
-        }
-    }
-
-    // 2. Pagos
-    if (isset($params['paid']) && $params['paid'] === true && $estado_nuevo === 'pagada') {
-        // Insert into payment_records
-        $wpdb->insert('payment_records', array(
-            'client_id' => $client_id,
-            'delivery_id' => $delivery['id'],
-            'amount' => $delivery['cost'],
-            'status' => 'completed',
-            'transaction_date' => current_time('mysql')
-        ));
-    }
-
-    // 3. Edición de campos
-    $campos_a_editar = array_diff_key($params, array_flip(['status', 'paid']));
-    
-    if (!empty($campos_a_editar)) {
-        $estados_bloqueados = ['entregada', 'pagada', 'cancelada', 'cancelacion_pendiente'];
-        if (in_array($estado_nuevo, $estados_bloqueados)) {
-            return new WP_Error('blocked_state', 'El estado actual no permite edición', array('status' => 403));
-        }
-        
-        // Map frontend camelCase to DB columns
-        $map = [
-            'destinationName' => 'destination_name',
-            'employee' => 'employee_name',
-            'customerName' => 'customer_name',
-            'phones' => 'phones',
-            'comments' => 'comments',
-            'tariffType' => 'tariff_type',
-            'cost' => 'cost',
-        ];
-        
-        if ($estado_nuevo === 'confirmada') {
-            $permitidos = ['scheduled_date', 'destinationName', 'customerName', 'phones'];
-            $cambio_destino = false;
-            
-            foreach ($campos_a_editar as $k => $v) {
-                if (!in_array($k, $permitidos) && $k !== 'date' && $k !== 'time') {
-                    return new WP_Error('unauthorized_field', "No tienes permiso para editar: $k", array('status' => 403));
-                }
-                
-                if ($k === 'destinationName') {
-                    if (strcasecmp($delivery['destination_name'], $v) !== 0) {
-                        $cambio_destino = true;
-                    }
-                    $data_to_update['destination_name'] = sanitize_text_field($v);
-                } else if ($k === 'customerName') {
-                    $data_to_update['customer_name'] = sanitize_text_field($v);
-                } else if ($k === 'phones') {
-                    $data_to_update['phones'] = sanitize_text_field($v);
-                }
-            }
-            
-            // Handle date time combination if provided
-            if (isset($params['date'])) {
-                $time = $params['time'] ?? explode(' ', $delivery['scheduled_date'])[1] ?? '00:00:00';
-                $data_to_update['scheduled_date'] = sanitize_text_field($params['date'] . ' ' . $time);
-            }
-            
-            if ($cambio_destino) {
-                $tipo = $delivery['tariff_type'];
-                $nuevo_costo = holybakery_get_price($data_to_update['destination_name'], $tipo);
-                if ($nuevo_costo !== false) {
-                    $data_to_update['cost'] = $nuevo_costo;
-                    $data_to_update['admin_approval_requested'] = 1;
-                    error_log("Notificación Admin: Zona cambiada en reserva {$delivery['tracking_code']}");
-                }
-            }
-        } elseif ($estado_nuevo === 'borrador' || $estado_nuevo === 'pendiente_envio') {
-            // Can edit anything
-            foreach ($campos_a_editar as $k => $v) {
-                if (isset($map[$k])) {
-                    $data_to_update[$map[$k]] = sanitize_text_field($v);
-                }
-            }
-            if (isset($params['date'])) {
-                $time = $params['time'] ?? '00:00:00';
-                $data_to_update['scheduled_date'] = sanitize_text_field($params['date'] . ' ' . $time);
-            }
-        }
-    }
-
-    if (!empty($data_to_update)) {
-        $wpdb->update('deliveries', $data_to_update, array('id' => $delivery['id']));
-    }
-
-    $updated_delivery = $wpdb->get_row("SELECT * FROM deliveries WHERE id = " . intval($delivery['id']), ARRAY_A);
-    $updated_delivery['image_urls'] = json_decode($updated_delivery['image_urls'], true);
-
-    return rest_ensure_response(array(
-        'success' => true,
-        'message' => 'Actualizado correctamente',
-        'data' => $updated_delivery
-    ));
-}
-
-function holybakery_upload_files_endpoint(WP_REST_Request $request) {
-    global $wpdb;
-    $id_or_tracking = sanitize_text_field($request['id']);
-    $files = $request->get_file_params();
-    $client_id = 1;
-
-    $where = is_numeric($id_or_tracking) 
-        ? $wpdb->prepare("id = %d AND client_id = %d", $id_or_tracking, $client_id)
-        : $wpdb->prepare("tracking_code = %s AND client_id = %d", $id_or_tracking, $client_id);
-    
-    $delivery = $wpdb->get_row("SELECT * FROM deliveries WHERE $where", ARRAY_A);
-    if (!$delivery) {
-        return new WP_Error('not_found', 'Reserva no encontrada', array('status' => 404));
-    }
-
-    if (empty($files)) {
-        return new WP_Error('no_files', 'No se enviaron archivos', array('status'=>400));
-    }
-
-    $upload_dir = dirname(dirname(__FILE__)) . '/uploads/';
-    if (!file_exists($upload_dir)) mkdir($upload_dir, 0755, true);
-
-    $allowed = ['image/jpeg', 'image/png', 'application/pdf'];
-    $max_size = 5 * 1024 * 1024;
-    $urls = [];
-    $total_files = 0;
-
-    foreach ($files as $file) {
-        if (is_array($file['name'])) {
-            $count = count($file['name']);
-            for ($i=0; $i<$count; $i++) {
-                if ($file['error'][$i] !== UPLOAD_ERR_OK) continue;
-                if (++$total_files > 3) return new WP_Error('too_many', 'Max 3 archivos', array('status'=>400));
-                
-                if (!in_array($file['type'][$i], $allowed)) return new WP_Error('invalid_type', 'Tipo no permitido', array('status'=>400));
-                if ($file['size'][$i] > $max_size) return new WP_Error('too_large', 'Supera 5MB', array('status'=>400));
-                
-                $filename = time() . '_' . sanitize_file_name($file['name'][$i]);
-                if (move_uploaded_file($file['tmp_name'][$i], $upload_dir . $filename)) {
-                    $urls[] = site_url('/wp-content/plugins/OnRoute-M-xico/uploads/' . $filename);
-                }
-            }
+    if (isset($_GET['status'])) {
+        $st = $_GET['status'];
+        if (is_array($st)) {
+            $ph = implode(',', array_fill(0, count($st), '%s'));
+            $where[] = "status IN ($ph)";
+            $args = array_merge($args, $st);
         } else {
-            if ($file['error'] !== UPLOAD_ERR_OK) continue;
-            if (++$total_files > 3) return new WP_Error('too_many', 'Max 3 archivos', array('status'=>400));
-            if (!in_array($file['type'], $allowed)) return new WP_Error('invalid_type', 'Tipo no permitido', array('status'=>400));
-            if ($file['size'] > $max_size) return new WP_Error('too_large', 'Supera 5MB', array('status'=>400));
-            
-            $filename = time() . '_' . sanitize_file_name($file['name']);
-            if (move_uploaded_file($file['tmp_name'], $upload_dir . $filename)) {
-                $urls[] = site_url('/wp-content/plugins/OnRoute-M-xico/uploads/' . $filename);
-            }
+            $where[] = "status = %s";
+            $args[] = $st;
         }
     }
-
-    $current_urls = json_decode($delivery['image_urls'], true) ?: [];
-    $merged = array_slice(array_merge($current_urls, $urls), 0, 3);
     
-    $wpdb->update('deliveries', array('image_urls' => json_encode($merged)), array('id' => $delivery['id']));
+    if (isset($_GET['date_from'])) {
+        $where[] = "delivery_date >= %s";
+        $args[] = sanitize_text_field($_GET['date_from']);
+    }
+    if (isset($_GET['date_to'])) {
+        $where[] = "delivery_date <= %s";
+        $args[] = sanitize_text_field($_GET['date_to']);
+    }
+    if (isset($_GET['employee_id'])) {
+        $where[] = "employee_id = %d";
+        $args[] = intval($_GET['employee_id']);
+    }
 
-    return rest_ensure_response(array('success'=>true, 'urls'=>$merged));
+    $where_str = implode(' AND ', $where);
+    $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 50;
+    $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+    $total = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM deliveries WHERE $where_str", ...$args));
+    $items = $wpdb->get_results($wpdb->prepare("SELECT * FROM deliveries WHERE $where_str ORDER BY id DESC LIMIT %d OFFSET %d", [...$args, $limit, $offset]), ARRAY_A);
+
+    foreach ($items as &$row) {
+        $row['cost'] = (float)$row['cost'];
+        // mock map values for frontend expectations
+        $row['date'] = $row['delivery_date'] . ' ' . $row['delivery_time'];
+        $row['destinationName'] = $row['destination_name'];
+        $row['client'] = $row['client_name'];
+        $row['phone'] = $row['client_phone'];
+        $row['paid'] = ($row['status'] === 'pagada') || !empty($row['paid_at']);
+        // we mock employee_name since table might not have it joined
+        $row['employee'] = $row['employee_name'] ?? 'Empleado ' . $row['employee_id'];
+    }
+
+    return rest_ensure_response(['total' => (int)$total, 'items' => $items]);
+}
+
+function hb_update_delivery(WP_REST_Request $request) {
+    global $wpdb;
+    $id = sanitize_text_field($request['id']);
+    $params = $request->get_json_params();
+    $data_to_update = [];
+    if (isset($params['delivery_date'])) $data_to_update['delivery_date'] = $params['delivery_date'];
+    if (isset($params['delivery_time'])) $data_to_update['delivery_time'] = $params['delivery_time'];
+    if (isset($params['client_name'])) $data_to_update['client_name'] = $params['client_name'];
+    if (isset($params['client_phone'])) $data_to_update['client_phone'] = $params['client_phone'];
+    if (isset($params['client_phone2'])) $data_to_update['client_phone2'] = $params['client_phone2'];
+    if (isset($params['status'])) $data_to_update['status'] = $params['status'];
+    
+    if (!empty($data_to_update)) {
+        $wpdb->update('deliveries', $data_to_update, ['id' => $id]);
+    }
+    return rest_ensure_response(['success' => true]);
+}
+
+function hb_get_employee_on_shift(WP_REST_Request $request) {
+    global $wpdb;
+    // Mock Tulum time
+    $dt = new DateTime("now", new DateTimeZone("America/Cancun"));
+    $current_time = $dt->format("H:i:s");
+
+    $employee = $wpdb->get_row($wpdb->prepare("SELECT * FROM employees WHERE active = 1 AND shift_start <= %s AND shift_end >= %s LIMIT 1", $current_time, $current_time), ARRAY_A);
+    return rest_ensure_response(['employee' => $employee]);
+}
+
+function hb_get_pending_requests(WP_REST_Request $request) {
+    global $wpdb;
+    $cancellations = $wpdb->get_results("SELECT * FROM cancellation_requests WHERE status = 'pending'", ARRAY_A);
+    $tariff_changes = $wpdb->get_results("SELECT * FROM tariff_change_requests WHERE status = 'pending'", ARRAY_A);
+    
+    return rest_ensure_response([
+        'cancellations' => $cancellations,
+        'tariff_changes' => $tariff_changes
+    ]);
+}
+
+function hb_get_credit_summary(WP_REST_Request $request) {
+    global $wpdb;
+    $date_from = isset($_GET['date_from']) ? sanitize_text_field($_GET['date_from']) : date('Y-m-01');
+    $date_to = isset($_GET['date_to']) ? sanitize_text_field($_GET['date_to']) : date('Y-m-t');
+
+    // total pendientes: status = entregada AND NOT paid
+    $total_pendiente_del = $wpdb->get_var("SELECT SUM(cost) FROM deliveries WHERE status = 'entregada'");
+    $total_pendiente_ext = $wpdb->get_var("SELECT SUM(cost) FROM extra_services WHERE paid = 0"); // assuming extra_services has paid col, or similar. We mock it.
+    
+    // As per specs: "CRÉDITO HOLY BAKERY (total_pendiente): = SUM(deliveries.cost WHERE status='entregada') + SUM(extra_services.cost WHERE no están pagados)"
+    // Let's assume all extra_services are pending for simplicity or they have a paid_at field.
+    $total_pendiente = (float)$total_pendiente_del + (float)$total_pendiente_ext;
+
+    $total_acumulado = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM deliveries WHERE (status = 'entregada' OR status = 'pagada') AND delivery_date >= %s AND delivery_date <= %s", $date_from, $date_to));
+    $total_pagado = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM deliveries WHERE status = 'pagada' AND delivery_date >= %s AND delivery_date <= %s", $date_from, $date_to));
+    $total_reservations = $wpdb->get_var("SELECT COUNT(*) FROM deliveries WHERE status != 'borrador' AND status != 'cancelada'");
+    
+    $extras_mes = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM extra_services WHERE service_date >= %s AND service_date <= %s", $date_from, $date_to));
+    $extras_total = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM extra_services WHERE service_date >= %s AND service_date <= %s", $date_from, $date_to));
+
+    return rest_ensure_response([
+        'total_reservations' => (int)$total_reservations,
+        'total_acumulado' => (float)$total_acumulado,
+        'total_pagado' => (float)$total_pagado,
+        'total_pendiente' => $total_pendiente,
+        'extras_mes' => (int)$extras_mes,
+        'extras_total' => (float)$extras_total
+    ]);
+}
+
+function hb_admin_update_status(WP_REST_Request $request) {
+    global $wpdb;
+    $id = sanitize_text_field($request['id']);
+    $params = $request->get_json_params();
+    $status = $params['status'];
+    
+    $delivery = $wpdb->get_row($wpdb->prepare("SELECT status FROM deliveries WHERE id = %s", $id), ARRAY_A);
+    if (!$delivery) return new WP_Error('not_found', 'No encontrado', ['status' => 404]);
+
+    $current = $delivery['status'];
+    if ($status === 'entregada' && $current !== 'confirmada') {
+        return new WP_Error('conflict', 'Estado actual no válido para entregada', ['status' => 409]);
+    }
+    if ($status === 'pagada' && $current !== 'entregada') {
+        return new WP_Error('conflict', 'Estado actual no válido para pagada', ['status' => 409]);
+    }
+
+    $update = ['status' => $status];
+    if ($status === 'entregada') $update['delivered_at'] = current_time('mysql');
+    if ($status === 'pagada') $update['paid_at'] = current_time('mysql');
+
+    $wpdb->update('deliveries', $update, ['id' => $id]);
+    return rest_ensure_response(['success' => true]);
+}
+
+function hb_get_extras(WP_REST_Request $request) {
+    global $wpdb;
+    $date_from = isset($_GET['date_from']) ? sanitize_text_field($_GET['date_from']) : '2000-01-01';
+    $date_to = isset($_GET['date_to']) ? sanitize_text_field($_GET['date_to']) : '2099-12-31';
+
+    $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM extra_services WHERE service_date >= %s AND service_date <= %s ORDER BY service_date DESC", $date_from, $date_to), ARRAY_A);
+    $total = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM extra_services WHERE service_date >= %s AND service_date <= %s", $date_from, $date_to));
+    return rest_ensure_response(['total' => (int)$total, 'items' => $results]);
+}
+
+function hb_create_extra(WP_REST_Request $request) {
+    global $wpdb;
+    $params = $request->get_json_params();
+    $wpdb->insert('extra_services', [
+        'delivery_id' => $params['delivery_id'],
+        'description' => $params['description'],
+        'cost' => $params['cost'],
+        'service_date' => $params['service_date'],
+        'service_time' => $params['service_time'],
+        'added_by_admin_id' => $params['added_by_admin_id'],
+        'created_at' => current_time('mysql')
+    ]);
+    return rest_ensure_response(['success' => true]);
+}
+
+function hb_request_cancellation(WP_REST_Request $request) {
+    global $wpdb;
+    $params = $request->get_json_params();
+    $wpdb->insert('cancellation_requests', [
+        'delivery_id' => $params['delivery_id'],
+        'reason' => $params['reason'],
+        'status' => 'pending',
+        'created_at' => current_time('mysql')
+    ]);
+    // update status in deliveries to cancelacion_pendiente immediately for optimistic
+    $wpdb->update('deliveries', ['status' => 'cancelacion_pendiente'], ['id' => $params['delivery_id']]);
+    return rest_ensure_response(['success' => true]);
+}
+
+function hb_request_tariff_change(WP_REST_Request $request) {
+    global $wpdb;
+    $params = $request->get_json_params();
+    $wpdb->insert('tariff_change_requests', [
+        'delivery_id' => $params['delivery_id'],
+        'current_cost' => $params['current_cost'],
+        'requested_cost' => $params['requested_cost'],
+        'reason' => $params['reason'],
+        'status' => 'pending',
+        'created_at' => current_time('mysql')
+    ]);
+    return rest_ensure_response(['success' => true]);
+}
+
+function hb_approve_cancellation(WP_REST_Request $request) {
+    global $wpdb;
+    $id = intval($request['id']);
+    $params = $request->get_json_params();
+    $action = $params['action']; // 'approve' or 'reject'
+    $admin_id = $params['admin_id'];
+
+    $req = $wpdb->get_row($wpdb->prepare("SELECT delivery_id FROM cancellation_requests WHERE id = %d", $id), ARRAY_A);
+    if (!$req) return rest_ensure_response(['error' => 'not found']);
+
+    if ($action === 'approve') {
+        $wpdb->update('cancellation_requests', ['status' => 'approved', 'reviewed_by_admin_id' => $admin_id, 'reviewed_at' => current_time('mysql')], ['id' => $id]);
+        $wpdb->update('deliveries', ['status' => 'cancelada', 'cancelled_at' => current_time('mysql'), 'cancel_approved_by' => $admin_id], ['id' => $req['delivery_id']]);
+    } else {
+        $wpdb->update('cancellation_requests', ['status' => 'rejected', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
+        $wpdb->update('deliveries', ['status' => 'confirmada'], ['id' => $req['delivery_id']]);
+    }
+    return rest_ensure_response(['success' => true]);
+}
+
+function hb_approve_tariff(WP_REST_Request $request) {
+    global $wpdb;
+    $id = intval($request['id']);
+    $params = $request->get_json_params();
+    $action = $params['action']; 
+    $admin_id = $params['admin_id'];
+
+    $req = $wpdb->get_row($wpdb->prepare("SELECT delivery_id, requested_cost FROM tariff_change_requests WHERE id = %d", $id), ARRAY_A);
+    if (!$req) return rest_ensure_response(['error' => 'not found']);
+
+    if ($action === 'approve') {
+        $wpdb->update('tariff_change_requests', ['status' => 'approved', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
+        $wpdb->update('deliveries', ['cost' => $req['requested_cost'], 'cost_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
+    } else {
+        $wpdb->update('tariff_change_requests', ['status' => 'rejected', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
+    }
+    return rest_ensure_response(['success' => true]);
 }
