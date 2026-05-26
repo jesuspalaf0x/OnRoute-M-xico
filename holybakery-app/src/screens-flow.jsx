@@ -591,13 +591,15 @@ function ResultadoScreen({ goTo, quoteData }) {
     const draftData = {
       status: "borrador",
       destinationName,
+      destination_name: destinationName,
       zoneName,
       place_id,
       latitude: lat,
       longitude: lng,
       formatted_address,
       maps_link,
-      cost: foreignPrice // or localPrice depending on logic
+      cost: foreignPrice,
+      cost_type: "foreign"
     };
 
     try {
@@ -1008,6 +1010,7 @@ function ReservaScreen({ goTo, quoteData }) {
               const draftData = {
                 status: "borrador",
                 destinationName,
+                destination_name: destinationName,
                 zoneName,
                 place_id,
                 latitude: lat,
@@ -1016,10 +1019,15 @@ function ReservaScreen({ goTo, quoteData }) {
                 maps_link,
                 cost,
                 date,
+                delivery_date: date,
                 time,
+                delivery_time: time,
                 client,
+                client_name: client,
                 phone: normalizeToE164(phone),
+                client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
+                client_phone2: normalizeToE164(phone2),
                 comments
               };
 
@@ -1065,6 +1073,7 @@ function ReservaScreen({ goTo, quoteData }) {
               const draftData = {
                 status: "pendiente_envio",
                 destinationName,
+                destination_name: destinationName,
                 zoneName,
                 place_id,
                 latitude: lat,
@@ -1073,10 +1082,15 @@ function ReservaScreen({ goTo, quoteData }) {
                 maps_link,
                 cost,
                 date,
+                delivery_date: date,
                 time,
+                delivery_time: time,
                 client,
+                client_name: client,
                 phone: normalizeToE164(phone),
+                client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
+                client_phone2: normalizeToE164(phone2),
                 comments
               };
 
@@ -1246,8 +1260,9 @@ Comentarios: ${commentsDisplay}`;
   const handleConfirm = async () => {
     if (id) {
       const token = sessionStorage.getItem("wp_token");
+      const numericId = id.replace(/DLV-0*/, "");
       try {
-        await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${id}`, {
+        await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${numericId}`, {
           method: "PUT", // assuming POST or PUT to update
           headers: {
             "Content-Type": "application/json",
