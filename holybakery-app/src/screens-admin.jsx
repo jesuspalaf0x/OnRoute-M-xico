@@ -34,8 +34,8 @@ function AdminPanel() {
 
     if (pendReq) {
       const formatted = [
-        ...(pendReq.cancellations || []).map(c => ({ id: c.id, dlv_id: c.delivery_id, type: "Cancelación", desc: `Motivo: ${c.reason}`, cta: "Aprobar", raw: c })),
-        ...(pendReq.tariff_changes || []).map(t => ({ id: t.id, dlv_id: t.delivery_id, type: "Cambio de tarifa", desc: `De $${t.current_cost} a $${t.requested_cost}`, cta: "Aprobar", raw: t }))
+        ...(pendReq.cancellations || []).map(c => ({ id: c.id, dlv_id: c.tracking_code || `DLV-${c.delivery_id}`, type: "Cancelación", desc: `Motivo: ${c.reason}`, cta: "Aprobar", raw: c })),
+        ...(pendReq.tariff_changes || []).map(t => ({ id: t.id, dlv_id: t.tracking_code || `DLV-${t.delivery_id}`, type: "Cambio de tarifa", desc: `De $${t.current_cost} a $${t.requested_cost}`, cta: "Aprobar", raw: t }))
       ];
       setApprovals(formatted);
     }
@@ -184,7 +184,7 @@ function AdminReservas() {
             {deliveries.map(d => (
               <tr key={d.id} style={d.status==="cancelada" ? {opacity:0.55} : {}}>
                 <td><input type="checkbox" defaultChecked={d.status==="entregada" && !d.paid}/></td>
-                <td className="id-cell">{d.id}</td>
+                <td className="id-cell">{d.tracking_code || d.id}</td>
                 <td className="nowrap">{d.date}</td>
                 <td><strong>{d.destination}</strong> <span className="muted" style={{fontSize:11}}>· {d.zone}</span></td>
                 <td>{d.employee}</td>
@@ -268,7 +268,7 @@ function AdminPagos() {
               {pending.map(d => (
                 <tr key={d.id}>
                   <td><input type="checkbox" checked={selectedIds.includes(d.id)} onChange={() => toggleSelect(d.id)}/></td>
-                  <td className="id-cell">{d.id}</td>
+                  <td className="id-cell">{d.tracking_code || d.id}</td>
                   <td className="nowrap">{d.date}</td>
                   <td><strong>{d.destination}</strong></td>
                   <td>{d.employee}</td>

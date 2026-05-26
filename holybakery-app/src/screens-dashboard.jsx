@@ -230,7 +230,7 @@ function EmpResumen({ goTo }) {
               <tbody>
                 {loading ? <tr><td colSpan="6" style={{textAlign: "center", padding: "20px"}}>Cargando...</td></tr> : upcoming.map(d => (
                   <tr key={d.id}>
-                    <td className="id-cell">{d.id}</td>
+                    <td className="id-cell">{d.tracking_code || d.id}</td>
                     <td>{d.date}</td>
                     <td><strong>{d.destinationName || d.destination}</strong> <span className="muted" style={{fontSize:11}}> · {d.zoneName || d.zone}</span></td>
                     <td>{d.employee}</td>
@@ -331,7 +331,7 @@ function EmpReservas() {
           <tbody>
             {loading ? <tr><td colSpan="9" style={{textAlign: "center", padding: "20px"}}>Cargando...</td></tr> : list.map(d => (
               <tr key={d.id} style={d.status==="cancelada" ? {opacity:0.55} : {}}>
-                <td className="id-cell">{d.id}</td>
+                <td className="id-cell">{d.tracking_code || d.id}</td>
                 <td className="nowrap">{d.date}</td>
                 <td><strong>{d.destinationName || d.destination}</strong><div className="muted" style={{fontSize:11}}>{d.zoneName || d.zone}</div></td>
                 <td>{d.client}<div className="muted" style={{fontSize:11}}>{d.phone}</div></td>
