@@ -668,6 +668,7 @@ input, select, textarea { font-family: inherit; }
   text-align: left;
 }
 .wa-bubble {
+  text-align: left;
   background: #dcf8c6;
   border-radius: 12px;
   padding: 12px 14px;

@@ -966,7 +966,9 @@ function ReservaScreen({ goTo, quoteData }) {
               </div>
               <div>
                 <label className="label">Comentarios e instrucciones</label>
-                <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder="Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery." className="campo-textarea" />
+                <div className="field field-textarea">
+                  <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder="Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery." />
+                </div>
                 <div className="adjuntos-area" style={{ marginTop: 16 }}>
                   <div className="adjuntos-info">
                     <I.Paperclip size={18} className="adjuntos-icono" />
@@ -1242,7 +1244,7 @@ Comentarios: ${commentsDisplay}`;
       const token = sessionStorage.getItem("wp_token");
       try {
         await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${id}`, {
-          method: "POST", // assuming POST or PUT to update
+          method: "PUT", // assuming POST or PUT to update
           headers: {
             "Content-Type": "application/json",
             "Authorization": token ? `Bearer ${token}` : ""
@@ -1265,7 +1267,7 @@ Comentarios: ${commentsDisplay}`;
               <I.Check size={24} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: 22 }}>Reserva creada</h2>
+              <h2 style={{ margin: 0, fontSize: 22, color: "var(--ink)" }}>Reserva creada</h2>
               <div className="muted" style={{ fontSize: 13 }}>ID asignado: <span className="mono" style={{ color: "var(--ink)", fontWeight: 700 }}>{id || "DLV-043"}</span></div>
             </div>
           </div>
