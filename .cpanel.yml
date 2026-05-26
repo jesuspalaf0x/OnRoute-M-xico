@@ -1,14 +1,14 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=../../public_html
-    - /bin/rm -f $DEPLOYPATH/index.html
-    - /bin/cp debug-schema.php $DEPLOYPATH/debug-schema.php
-    - /bin/cp deploy-plugin.php $DEPLOYPATH/deploy-plugin.php
-    - /bin/cp uploads/schema-info.php $DEPLOYPATH/schema-info.php
-    - /bin/cp holybakery_api_confirm.php $DEPLOYPATH/wp-content/plugins/holybakery_api_confirm.php
-    - /bin/cp -R assets $DEPLOYPATH
-    - /bin/cp -R shared $DEPLOYPATH
-    - /bin/cp -R variations $DEPLOYPATH
-    - /bin/cp -R pages $DEPLOYPATH
-    - /bin/cp -R uploads $DEPLOYPATH
+    # ⚠️  IMPORTANTE: Este repo despliega ÚNICAMENTE el plugin de WordPress al subdominio holybakery.onroutemx.com
+    # La ruta ../../public_html apunta a onroutemx.com (sitio web principal) — NO USAR para archivos de la app.
+    # Solo copiar el plugin PHP al WordPress de holybakery (que tiene su propio wp-content)
+    - export HOLYBAKERY_WP=../../subdomains/holybakery/public_html
+
+    # Copiar el plugin de WordPress al subdominio holybakery
+    - /bin/cp holybakery_api_confirm.php $HOLYBAKERY_WP/wp-content/plugins/holybakery_api_confirm.php
+
+    # Copiar script de limpieza al dominio PRINCIPAL para ejecutarlo manualmente desde navegador
+    # NOTA: Este script limpia los archivos de la app que se copiaron accidentalmente
+    - /bin/cp cleanup-main-domain.php ../../public_html/cleanup-main-domain.php
