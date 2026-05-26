@@ -155,6 +155,15 @@ function hb_create_delivery(WP_REST_Request $request) {
         $scheduled_date = $date . (!empty($time) ? ' ' . $time : ' 00:00:00');
     }
 
+    // Verify if the driver exists to satisfy the foreign key constraint
+    $driver_id = isset($params['employee_id']) ? intval($params['employee_id']) : null;
+    if ($driver_id) {
+        $driver_exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM employees WHERE id = %d", $driver_id));
+        if (!$driver_exists) {
+            $driver_id = null;
+        }
+    }
+
     $data = [
         'client_id' => isset($params['client_id']) ? intval($params['client_id']) : 1,
         'customer_name' => sanitize_text_field($params['client_name'] ?? $params['client'] ?? ''),
@@ -164,7 +173,7 @@ function hb_create_delivery(WP_REST_Request $request) {
         'cost' => floatval($params['cost'] ?? 0),
         'tariff_type' => sanitize_text_field($params['cost_type'] ?? 'local'),
         'status' => sanitize_text_field($params['status'] ?? 'confirmada'),
-        'driver_id' => intval($params['employee_id'] ?? 1),
+        'driver_id' => $driver_id,
         'tracking_code' => 'DLV-TEMP-' . rand(100000, 999999), // unique non-null temp tracking code
         'comments' => sanitize_text_field($params['comments'] ?? ''),
         'created_at' => current_time('mysql'),
