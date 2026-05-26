@@ -9,43 +9,33 @@ $paths = [
 ];
 
 $loaded = false;
+$found_path = '';
 foreach ($paths as $path) {
     if (file_exists($path)) {
         require_once($path);
         $loaded = true;
+        $found_path = $path;
         break;
     }
 }
 
-if (!$loaded) {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'success' => false,
-        'message' => "WordPress wp-load.php not found. Checked: " . implode(', ', $paths)
-    ], JSON_PRETTY_PRINT);
-    exit;
+$base_dir = dirname($found_path);
+$plugins_dir = $base_dir . '/wp-content/plugins';
+
+$plugins = [];
+if (is_dir($plugins_dir)) {
+    $files = scandir($plugins_dir);
+    foreach ($files as $file) {
+        if ($file !== '.' && $file !== '..' && is_dir($plugins_dir . '/' . $file)) {
+            $plugins[] = $file;
+        }
+    }
 }
-
-global $wpdb;
-$table_name = 'deliveries';
-
-$table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") === $table_name;
-
-if (!$table_exists) {
-    header('Content-Type: application/json');
-    echo json_encode([
-        'success' => false,
-        'message' => "Table '$table_name' does not exist."
-    ], JSON_PRETTY_PRINT);
-    exit;
-}
-
-$columns = $wpdb->get_results("DESCRIBE $table_name", ARRAY_A);
 
 header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
-    'table' => $table_name,
-    'columns' => $columns
+    'plugins_dir' => $plugins_dir,
+    'plugins' => $plugins
 ], JSON_PRETTY_PRINT);
 ?>
