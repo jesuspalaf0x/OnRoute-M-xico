@@ -187,7 +187,7 @@ function hb_create_delivery(WP_REST_Request $request) {
         ]);
     }
 
-    return new WP_Error('insert_failed', 'Failed to create delivery', ['status' => 500]);
+    return new WP_Error('insert_failed', 'Failed to create delivery. Error: ' . $wpdb->last_error, ['status' => 500]);
 }
 
 function hb_update_delivery(WP_REST_Request $request) {
