@@ -312,8 +312,13 @@ function hb_admin_update_status(WP_REST_Request $request) {
     if ($status === 'entregada') $update['delivered_at'] = current_time('mysql');
     if ($status === 'pagada') $update['paid_at'] = current_time('mysql');
 
-    $wpdb->update('deliveries', $update, ['id' => $id]);
-    return rest_ensure_response(['success' => true]);
+    $result = $wpdb->update('deliveries', $update, ['id' => $id]);
+    return rest_ensure_response([
+        'success' => $result !== false,
+        'result' => $result,
+        'error' => $wpdb->last_error,
+        'query' => $wpdb->last_query
+    ]);
 }
 
 function hb_get_extras(WP_REST_Request $request) {
