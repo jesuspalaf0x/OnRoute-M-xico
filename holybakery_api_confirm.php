@@ -406,5 +406,5 @@ function hb_debug_db() {
     global $wpdb;
     $c = $wpdb->get_col("DESCRIBE cancellation_requests");
     $t = $wpdb->get_col("DESCRIBE tariff_change_requests");
-    return rest_ensure_response(['c' => $c, 't' => $t]);
+    return rest_ensure_response(base64_encode(json_encode(['c' => $c, 't' => $t])));
 }
