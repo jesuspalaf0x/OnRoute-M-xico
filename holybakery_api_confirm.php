@@ -17,6 +17,12 @@ add_action( 'rest_api_init', function () {
         'callback' => 'hb_get_deliveries',
         'permission_callback' => '__return_true',
     ]);
+
+    register_rest_route( $ns, '/deliveries', [
+        'methods' => 'POST',
+        'callback' => 'hb_create_delivery',
+        'permission_callback' => '__return_true',
+    ]);
     
     register_rest_route( $ns, '/deliveries/(?P<id>[a-zA-Z0-9-]+)', [
         'methods' => ['PATCH', 'PUT'],
@@ -136,6 +142,42 @@ function hb_get_deliveries(WP_REST_Request $request) {
     }
 
     return rest_ensure_response(['total' => (int)$total, 'items' => $items]);
+}
+
+function hb_create_delivery(WP_REST_Request $request) {
+    global $wpdb;
+    $params = $request->get_json_params();
+
+    $data = [
+        'client_id' => isset($params['client_id']) ? $params['client_id'] : 1,
+        'client_name' => sanitize_text_field($params['client_name']),
+        'client_phone' => sanitize_text_field($params['client_phone']),
+        'destination_name' => sanitize_text_field($params['destination_name']),
+        'delivery_date' => sanitize_text_field($params['delivery_date']),
+        'delivery_time' => sanitize_text_field($params['delivery_time']),
+        'cost' => floatval($params['cost']),
+        'cost_type' => sanitize_text_field($params['cost_type'] ?? 'local'),
+        'status' => sanitize_text_field($params['status'] ?? 'confirmada'),
+        'employee_id' => intval($params['employee_id'] ?? 1),
+        'created_at' => current_time('mysql'),
+    ];
+
+    if ($data['status'] === 'confirmada') {
+        $data['confirmed_at'] = current_time('mysql');
+    }
+
+    $inserted = $wpdb->insert('deliveries', $data);
+
+    if ($inserted) {
+        $insert_id = $wpdb->insert_id;
+        return rest_ensure_response([
+            'success' => true,
+            'id' => $insert_id,
+            'status' => $data['status']
+        ]);
+    }
+
+    return new WP_Error('insert_failed', 'Failed to create delivery', ['status' => 500]);
 }
 
 function hb_update_delivery(WP_REST_Request $request) {

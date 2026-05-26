@@ -602,7 +602,7 @@ function ResultadoScreen({ goTo, quoteData }) {
 
     try {
       // Connect to the real database via WP REST API custom endpoint
-      const res = await fetch("https://onroutemx.com/wp-json/holybakery/v1/deliveries", {
+      const res = await fetch("https://onroutemx.com/wp-json/hb/v1/deliveries", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1018,7 +1018,7 @@ function ReservaScreen({ goTo, quoteData }) {
               };
 
               try {
-                const res = await fetch("https://onroutemx.com/wp-json/holybakery/v1/deliveries", {
+                const res = await fetch("https://onroutemx.com/wp-json/hb/v1/deliveries", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -1035,7 +1035,7 @@ function ReservaScreen({ goTo, quoteData }) {
                     const formData = new FormData();
                     files.forEach(f => formData.append('files[]', f));
                     try {
-                      await fetch(`https://onroutemx.com/wp-json/holybakery/v1/deliveries/${newId}/upload`, {
+                      await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${newId}/upload`, {
                         method: 'POST',
                         headers: { "Authorization": token ? `Bearer ${token}` : "" },
                         body: formData
@@ -1075,7 +1075,7 @@ function ReservaScreen({ goTo, quoteData }) {
               };
 
               try {
-                const res = await fetch("https://onroutemx.com/wp-json/holybakery/v1/deliveries", {
+                const res = await fetch("https://onroutemx.com/wp-json/hb/v1/deliveries", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -1092,7 +1092,7 @@ function ReservaScreen({ goTo, quoteData }) {
                     const formData = new FormData();
                     files.forEach(f => formData.append('files[]', f));
                     try {
-                      await fetch(`https://onroutemx.com/wp-json/holybakery/v1/deliveries/${newId}/upload`, {
+                      await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${newId}/upload`, {
                         method: 'POST',
                         headers: { "Authorization": token ? `Bearer ${token}` : "" },
                         body: formData
@@ -1241,7 +1241,7 @@ Comentarios: ${commentsDisplay}`;
     if (id) {
       const token = sessionStorage.getItem("wp_token");
       try {
-        await fetch(`https://onroutemx.com/wp-json/holybakery/v1/deliveries/${id}`, {
+        await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${id}`, {
           method: "POST", // assuming POST or PUT to update
           headers: {
             "Content-Type": "application/json",
