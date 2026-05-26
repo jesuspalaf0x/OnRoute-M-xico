@@ -89,6 +89,12 @@ add_action( 'rest_api_init', function () {
         'callback' => 'hb_approve_tariff',
         'permission_callback' => '__return_true',
     ]);
+
+    register_rest_route( $ns, '/debug-db', [
+        'methods' => 'GET',
+        'callback' => 'hb_debug_db',
+        'permission_callback' => '__return_true',
+    ]);
 });
 
 function hb_get_deliveries(WP_REST_Request $request) {
@@ -387,10 +393,18 @@ function hb_approve_tariff(WP_REST_Request $request) {
     if (!$req) return rest_ensure_response(['error' => 'not found']);
 
     if ($action === 'approve') {
+        $new_cost = isset($params['cost']) ? floatval($params['cost']) : $req['requested_cost'];
         $wpdb->update('tariff_change_requests', ['status' => 'approved', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
-        $wpdb->update('deliveries', ['cost' => $req['requested_cost'], 'tariff_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
+        $wpdb->update('deliveries', ['cost' => $new_cost, 'tariff_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
     } else {
         $wpdb->update('tariff_change_requests', ['status' => 'rejected', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
     }
     return rest_ensure_response(['success' => true]);
+}
+
+function hb_debug_db() {
+    global $wpdb;
+    $c = $wpdb->get_results("DESCRIBE cancellation_requests", ARRAY_A);
+    $t = $wpdb->get_results("DESCRIBE tariff_change_requests", ARRAY_A);
+    return rest_ensure_response(['c' => $c, 't' => $t]);
 }
