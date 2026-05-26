@@ -2,7 +2,7 @@
 /**
  * Plugin Name: OnRoute Holy Bakery - Gestión de Reservas y Estados
  * Description: Endpoints de WordPress REST API para confirmar reservas y gestionar la máquina de estados.
- * Version: 3.0 (D-1 a D-7 Integration)
+ * Version: 3.1 (Correct DB Mappings)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -110,15 +110,15 @@ function hb_get_deliveries(WP_REST_Request $request) {
     }
     
     if (isset($_GET['date_from'])) {
-        $where[] = "delivery_date >= %s";
-        $args[] = sanitize_text_field($_GET['date_from']);
+        $where[] = "scheduled_date >= %s";
+        $args[] = sanitize_text_field($_GET['date_from']) . ' 00:00:00';
     }
     if (isset($_GET['date_to'])) {
-        $where[] = "delivery_date <= %s";
-        $args[] = sanitize_text_field($_GET['date_to']);
+        $where[] = "scheduled_date <= %s";
+        $args[] = sanitize_text_field($_GET['date_to']) . ' 23:59:59';
     }
     if (isset($_GET['employee_id'])) {
-        $where[] = "employee_id = %d";
+        $where[] = "driver_id = %d";
         $args[] = intval($_GET['employee_id']);
     }
 
@@ -131,14 +131,13 @@ function hb_get_deliveries(WP_REST_Request $request) {
 
     foreach ($items as &$row) {
         $row['cost'] = (float)$row['cost'];
-        // mock map values for frontend expectations
-        $row['date'] = $row['delivery_date'] . ' ' . $row['delivery_time'];
+        // Map database columns to frontend expectations
+        $row['date'] = $row['scheduled_date'];
         $row['destinationName'] = $row['destination_name'];
-        $row['client'] = $row['client_name'];
-        $row['phone'] = $row['client_phone'];
+        $row['client'] = $row['customer_name'];
+        $row['phone'] = $row['phones'];
         $row['paid'] = ($row['status'] === 'pagada') || !empty($row['paid_at']);
-        // we mock employee_name since table might not have it joined
-        $row['employee'] = $row['employee_name'] ?? 'Empleado ' . $row['employee_id'];
+        $row['employee'] = $row['employee_name'] ?? 'Empleado ' . $row['driver_id'];
     }
 
     return rest_ensure_response(['total' => (int)$total, 'items' => $items]);
@@ -148,34 +147,43 @@ function hb_create_delivery(WP_REST_Request $request) {
     global $wpdb;
     $params = $request->get_json_params();
 
+    // Prepare scheduled_date by merging date and time
+    $date = sanitize_text_field($params['delivery_date'] ?? $params['date'] ?? '');
+    $time = sanitize_text_field($params['delivery_time'] ?? $params['time'] ?? '');
+    $scheduled_date = null;
+    if (!empty($date)) {
+        $scheduled_date = $date . (!empty($time) ? ' ' . $time : ' 00:00:00');
+    }
+
     $data = [
-        'client_id' => 1,
-        'client_name' => sanitize_text_field($params['client'] ?? ''),
-        'client_phone' => sanitize_text_field($params['phone'] ?? ''),
-        'client_phone2' => sanitize_text_field($params['phone2'] ?? ''),
-        'destination_name' => sanitize_text_field($params['destinationName'] ?? ''),
-        'delivery_date' => sanitize_text_field($params['date'] ?? ''),
-        'delivery_time' => sanitize_text_field($params['time'] ?? ''),
+        'client_id' => isset($params['client_id']) ? intval($params['client_id']) : 1,
+        'customer_name' => sanitize_text_field($params['client_name'] ?? $params['client'] ?? ''),
+        'phones' => sanitize_text_field($params['client_phone'] ?? $params['phone'] ?? ''),
+        'destination_name' => sanitize_text_field($params['destination_name'] ?? $params['destinationName'] ?? ''),
+        'scheduled_date' => $scheduled_date,
         'cost' => floatval($params['cost'] ?? 0),
-        'cost_type' => sanitize_text_field($params['cost_type'] ?? 'local'),
+        'tariff_type' => sanitize_text_field($params['cost_type'] ?? 'local'),
         'status' => sanitize_text_field($params['status'] ?? 'confirmada'),
-        'employee_id' => intval($params['employee_id'] ?? 2),
-        'comments' => sanitize_textarea_field($params['comments'] ?? ''),
+        'driver_id' => intval($params['employee_id'] ?? 1),
+        'tracking_code' => 'DLV-TEMP-' . rand(100000, 999999), // unique non-null temp tracking code
+        'comments' => sanitize_text_field($params['comments'] ?? ''),
         'created_at' => current_time('mysql'),
     ];
-
-    if ($data['status'] === 'confirmada') {
-        $data['confirmed_at'] = current_time('mysql');
-    }
 
     $inserted = $wpdb->insert('deliveries', $data);
 
     if ($inserted) {
         $insert_id = $wpdb->insert_id;
+        $tracking_code = 'DLV-' . str_pad($insert_id, 3, '0', STR_PAD_LEFT);
+        
+        // Update tracking code dynamically
+        $wpdb->update('deliveries', ['tracking_code' => $tracking_code], ['id' => $insert_id]);
+        
         return rest_ensure_response([
             'success' => true,
             'id' => $insert_id,
-            'status' => $data['status']
+            'status' => $data['status'],
+            'tracking_code' => $tracking_code
         ]);
     }
 
@@ -187,16 +195,26 @@ function hb_update_delivery(WP_REST_Request $request) {
     $id = sanitize_text_field($request['id']);
     $params = $request->get_json_params();
     $data_to_update = [];
-    if (isset($params['delivery_date'])) $data_to_update['delivery_date'] = $params['delivery_date'];
-    if (isset($params['delivery_time'])) $data_to_update['delivery_time'] = $params['delivery_time'];
-    if (isset($params['client_name'])) $data_to_update['client_name'] = $params['client_name'];
-    if (isset($params['client_phone'])) $data_to_update['client_phone'] = $params['client_phone'];
-    if (isset($params['client_phone2'])) $data_to_update['client_phone2'] = $params['client_phone2'];
+    
+    // Map dates to scheduled_date
+    $date = isset($params['delivery_date']) ? $params['delivery_date'] : (isset($params['date']) ? $params['date'] : null);
+    $time = isset($params['delivery_time']) ? $params['delivery_time'] : (isset($params['time']) ? $params['time'] : null);
+    if ($date || $time) {
+        $current_date = $wpdb->get_var($wpdb->prepare("SELECT scheduled_date FROM deliveries WHERE id = %s", $id));
+        $current_parts = explode(' ', $current_date ?? ' ');
+        $d = $date ? $date : ($current_parts[0] ? $current_parts[0] : '');
+        $t = $time ? $time : ($current_parts[1] ? $current_parts[1] : '00:00:00');
+        $data_to_update['scheduled_date'] = $d . ' ' . $t;
+    }
+    
+    if (isset($params['client_name']) || isset($params['client'])) {
+        $data_to_update['customer_name'] = sanitize_text_field($params['client_name'] ?? $params['client']);
+    }
+    if (isset($params['client_phone']) || isset($params['phone'])) {
+        $data_to_update['phones'] = sanitize_text_field($params['client_phone'] ?? $params['phone']);
+    }
     if (isset($params['status'])) {
-        $data_to_update['status'] = $params['status'];
-        if ($params['status'] === 'confirmada') {
-            $data_to_update['confirmed_at'] = current_time('mysql');
-        }
+        $data_to_update['status'] = sanitize_text_field($params['status']);
     }
     
     if (!empty($data_to_update)) {
@@ -207,7 +225,6 @@ function hb_update_delivery(WP_REST_Request $request) {
 
 function hb_get_employee_on_shift(WP_REST_Request $request) {
     global $wpdb;
-    // Mock Tulum time
     $dt = new DateTime("now", new DateTimeZone("America/Cancun"));
     $current_time = $dt->format("H:i:s");
 
@@ -231,16 +248,13 @@ function hb_get_credit_summary(WP_REST_Request $request) {
     $date_from = isset($_GET['date_from']) ? sanitize_text_field($_GET['date_from']) : date('Y-m-01');
     $date_to = isset($_GET['date_to']) ? sanitize_text_field($_GET['date_to']) : date('Y-m-t');
 
-    // total pendientes: status = entregada AND NOT paid
     $total_pendiente_del = $wpdb->get_var("SELECT SUM(cost) FROM deliveries WHERE status = 'entregada'");
-    $total_pendiente_ext = $wpdb->get_var("SELECT SUM(cost) FROM extra_services WHERE paid = 0"); // assuming extra_services has paid col, or similar. We mock it.
+    $total_pendiente_ext = $wpdb->get_var("SELECT SUM(cost) FROM extra_services WHERE paid = 0");
     
-    // As per specs: "CRÉDITO HOLY BAKERY (total_pendiente): = SUM(deliveries.cost WHERE status='entregada') + SUM(extra_services.cost WHERE no están pagados)"
-    // Let's assume all extra_services are pending for simplicity or they have a paid_at field.
     $total_pendiente = (float)$total_pendiente_del + (float)$total_pendiente_ext;
 
-    $total_acumulado = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM deliveries WHERE (status = 'entregada' OR status = 'pagada') AND delivery_date >= %s AND delivery_date <= %s", $date_from, $date_to));
-    $total_pagado = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM deliveries WHERE status = 'pagada' AND delivery_date >= %s AND delivery_date <= %s", $date_from, $date_to));
+    $total_acumulado = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM deliveries WHERE (status = 'entregada' OR status = 'pagada') AND scheduled_date >= %s AND scheduled_date <= %s", $date_from . ' 00:00:00', $date_to . ' 23:59:59'));
+    $total_pagado = $wpdb->get_var($wpdb->prepare("SELECT SUM(cost) FROM deliveries WHERE status = 'pagada' AND scheduled_date >= %s AND scheduled_date <= %s", $date_from . ' 00:00:00', $date_to . ' 23:59:59'));
     $total_reservations = $wpdb->get_var("SELECT COUNT(*) FROM deliveries WHERE status != 'borrador' AND status != 'cancelada'");
     
     $extras_mes = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM extra_services WHERE service_date >= %s AND service_date <= %s", $date_from, $date_to));
@@ -315,7 +329,6 @@ function hb_request_cancellation(WP_REST_Request $request) {
         'status' => 'pending',
         'created_at' => current_time('mysql')
     ]);
-    // update status in deliveries to cancelacion_pendiente immediately for optimistic
     $wpdb->update('deliveries', ['status' => 'cancelacion_pendiente'], ['id' => $params['delivery_id']]);
     return rest_ensure_response(['success' => true]);
 }
@@ -338,7 +351,7 @@ function hb_approve_cancellation(WP_REST_Request $request) {
     global $wpdb;
     $id = intval($request['id']);
     $params = $request->get_json_params();
-    $action = $params['action']; // 'approve' or 'reject'
+    $action = $params['action']; 
     $admin_id = $params['admin_id'];
 
     $req = $wpdb->get_row($wpdb->prepare("SELECT delivery_id FROM cancellation_requests WHERE id = %d", $id), ARRAY_A);
@@ -366,7 +379,7 @@ function hb_approve_tariff(WP_REST_Request $request) {
 
     if ($action === 'approve') {
         $wpdb->update('tariff_change_requests', ['status' => 'approved', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
-        $wpdb->update('deliveries', ['cost' => $req['requested_cost'], 'cost_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
+        $wpdb->update('deliveries', ['cost' => $req['requested_cost'], 'tariff_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
     } else {
         $wpdb->update('tariff_change_requests', ['status' => 'rejected', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
     }
