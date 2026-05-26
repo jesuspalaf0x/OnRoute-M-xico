@@ -9,6 +9,7 @@ deployment:
     # Copiar el plugin de WordPress al subdominio holybakery
     - /bin/cp holybakery_api_confirm.php $HOLYBAKERY_WP/wp-content/plugins/holybakery_api_confirm.php
 
-    # Copiar script de limpieza al dominio PRINCIPAL para ejecutarlo manualmente desde navegador
-    # NOTA: Este script limpia los archivos de la app que se copiaron accidentalmente
+    # Copiar scripts de reparación al dominio PRINCIPAL para ejecutarlos manualmente
+    # NOTA: Estos scripts limpian los archivos de la app que se copiaron accidentalmente
     - /bin/cp cleanup-main-domain.php ../../public_html/cleanup-main-domain.php
+    - /bin/cp fix-wp-plugin.php ../../public_html/fix-wp-plugin.php
