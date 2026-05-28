@@ -182,3 +182,182 @@ code {
   color: #6c736f !important; /* --muted del proyecto */
   margin-left: 4px !important;
 }
+
+/* ============ Solicitudes Modal ============ */
+.sol-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(12,26,18,0.55);
+  backdrop-filter: blur(6px);
+  z-index: 110;
+  display: grid; place-items: center;
+  padding: 24px;
+  animation: sol-fade 160ms ease-out;
+}
+@keyframes sol-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sol-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.sol-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: 0 1px 0 rgba(12,26,18,0.04), 0 18px 48px rgba(12,26,18,0.10);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  animation: sol-pop 220ms cubic-bezier(.2,.7,.2,1);
+}
+.sol-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 22px 24px 20px;
+  border-bottom: 1px solid var(--line);
+  gap: 16px;
+}
+.sol-title { margin: 0 0 2px; font-size: 19px; letter-spacing: -0.015em; font-weight: 800; color: var(--ink); }
+.sol-sub { margin: 0; font-size: 13.5px; color: var(--muted); }
+.sol-sub strong { color: var(--ink); font-family: "Geist Mono", monospace; font-weight: 700; letter-spacing: -0.01em; }
+.sol-close {
+  border: 0; background: var(--bg-alt); color: var(--ink);
+  width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center; cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms;
+}
+.sol-close:hover { background: var(--line-strong); }
+.sol-close:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.sol-body {
+  padding: 18px;
+  display: flex; flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.sol-section {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  transition: background 240ms ease, border-color 240ms ease;
+}
+.sol-section.is-requested {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft-2);
+}
+.sol-section-head {
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-bottom: 16px;
+}
+.sol-section-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.sol-icon-cancel { background: var(--danger-soft); color: var(--danger); }
+.sol-icon-tariff { background: var(--warning-soft); color: var(--warning); }
+.sol-section-head h4 {
+  margin: 0 0 4px;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.sol-section-head p {
+  margin: 0; font-size: 13px;
+  color: var(--muted); line-height: 1.45;
+}
+.sol-section-head p strong { color: var(--ink); font-weight: 700; }
+
+.sol-inputs {
+  display: flex; flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.sol-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  outline: 0;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.sol-input::placeholder { color: #a3a8a4; }
+.sol-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(22,163,74,0.12);
+}
+.sol-input:disabled {
+  background: var(--bg-alt);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.sol-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sol-btn-primary,
+.sol-btn-wa {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 160ms, color 160ms, border-color 160ms, transform 80ms, box-shadow 200ms;
+  white-space: nowrap;
+}
+.sol-btn-primary { background: var(--primary); color: white; }
+.sol-btn-primary:hover { background: var(--primary-hover); }
+.sol-btn-primary:active { transform: translateY(1px); }
+.sol-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.sol-btn-done {
+  background: #e6e6e1 !important;
+  color: var(--muted) !important;
+  cursor: default;
+}
+.sol-btn-done:hover { background: #e6e6e1; }
+
+.sol-btn-wa {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.sol-btn-wa:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  color: var(--muted);
+}
+.sol-btn-wa--active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0 rgba(22,163,74,0.55);
+  animation: sol-wa-pulse 1.8s ease-out infinite;
+}
+.sol-btn-wa--active:hover {
+  background: #128a3e;
+  border-color: #128a3e;
+}
+.sol-btn-wa--active:active { transform: translateY(1px); }
+@keyframes sol-wa-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.50); }
+  60%  { box-shadow: 0 0 0 14px rgba(22,163,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+}
+
+@media (max-width: 520px) {
+  .sol-actions { grid-template-columns: 1fr; }
+}

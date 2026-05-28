@@ -294,8 +294,8 @@ const SummaryCard = ({ label, value, sub, tone }) => (
   </div>
 );
 
-/* ============ ADMIN — CANCELACIONES ============ */
-function AdminCancelaciones() {
+/* ============ ADMIN — SOLICITUDES ============ */
+function AdminSolicitudes() {
   const [requests, setRequests] = useStateA([]);
   const [activeTariffRequest, setActiveTariffRequest] = useStateA(null);
   const [newTariffCost, setNewTariffCost] = useStateA("");
@@ -412,7 +412,7 @@ function AdminCancelaciones() {
                   <strong>Detalle de la solicitud:</strong> "{req.reason || "Sin especificar"}"
                 </div>
                 
-                <div className="row" style={{gridTemplateColumns:"repeat(4, 1fr)", gap: 12, marginTop: 14}}>
+                <div className="row" style={{gridTemplateColumns: req.type === "tariff_change" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: 12, marginTop: 14}}>
                   <Mini label="Costo original" value={fmtMXN_A(req.cost || req.old_tariff || 0)}/>
                   {req.type === "tariff_change" && (
                     <Mini label="Costo solicitado" value={fmtMXN_A(req.requested_cost || req.new_tariff || 0)}/>
@@ -827,4 +827,4 @@ function AdminBank() {
   );
 }
 
-window.AdminScreens = { AdminPanel, AdminReservas, AdminPagos, AdminCancelaciones, AdminExtras, AdminZonas, AdminPref, AdminTC, AdminBank };
+window.AdminScreens = { AdminPanel, AdminReservas, AdminPagos, AdminSolicitudes, AdminExtras, AdminZonas, AdminPref, AdminTC, AdminBank };

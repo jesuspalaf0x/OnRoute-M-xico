@@ -41,11 +41,11 @@ function App() {
     const sec = screen.replace("adm/","");
     const map = {
       panel: <A.AdminPanel goTo={goTo}/>, reservas: <A.AdminReservas goTo={goTo}/>, pagos: <A.AdminPagos goTo={goTo}/>,
-      cancelaciones: <A.AdminCancelaciones goTo={goTo}/>, extras: <A.AdminExtras goTo={goTo}/>,
+      solicitudes: <A.AdminSolicitudes goTo={goTo}/>, extras: <A.AdminExtras goTo={goTo}/>,
       "config-zonas": <A.AdminZonas goTo={goTo}/>, "config-pref": <A.AdminPref goTo={goTo}/>, "config-tc": <A.AdminTC goTo={goTo}/>, "config-bank": <A.AdminBank goTo={goTo}/>,
       zonas: <A.AdminZonas goTo={goTo}/>, pref: <A.AdminPref goTo={goTo}/>, tc: <A.AdminTC goTo={goTo}/>, bank: <A.AdminBank goTo={goTo}/>,
     };
-    const navMap = { panel:"panel", reservas:"reservas", pagos:"pagos", cancelaciones:"cancelaciones", extras:"extras", zonas:"config-zonas", pref:"config-pref", tc:"config-tc", bank:"config-bank" };
+    const navMap = { panel:"panel", reservas:"reservas", pagos:"pagos", solicitudes:"solicitudes", extras:"extras", zonas:"config-zonas", pref:"config-pref", tc:"config-tc", bank:"config-bank" };
     body = <Shell role="admin" section={navMap[sec] || sec} setSection={(k) => {
       const inv = { "config-zonas":"zonas", "config-pref":"pref", "config-tc":"tc", "config-bank":"bank" };
       setScreen("adm/" + (inv[k] || k));
