@@ -409,7 +409,7 @@ function hb_approve_cancellation(WP_REST_Request $request) {
 
     if ($action === 'approve') {
         $wpdb->update('cancellation_requests', ['status' => 'approved', 'reviewed_by_admin_id' => $admin_id, 'reviewed_at' => current_time('mysql')], ['id' => $id]);
-        $wpdb->update('deliveries', ['status' => 'cancelada', 'cancelled_at' => current_time('mysql'), 'cancel_approved_by' => $admin_id], ['id' => $req['delivery_id']]);
+        $wpdb->update('deliveries', ['status' => 'cancelada'], ['id' => $req['delivery_id']]);
     } else {
         $wpdb->update('cancellation_requests', ['status' => 'rejected', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
         $wpdb->update('deliveries', ['status' => 'confirmada'], ['id' => $req['delivery_id']]);
