@@ -378,12 +378,16 @@ function hb_request_tariff_change(WP_REST_Request $request) {
     $driver_id = isset($delivery['driver_id']) ? intval($delivery['driver_id']) : 1;
     $zone_id = isset($delivery['zone_id']) ? intval($delivery['zone_id']) : 1;
 
+    $req_cost = isset($params['requested_cost']) ? floatval($params['requested_cost']) : 0.0;
+
+    file_put_contents(__DIR__ . '/api_debug.log', "Params received: " . json_encode($params) . "\n", FILE_APPEND);
+
     $wpdb->query("SET FOREIGN_KEY_CHECKS = 0;");
     $res = $wpdb->insert('tariff_change_requests', [
         'client_id' => $client_id,
         'requested_by' => $driver_id,
         'delivery_id' => $params['delivery_id'],
-        'requested_cost' => $params['requested_cost'],
+        'requested_cost' => $req_cost,
         'reason' => $params['reason'],
         'status' => 'pending',
         'created_at' => current_time('mysql')
