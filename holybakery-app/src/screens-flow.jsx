@@ -599,7 +599,11 @@ function ResultadoScreen({ goTo, quoteData }) {
       formatted_address,
       maps_link,
       cost: foreignPrice,
-      cost_type: "foreign"
+      cost_type: "foreign",
+      employee_id: 2, // Diana Dominguez default for quick drafts
+      employee: "Diana Domínguez",
+      employee_name: "Diana Domínguez",
+      zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
     };
 
     try {
@@ -1028,7 +1032,11 @@ function ReservaScreen({ goTo, quoteData }) {
                 client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
                 client_phone2: normalizeToE164(phone2),
-                comments
+                comments,
+                employee_id: employee,
+                employee: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
+                employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
+                zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
               };
 
               try {
@@ -1091,7 +1099,11 @@ function ReservaScreen({ goTo, quoteData }) {
                 client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
                 client_phone2: normalizeToE164(phone2),
-                comments
+                comments,
+                employee_id: employee,
+                employee: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
+                employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
+                zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
               };
 
               try {

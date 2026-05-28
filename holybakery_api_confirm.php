@@ -175,6 +175,8 @@ function hb_create_delivery(WP_REST_Request $request) {
         'tariff_type' => sanitize_text_field($params['cost_type'] ?? 'local'),
         'status' => sanitize_text_field($params['status'] ?? 'confirmada'),
         'driver_id' => $driver_id,
+        'zone_id' => isset($params['zone_id']) ? intval($params['zone_id']) : 1,
+        'employee_name' => sanitize_text_field($params['employee_name'] ?? $params['employee'] ?? ''),
         'tracking_code' => 'DLV-TEMP-' . rand(100000, 999999), // unique non-null temp tracking code
         'comments' => sanitize_text_field($params['comments'] ?? ''),
         'created_at' => current_time('mysql'),

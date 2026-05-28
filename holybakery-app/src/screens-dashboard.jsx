@@ -437,6 +437,58 @@ function SolicitudesModal({ delivery, onClose, onSuccess }) {
 ============================================================= */
 function EmpReservas() {
   const [filter, setFilter] = useStateD("todos");
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return { date: '', time: '' };
+    const regex = /^(\d{4})-(\d{2})-(\d{2})(?:\s+|T)(\d{2}):(\d{2}):(\d{2})/;
+    const match = dateStr.match(regex);
+    let year, month, day, hours, minutes;
+    if (match) {
+      year = parseInt(match[1], 10);
+      month = parseInt(match[2], 10) - 1;
+      day = parseInt(match[3], 10);
+      hours = parseInt(match[4], 10);
+      minutes = parseInt(match[5], 10);
+    } else {
+      if (dateStr.includes(',')) {
+        const parts = dateStr.split(',');
+        return { date: parts[0].trim() + ',', time: parts[1] ? parts[1].trim() : '' };
+      }
+      const dateObj = new Date(dateStr.replace(' ', 'T'));
+      if (isNaN(dateObj.getTime())) return { date: dateStr, time: '' };
+      year = dateObj.getFullYear();
+      month = dateObj.getMonth();
+      day = dateObj.getDate();
+      hours = dateObj.getHours();
+      minutes = dateObj.getMinutes();
+    }
+    const dateObj = new Date(year, month, day, hours, minutes);
+    const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    const dayName = days[dateObj.getDay()];
+    const monthName = months[dateObj.getMonth()];
+    const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+    let displayHours = hours % 12;
+    displayHours = displayHours ? displayHours : 12;
+    const displayMinutes = String(minutes).padStart(2, '0');
+    return { date: `${dayName} ${day} ${monthName},`, time: `${displayHours}:${displayMinutes} ${ampm}` };
+  };
+
+  const getDestinationShortName = (dest) => {
+    if (!dest) return '';
+    return dest.split(',')[0].trim();
+  };
+
+  const getZoneText = (d) => {
+    if (d.zoneName) return d.zoneName;
+    if (d.zone && isNaN(d.zone)) return d.zone;
+    const zoneId = d.zone_id || (d.zone ? Number(d.zone) : null);
+    if (zoneId) {
+      const z = window.MOCK.ZONES.find(x => x.id === zoneId);
+      if (z) return `${z.name} · ${z.desc}`;
+    }
+    return 'Sin zona';
+  };
   
   // Create dynamic URL query based on filter
   const queryParams = new URLSearchParams();
@@ -481,31 +533,40 @@ function EmpReservas() {
       <div className="table-wrap">
         <table className="table">
           <thead><tr>
-            <th>ID</th><th>Cuándo</th><th>Destino</th><th>Cliente</th>
-            <th>Empleado</th><th>Costo</th><th>Pago</th><th>Estado</th><th></th>
+            <th>ID</th><th>Fecha y Hora</th><th>Destino</th><th>Cliente</th>
+            <th>Empleado</th><th>Costo</th><th>Pago</th><th>Estado</th><th>Acciones</th>
           </tr></thead>
           <tbody>
-            {loading ? <tr><td colSpan="9" style={{textAlign: "center", padding: "20px"}}>Cargando...</td></tr> : list.map(d => (
-              <tr key={d.id} style={d.status==="cancelada" ? {opacity:0.55} : {}}>
-                <td className="id-cell">{d.tracking_code || d.id}</td>
-                <td className="nowrap">{d.date}</td>
-                <td><strong>{d.destinationName || d.destination}</strong><div className="muted" style={{fontSize:11}}>{d.zoneName || d.zone}</div></td>
-                <td>{d.client}<div className="muted" style={{fontSize:11}}>{d.phone}</div></td>
-                <td>{d.employee}</td>
-                <td className="money">{fmtMXN(d.cost)}</td>
-                <td>{d.paid
-                  ? <span style={{color:"var(--accent)", fontWeight:700}}><ID.Check size={12}/> Pagada</span>
-                  : <span className="muted">Pendiente</span>}</td>
-                <td><StatusPill s={d.status}/></td>
-                <td>
-                  <div className="flex gap-8">
-                    <button className="btn btn-ghost btn-sm flex" onClick={() => setActiveReqDelivery(d)} style={{gap: 6}}>
-                      <ID.Settings size={12}/> Solicitudes
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {loading ? <tr><td colSpan="9" style={{textAlign: "center", padding: "20px"}}>Cargando...</td></tr> : list.map(d => {
+              const dt = formatDateTime(d.date);
+              return (
+                <tr key={d.id} style={d.status==="cancelada" ? {opacity:0.55} : {}}>
+                  <td className="id-cell">{d.tracking_code || d.id}</td>
+                  <td className="nowrap">
+                    <strong>{dt.date}</strong>
+                    <div style={{fontSize:11, color:"var(--muted)", marginTop:2}}>{dt.time}</div>
+                  </td>
+                  <td>
+                    <strong>{getDestinationShortName(d.destinationName || d.destination)}</strong>
+                    <div className="muted" style={{fontSize:11, marginTop:2}}>{getZoneText(d)}</div>
+                  </td>
+                  <td>{d.client}<div className="muted" style={{fontSize:11}}>{d.phone}</div></td>
+                  <td>{d.employee}</td>
+                  <td className="money">{fmtMXN(d.cost)}</td>
+                  <td>{d.paid
+                    ? <span style={{color:"var(--accent)", fontWeight:700}}><ID.Check size={12}/> Pagada</span>
+                    : <span className="muted">Pendiente</span>}</td>
+                  <td><StatusPill s={d.status}/></td>
+                  <td>
+                    <div className="flex gap-8">
+                      <button className="btn btn-soft btn-sm flex" onClick={() => setActiveReqDelivery(d)} style={{gap: 6, whiteSpace: "nowrap"}}>
+                        <ID.Settings size={14}/> Solicitudes
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {!loading && (

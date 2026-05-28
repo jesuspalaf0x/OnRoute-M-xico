@@ -417,8 +417,10 @@ input, select, textarea { font-family: inherit; }
 .table-wrap {
   border: 1px solid var(--line);
   border-radius: 14px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   background: var(--surface);
+  -webkit-overflow-scrolling: touch;
 }
 .table {
   width: 100%;
