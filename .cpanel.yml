@@ -5,18 +5,18 @@ deployment:
     # DEPLOY: Solo copia el plugin PHP al WordPress de holybakery.onroutemx.com
     # NO tocar public_html — esa es la raíz de onroutemx.com (WordPress principal)
     # ============================================================
-    - export HOLYBAKERY_WP=../../subdomains/holybakery/public_html
+    - export HOLYBAKERY_WP=../subdomains/holybakery/public_html
 
     # PROTECCIÓN: Eliminar cualquier index.html que pueda haber llegado al dominio principal
-    - /bin/rm -f ../../public_html/index.html
-    - /bin/rm -f ../../public_html/favicon.svg
-    - /bin/rm -f ../../public_html/cleanup-main-domain.php
-    - /bin/rm -f ../../public_html/fix-wp-plugin.php
-    - /bin/rm -f ../../public_html/debug-schema.php
-    - /bin/rm -f ../../public_html/deploy-plugin.php
-    - /bin/rm -f ../../public_html/delete-index.php
-    - /bin/rm -f ../../public_html/schema-info.php
+    - /bin/rm -f ../public_html/index.html
+    - /bin/rm -f ../public_html/favicon.svg
+    - /bin/rm -f ../public_html/cleanup-main-domain.php
+    - /bin/rm -f ../public_html/fix-wp-plugin.php
+    - /bin/rm -f ../public_html/debug-schema.php
+    - /bin/rm -f ../public_html/deploy-plugin.php
+    - /bin/rm -f ../public_html/delete-index.php
+    - /bin/rm -f ../public_html/schema-info.php
 
     # Copiar el plugin de WordPress al subdominio holybakery y al dominio principal
     - /bin/cp holybakery_api_confirm.php $HOLYBAKERY_WP/wp-content/plugins/holybakery_api_confirm.php
-    - /bin/cp holybakery_api_confirm.php ../../public_html/wp-content/plugins/holybakery_api_confirm.php
+    - /bin/cp holybakery_api_confirm.php ../public_html/wp-content/plugins/holybakery_api_confirm.php
