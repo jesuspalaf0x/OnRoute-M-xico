@@ -591,13 +591,15 @@ function ResultadoScreen({ goTo, quoteData }) {
     const draftData = {
       status: "borrador",
       destinationName,
+      destination_name: destinationName,
       zoneName,
       place_id,
       latitude: lat,
       longitude: lng,
       formatted_address,
       maps_link,
-      cost: foreignPrice // or localPrice depending on logic
+      cost: foreignPrice,
+      cost_type: "foreign"
     };
 
     try {
@@ -966,7 +968,13 @@ function ReservaScreen({ goTo, quoteData }) {
               </div>
               <div>
                 <label className="label">Comentarios e instrucciones</label>
-                <textarea value={comments} onChange={(e) => setComments(e.target.value)} rows={4} placeholder="Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery." className="campo-textarea" />
+                <textarea 
+                  className="campo-textarea"
+                  value={comments} 
+                  onChange={(e) => setComments(e.target.value)} 
+                  rows={4} 
+                  placeholder="Ej. Cobrar $250.00 pesos pendientes de abonar, el cliente pagará el delivery." 
+                />
                 <div className="adjuntos-area" style={{ marginTop: 16 }}>
                   <div className="adjuntos-info">
                     <I.Paperclip size={18} className="adjuntos-icono" />
@@ -1002,6 +1010,7 @@ function ReservaScreen({ goTo, quoteData }) {
               const draftData = {
                 status: "borrador",
                 destinationName,
+                destination_name: destinationName,
                 zoneName,
                 place_id,
                 latitude: lat,
@@ -1010,10 +1019,15 @@ function ReservaScreen({ goTo, quoteData }) {
                 maps_link,
                 cost,
                 date,
+                delivery_date: date,
                 time,
+                delivery_time: time,
                 client,
+                client_name: client,
                 phone: normalizeToE164(phone),
+                client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
+                client_phone2: normalizeToE164(phone2),
                 comments
               };
 
@@ -1059,6 +1073,7 @@ function ReservaScreen({ goTo, quoteData }) {
               const draftData = {
                 status: "pendiente_envio",
                 destinationName,
+                destination_name: destinationName,
                 zoneName,
                 place_id,
                 latitude: lat,
@@ -1067,10 +1082,15 @@ function ReservaScreen({ goTo, quoteData }) {
                 maps_link,
                 cost,
                 date,
+                delivery_date: date,
                 time,
+                delivery_time: time,
                 client,
+                client_name: client,
                 phone: normalizeToE164(phone),
+                client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
+                client_phone2: normalizeToE164(phone2),
                 comments
               };
 
@@ -1240,8 +1260,9 @@ Comentarios: ${commentsDisplay}`;
   const handleConfirm = async () => {
     if (id) {
       const token = sessionStorage.getItem("wp_token");
+      const numericId = id.replace(/DLV-0*/, "");
       try {
-        await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${id}`, {
+        await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${numericId}`, {
           method: "PUT", // assuming POST or PUT to update
           headers: {
             "Content-Type": "application/json",
@@ -1265,7 +1286,7 @@ Comentarios: ${commentsDisplay}`;
               <I.Check size={24} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: 22 }}>Reserva creada</h2>
+              <h2 style={{ margin: 0, fontSize: 22, color: "var(--ink)" }}>Reserva creada</h2>
               <div className="muted" style={{ fontSize: 13 }}>ID asignado: <span className="mono" style={{ color: "var(--ink)", fontWeight: 700 }}>{id || "DLV-043"}</span></div>
             </div>
           </div>
