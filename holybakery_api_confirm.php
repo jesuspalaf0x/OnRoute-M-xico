@@ -381,18 +381,16 @@ function hb_request_tariff_change(WP_REST_Request $request) {
     $wpdb->query("SET FOREIGN_KEY_CHECKS = 0;");
     $wpdb->insert('tariff_change_requests', [
         'client_id' => $client_id,
-        'zone_id' => $zone_id,
         'requested_by' => $driver_id,
         'delivery_id' => $params['delivery_id'],
-        'old_tariff' => $params['current_cost'],
-        'new_tariff' => $params['requested_cost'],
-        'current_cost' => $params['current_cost'], // supports both table schemas
         'requested_cost' => $params['requested_cost'],
         'reason' => $params['reason'],
         'status' => 'pending',
         'created_at' => current_time('mysql')
     ]);
     $wpdb->query("SET FOREIGN_KEY_CHECKS = 1;");
+    
+    $wpdb->update('deliveries', ['status' => 'cambio_tarifa_pendiente'], ['id' => $params['delivery_id']]);
     
     return rest_ensure_response(['success' => true]);
 }
