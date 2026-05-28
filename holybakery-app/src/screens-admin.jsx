@@ -380,22 +380,23 @@ function AdminSolicitudes() {
         </div>
       </div>
 
-      <div className="stack">
-        {requests.length === 0 ? (
-          <div className="empty section-card">No hay otras solicitudes abiertas en este momento.</div>
-        ) : requests.map(req => (
+      <h3 style={{marginBottom: 16}}>Cancelaciones</h3>
+      <div className="stack" style={{marginBottom: 32}}>
+        {requests.filter(req => req.type === "cancellation").length === 0 ? (
+          <div className="empty section-card">No hay cancelaciones pendientes en este momento.</div>
+        ) : requests.filter(req => req.type === "cancellation").map(req => (
           <div className="section-card" key={req.type + req.id}>
             <div className="flex" style={{gap: 14, alignItems:"flex-start"}}>
               <div style={{
                 width: 44, 
                 height: 44, 
                 borderRadius: 12, 
-                background: req.type === "cancellation" ? "var(--danger-soft)" : "var(--accent-soft)", 
-                color: req.type === "cancellation" ? "var(--danger)" : "var(--accent)", 
+                background: "var(--danger-soft)", 
+                color: "var(--danger)", 
                 display:"grid", 
                 placeItems:"center"
               }}>
-                {req.type === "cancellation" ? <IA.ShieldX size={20}/> : <IA.RefreshCcw size={20}/>}
+                <IA.ShieldX size={20}/>
               </div>
               <div style={{flex:1}}>
                 <div className="flex-between">
@@ -409,14 +410,11 @@ function AdminSolicitudes() {
                 </div>
                 
                 <div className="card-tight" style={{background:"var(--surface-2)", borderRadius:10, marginTop: 12, fontSize: 13}}>
-                  <strong>Detalle de la solicitud:</strong> "{req.reason || "Sin especificar"}"
+                  <strong>Motivo de la solicitud:</strong> "{req.reason || "Sin especificar"}"
                 </div>
                 
-                <div className="row" style={{gridTemplateColumns: req.type === "tariff_change" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: 12, marginTop: 14}}>
+                <div className="row" style={{gridTemplateColumns:"repeat(4, 1fr)", gap: 12, marginTop: 14}}>
                   <Mini label="Costo original" value={fmtMXN_A(req.cost || req.old_tariff || 0)}/>
-                  {req.type === "tariff_change" && (
-                    <Mini label="Costo solicitado" value={fmtMXN_A(req.requested_cost || req.new_tariff || 0)}/>
-                  )}
                   <Mini label="Zona" value="Local/Cobertura"/>
                   <Mini label="Cliente" value={req.customer_name || req.client || "N/A"}/>
                   <Mini label="Fecha entrega" value={req.date}/>
@@ -424,15 +422,62 @@ function AdminSolicitudes() {
                 
                 <div className="flex-end" style={{marginTop: 14}}>
                   <button className="btn btn-soft btn-sm" onClick={() => handleRejectRequest(req)}>Rechazar</button>
-                  {req.type === "cancellation" ? (
-                    <button className="btn btn-primary btn-sm" onClick={() => handleApproveCancellation(req)}>
-                      <IA.Check size={14}/> Aprobar cancelación
-                    </button>
-                  ) : (
-                    <button className="btn btn-accent btn-sm" onClick={() => handleApproveTariffClick(req)}>
-                      <IA.Check size={14}/> Aprobar cambio de tarifa
-                    </button>
-                  )}
+                  <button className="btn btn-primary btn-sm" onClick={() => handleApproveCancellation(req)}>
+                    <IA.Check size={14}/> Aprobar cancelación
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h3 style={{marginBottom: 16}}>Cambios de Tarifa</h3>
+      <div className="stack">
+        {requests.filter(req => req.type === "tariff_change").length === 0 ? (
+          <div className="empty section-card">No hay cambios de tarifa pendientes en este momento.</div>
+        ) : requests.filter(req => req.type === "tariff_change").map(req => (
+          <div className="section-card" key={req.type + req.id}>
+            <div className="flex" style={{gap: 14, alignItems:"flex-start"}}>
+              <div style={{
+                width: 44, 
+                height: 44, 
+                borderRadius: 12, 
+                background: "var(--accent-soft)", 
+                color: "var(--accent)", 
+                display:"grid", 
+                placeItems:"center"
+              }}>
+                <IA.RefreshCcw size={20}/>
+              </div>
+              <div style={{flex:1}}>
+                <div className="flex-between">
+                  <div>
+                    <strong style={{fontSize: 15}}>{req.tracking} · {req.destination}</strong>
+                    <div className="muted" style={{fontSize: 12.5}}>
+                      Solicitado por {req.employee || "Empleado"} · {req.date}
+                    </div>
+                  </div>
+                  <span className={`status status-pendiente`}>{req.labelType}</span>
+                </div>
+                
+                <div className="card-tight" style={{background:"var(--surface-2)", borderRadius:10, marginTop: 12, fontSize: 13}}>
+                  <strong>Motivo de la solicitud:</strong> "{req.reason || "Sin especificar"}"
+                </div>
+                
+                <div className="row" style={{gridTemplateColumns:"repeat(5, 1fr)", gap: 12, marginTop: 14}}>
+                  <Mini label="Costo original" value={fmtMXN_A(req.cost || req.old_tariff || 0)}/>
+                  <Mini label="Nuevo costo" value={fmtMXN_A(req.requested_cost || req.new_tariff || 0)}/>
+                  <Mini label="Zona" value="Local/Cobertura"/>
+                  <Mini label="Cliente" value={req.customer_name || req.client || "N/A"}/>
+                  <Mini label="Fecha entrega" value={req.date}/>
+                </div>
+                
+                <div className="flex-end" style={{marginTop: 14}}>
+                  <button className="btn btn-soft btn-sm" onClick={() => handleRejectRequest(req)}>Rechazar</button>
+                  <button className="btn btn-accent btn-sm" onClick={() => handleApproveTariffClick(req)}>
+                    <IA.Check size={14}/> Aprobar cambio de tarifa
+                  </button>
                 </div>
               </div>
             </div>

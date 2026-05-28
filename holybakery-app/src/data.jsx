@@ -55,6 +55,7 @@ const STATUS_LABEL = {
   pagada: "Pagada",
   cancelada: "Cancelada",
   cancelacion_pendiente: "Cancelación pendiente",
+  cambio_tarifa_pendiente: "Cambio de Tarifa",
 };
 
 window.MOCK = { EMPLOYEES, ZONES, PREFERENTIAL, DELIVERIES, DRAFTS, EXTRAS, STATUS_LABEL };

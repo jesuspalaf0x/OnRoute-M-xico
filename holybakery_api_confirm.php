@@ -379,7 +379,7 @@ function hb_request_tariff_change(WP_REST_Request $request) {
     $zone_id = isset($delivery['zone_id']) ? intval($delivery['zone_id']) : 1;
 
     $wpdb->query("SET FOREIGN_KEY_CHECKS = 0;");
-    $wpdb->insert('tariff_change_requests', [
+    $res = $wpdb->insert('tariff_change_requests', [
         'client_id' => $client_id,
         'requested_by' => $driver_id,
         'delivery_id' => $params['delivery_id'],
@@ -392,7 +392,7 @@ function hb_request_tariff_change(WP_REST_Request $request) {
     
     $wpdb->update('deliveries', ['status' => 'cambio_tarifa_pendiente'], ['id' => $params['delivery_id']]);
     
-    return rest_ensure_response(['success' => true]);
+    return rest_ensure_response(['success' => true, 'insert_res' => $res, 'db_error' => $wpdb->last_error]);
 }
 
 function hb_approve_cancellation(WP_REST_Request $request) {

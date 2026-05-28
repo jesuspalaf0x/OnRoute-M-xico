@@ -140,7 +140,7 @@ function AppShell({ role, section, setSection, goTo, children }) {
    STATUS PILL
 ============================================================= */
 const StatusPill = ({ s }) => (
-  <span className={"status status-" + (s === "cancelacion_pendiente" ? "pendiente" : s)}>
+  <span className={"status status-" + (s === "cancelacion_pendiente" || s === "cambio_tarifa_pendiente" ? "pendiente" : s)}>
     {window.MOCK.STATUS_LABEL[s]}
   </span>
 );
@@ -277,6 +277,161 @@ function EmpResumen({ goTo }) {
   );
 }
 
+function SolicitudesModal({ delivery, onClose, onSuccess }) {
+  const [cancelReq, setCancelReq] = useStateD(false);
+  const [tariffReq, setTariffReq] = useStateD(false);
+  const [newCost, setNewCost] = useStateD("");
+  const [reason, setReason] = useStateD("");
+  const [waClicked, setWaClicked] = useStateD(false);
+  
+  // Can only close if not processing, and if requested, WA must be clicked
+  const canClose = (!cancelReq && !tariffReq) || waClicked;
+
+  const handleClose = () => {
+    if (canClose) {
+      if (cancelReq) onSuccess('cancellation', delivery.id);
+      else if (tariffReq) onSuccess('tariff_change', delivery.id, parseFloat(newCost));
+      else onClose();
+    }
+  };
+
+  const handleCancelClick = async () => {
+    if (!confirm("¿Estás seguro de solicitar la cancelación de esta entrega?")) return;
+    
+    const res = await fetch(`${API_BASE}/cancellation-requests`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ delivery_id: delivery.id, reason: "Cliente canceló" })
+    });
+    if (res.ok) {
+      setCancelReq(true);
+    } else {
+      alert("Error al registrar la solicitud.");
+    }
+  };
+
+  const handleTariffClick = async () => {
+    const costVal = parseFloat(newCost);
+    if (isNaN(costVal) || costVal <= 0) {
+      alert("Por favor ingresa un costo solicitado válido mayor a cero.");
+      return;
+    }
+    const reqReason = reason.trim() || "Ajuste de tarifa";
+    
+    if (!confirm("¿Estás seguro de solicitar este cambio de tarifa?")) return;
+    
+    const res = await fetch(`${API_BASE}/tariff-change-requests`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        delivery_id: delivery.id,
+        current_cost: delivery.cost,
+        requested_cost: costVal,
+        reason: reqReason
+      })
+    });
+    if (res.ok) {
+      setTariffReq(true);
+    } else {
+      alert("Error al registrar la solicitud.");
+    }
+  };
+
+  const tracking = delivery.tracking_code || `DLV-${delivery.id}`;
+  const wpTextCancel = `Hola,%20necesito%20cancelar%20la%20reserva%20con%20ID%20${tracking}.`;
+  const wpTextTariff = `Hola,%20necesito%20solicitar%20un%20cambio%20de%20tarifa%20para%20la%20reserva%20con%20ID%20${tracking}.`;
+  
+  return (
+    <div className="sol-backdrop" onClick={handleClose}>
+      <div className="sol-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="sol-header">
+          <div>
+            <h3 className="sol-title">Solicitudes para Reserva</h3>
+            <p className="sol-sub">ID: <strong>{tracking}</strong> · {delivery.destinationName || delivery.destination}</p>
+          </div>
+          <button className="sol-close" onClick={handleClose} aria-label="Cerrar" disabled={!canClose}><ID.X size={18}/></button>
+        </div>
+
+        <div className="sol-body">
+          <section className={"sol-section " + (cancelReq ? "is-requested" : "")}>
+            <div className="sol-section-head">
+              <div className="sol-section-icon sol-icon-cancel"><ID.ShieldX size={18}/></div>
+              <div>
+                <h4>Cancelación</h4>
+                <p>Solicita la cancelación formal de la entrega en el sistema.</p>
+              </div>
+            </div>
+            <div className="sol-actions">
+              <button
+                className={"sol-btn-primary " + (cancelReq ? "sol-btn-done" : "")}
+                onClick={handleCancelClick}
+                disabled={cancelReq || tariffReq}>
+                {cancelReq ? (<><ID.Check size={16}/> Solicitud registrada</>) : "Solicitar cancelación"}
+              </button>
+              <button
+                className={"sol-btn-wa " + (cancelReq && !waClicked ? "sol-btn-wa--active" : "")}
+                disabled={!cancelReq}
+                onClick={() => {
+                  window.open(`https://wa.me/529841068542?text=${wpTextCancel}`, '_blank');
+                  setWaClicked(true);
+                }}>
+                <ID.WhatsApp size={16}/> Notificar por WhatsApp
+              </button>
+            </div>
+          </section>
+
+          <section className={"sol-section " + (tariffReq ? "is-requested" : "")}>
+            <div className="sol-section-head">
+              <div className="sol-section-icon sol-icon-tariff"><ID.DollarSign size={18}/></div>
+              <div>
+                <h4>Cambio de tarifa</h4>
+                <p>Solicita un ajuste en la tarifa asignada por el sistema. Costo actual: <strong>{fmtMXN(delivery.cost)}</strong></p>
+              </div>
+            </div>
+
+            <div className="sol-inputs">
+              <input
+                className="sol-input"
+                type="number"
+                placeholder="Ingresa el costo solicitado"
+                value={newCost}
+                onChange={(e) => setNewCost(e.target.value)}
+                disabled={tariffReq || cancelReq}
+              />
+              <input
+                className="sol-input"
+                type="text"
+                placeholder="Motivo (ej. Cambio de destino, lluvia…)"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                disabled={tariffReq || cancelReq}
+              />
+            </div>
+
+            <div className="sol-actions">
+              <button
+                className={"sol-btn-primary " + (tariffReq ? "sol-btn-done" : "")}
+                onClick={handleTariffClick}
+                disabled={tariffReq || cancelReq}>
+                {tariffReq ? (<><ID.Check size={16}/> Solicitud registrada</>) : "Solicitar cambio de tarifa"}
+              </button>
+              <button
+                className={"sol-btn-wa " + (tariffReq && !waClicked ? "sol-btn-wa--active" : "")}
+                disabled={!tariffReq}
+                onClick={() => {
+                  window.open(`https://wa.me/529841068542?text=${wpTextTariff}`, '_blank');
+                  setWaClicked(true);
+                }}>
+                <ID.WhatsApp size={16}/> Notificar por WhatsApp
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* =============================================================
    EMPLOYEE — RESERVAS ACTIVAS
 ============================================================= */
@@ -316,6 +471,7 @@ function EmpReservas() {
           ["entregada","Entregadas"],
           ["pagada","Pagadas"],
           ["cancelacion_pendiente","Cancelación pendiente"],
+          ["cambio_tarifa_pendiente","Cambio de tarifa"],
           ["cancelada","Canceladas"],
         ].map(([k,l]) => (
           <button key={k} className={"btn btn-sm " + (filter===k ? "btn-primary" : "btn-ghost")} onClick={() => setFilter(k)}>{l}</button>
@@ -364,11 +520,16 @@ function EmpReservas() {
         <SolicitudesModal 
           delivery={activeReqDelivery} 
           onClose={() => setActiveReqDelivery(null)}
-          onSuccess={(type, id) => {
+          onSuccess={(type, id, requestedCost) => {
             if (type === 'cancellation') {
               setData({
                 ...deliveriesData,
                 items: list.map(item => item.id === id ? { ...item, status: 'cancelacion_pendiente' } : item)
+              });
+            } else if (type === 'tariff_change') {
+              setData({
+                ...deliveriesData,
+                items: list.map(item => item.id === id ? { ...item, status: 'cambio_tarifa_pendiente', cost: requestedCost } : item)
               });
             }
             setActiveReqDelivery(null);
