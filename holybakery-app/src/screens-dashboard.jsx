@@ -60,15 +60,15 @@ function AppShell({ role, section, setSection, goTo, children }) {
   const isAdmin = role === "admin";
   const employeeNav = [
     { key: "resumen", label: "Resumen", icon: <ID.Home size={16}/> },
-    { key: "reservas", label: "Reservas realizadas", icon: <ID.Layers size={16}/>, badge: "12" },
-    { key: "guardadas", label: "Guardadas", icon: <ID.Bookmark size={16}/>, badge: "3" },
+    { key: "reservas", label: "Reservas realizadas", icon: <ID.Layers size={16}/> },
+    { key: "guardadas", label: "Guardadas", icon: <ID.Bookmark size={16}/> },
     { key: "configuracion", label: "Configuración", icon: <ID.Settings size={16}/> },
   ];
   const adminNav = [
     { key: "panel", label: "Panel", icon: <ID.Home size={16}/> },
     { key: "reservas", label: "Reservas", icon: <ID.Layers size={16}/> },
-    { key: "pagos", label: "Pagos", icon: <ID.CreditCard size={16}/>, badge: "5" },
-    { key: "cancelaciones", label: "Cancelaciones", icon: <ID.ShieldX size={16}/>, badge: "1" },
+    { key: "pagos", label: "Pagos", icon: <ID.CreditCard size={16}/> },
+    { key: "cancelaciones", label: "Cancelaciones", icon: <ID.ShieldX size={16}/> },
     { key: "extras", label: "Extras", icon: <ID.PackagePlus size={16}/> },
     { key: "config-zonas", label: "Zonas y tarifas", icon: <ID.Map size={16}/> },
     { key: "config-pref", label: "Tarifas especiales", icon: <ID.Star size={16}/> },
