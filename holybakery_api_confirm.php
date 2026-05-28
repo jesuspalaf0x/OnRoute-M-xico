@@ -430,7 +430,7 @@ function hb_approve_tariff(WP_REST_Request $request) {
     if ($action === 'approve') {
         $new_cost = isset($params['cost']) ? floatval($params['cost']) : $req['requested_cost'];
         $wpdb->update('tariff_change_requests', ['status' => 'approved', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
-        $wpdb->update('deliveries', ['cost' => $new_cost, 'tariff_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
+        $wpdb->update('deliveries', ['cost' => $new_cost, 'status' => 'confirmada', 'tariff_type' => 'local', 'updated_at' => current_time('mysql')], ['id' => $req['delivery_id']]);
     } else {
         $wpdb->update('tariff_change_requests', ['status' => 'rejected', 'reviewed_at' => current_time('mysql')], ['id' => $id]);
     }
