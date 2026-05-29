@@ -324,6 +324,12 @@ input, select, textarea { font-family: inherit; }
 .btn-block { width: 100%; }
 .btn-lg { padding: 14px 20px; font-size: 14.5px; border-radius: 14px; }
 .btn-sm { padding: 7px 12px; font-size: 12px; border-radius: 8px; }
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  pointer-events: none;
+}
 
 /* ============ Form fields ============ */
 .label {

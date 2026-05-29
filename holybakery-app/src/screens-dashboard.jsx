@@ -559,7 +559,13 @@ function EmpReservas() {
                   <td><StatusPill s={d.status}/></td>
                   <td>
                     <div className="flex gap-8">
-                      <button className="btn btn-soft btn-sm flex" onClick={() => setActiveReqDelivery(d)} style={{gap: 6, whiteSpace: "nowrap"}}>
+                      <button 
+                        className="btn btn-soft btn-sm flex" 
+                        onClick={() => setActiveReqDelivery(d)} 
+                        style={{gap: 6, whiteSpace: "nowrap"}}
+                        disabled={d.status !== "confirmada"}
+                        title={d.status !== "confirmada" ? "Solo disponible en estado Confirmada" : "Solicitudes"}
+                      >
                         <ID.Settings size={14}/> Solicitudes
                       </button>
                     </div>
