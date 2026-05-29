@@ -139,11 +139,14 @@ function AppShell({ role, section, setSection, goTo, children }) {
 /* =============================================================
    STATUS PILL
 ============================================================= */
-const StatusPill = ({ s }) => (
-  <span className={"status status-" + (s === "cancelacion_pendiente" || s === "cambio_tarifa_pendiente" || s === "cambio_tarifa" ? "pendiente" : s)}>
-    {window.MOCK.STATUS_LABEL[s] || (s === "cambio_tarifa" ? "Cambio de tarifa" : s)}
-  </span>
-);
+const StatusPill = ({ s }) => {
+  const statusKey = s || "confirmada";
+  return (
+    <span className={"status status-" + (statusKey === "cancelacion_pendiente" || statusKey === "cambio_tarifa_pendiente" || statusKey === "cambio_tarifa" ? "pendiente" : statusKey)}>
+      {window.MOCK.STATUS_LABEL[statusKey] || (statusKey === "cambio_tarifa" ? "Cambio de tarifa" : statusKey)}
+    </span>
+  );
+};
 
 /* =============================================================
    EMPLOYEE — RESUMEN
