@@ -25,3 +25,8 @@ deployment:
     - /bin/cp create-missing-tables.php $HOLYBAKERY_WP/create-missing-tables.php
     - /bin/cp fix-employees.php ../public_html/fix-employees.php
     - /bin/cp fix-employees.php $HOLYBAKERY_WP/fix-employees.php
+    
+    # ============================================================
+    # DEPLOY FRONTEND: Copiar el build de React al subdominio holybakery
+    # ============================================================
+    - /bin/cp -R holybakery-app/dist/* $HOLYBAKERY_WP/
