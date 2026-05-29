@@ -98,7 +98,10 @@ function AppShell({ role, section, setSection, goTo, children }) {
         </div>
         <div className="top-right">
           <span className="pill"><ID.RefreshCcw size={12}/> $17.50 MXN/USD</span>
-          {!isAdmin && <span className="muted">En turno: <strong style={{color:"var(--ink)"}}>Diana Domínguez</strong> · 3 p.m. – 8:30 p.m.</span>}
+          {!isAdmin && (() => {
+            const currentEmp = window.MOCK.getCurrentEmployee();
+            return <span className="muted">En turno: <strong style={{color:"var(--ink)"}}>{currentEmp.name}</strong> · {currentEmp.shift}</span>;
+          })()}
           {isAdmin && <span className="muted">Admin · <strong style={{color:"var(--ink)"}}>OnRoute Master</strong></span>}
           <button className="btn btn-ghost btn-sm"><ID.Bell size={14}/></button>
           <button className="btn btn-ghost btn-sm" onClick={handleLogout}><ID.LogOut size={14}/> Salir</button>
@@ -251,19 +254,20 @@ function EmpResumen({ goTo }) {
             <h3>Empleado en turno</h3>
             <p className="desc">Detección automática por horario.</p>
             <div className="card-tight" style={{background:"var(--accent-soft)", borderRadius:12, display:"flex", gap:12, alignItems:"center"}}>
-              {lEmp ? <div className="muted">Cargando...</div> : (empData && empData.employee) ? (
-                <>
-                  <div style={{width:40, height:40, borderRadius:"50%", background:"var(--accent)", color:"white", display:"grid", placeItems:"center", fontWeight:800}}>
-                    {empData.employee.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <strong>{empData.employee.name}</strong>
-                    <div className="muted" style={{fontSize:12}}>{empData.employee.role} · {empData.employee.shift_start.substring(0,5)} – {empData.employee.shift_end.substring(0,5)}</div>
-                  </div>
-                </>
-              ) : (
-                <div className="muted">Sin empleado en turno actualmente</div>
-              )}
+              {(() => {
+                const emp = window.MOCK.getCurrentEmployee();
+                return (
+                  <>
+                    <div style={{width:40, height:40, borderRadius:"50%", background:"var(--accent)", color:"white", display:"grid", placeItems:"center", fontWeight:800}}>
+                      {emp.initials}
+                    </div>
+                    <div>
+                      <strong>{emp.name}</strong>
+                      <div className="muted" style={{fontSize:12}}>{emp.role} · {emp.shift}</div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
           <div className="section-card">

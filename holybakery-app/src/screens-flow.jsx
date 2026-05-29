@@ -37,13 +37,14 @@ const wpLogin = async (username, password) => {
    LOGIN
 ============================================================= */
 function LoginScreen({ goTo }) {
-  const [employee, setEmployee] = useState(2); // Diana (afternoon) selected by shift
+  const currentEmp = window.MOCK.getCurrentEmployee();
+  const [employee, setEmployee] = useState(currentEmp.id);
   const [password, setPassword] = useState("");
   const [showSelect, setShowSelect] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const detectedEmployee = window.MOCK.EMPLOYEES.find((e) => e.id === employee);
+  const detectedEmployee = currentEmp;
 
   const handleLogin = async () => {
     if (!password) {

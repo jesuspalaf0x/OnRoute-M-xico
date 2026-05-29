@@ -59,5 +59,39 @@ const STATUS_LABEL = {
   cambio_tarifa: "Cambio de tarifa",
 };
 
-window.MOCK = { EMPLOYEES, ZONES, PREFERENTIAL, DELIVERIES, DRAFTS, EXTRAS, STATUS_LABEL };
+const getCurrentEmployee = () => {
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Cancun" }));
+  const currentTime = now.getHours() + now.getMinutes() / 60;
+
+  for (const emp of EMPLOYEES) {
+    if (!emp.shift) continue;
+    const parts = emp.shift.split('–').map(s => s.trim());
+    if (parts.length !== 2) continue;
+
+    const parseTime = (str) => {
+      const match = str.match(/(\d+):(\d+)\s*(a\.m\.|p\.m\.)/i);
+      if (!match) return -1;
+      let h = parseInt(match[1], 10);
+      let m = parseInt(match[2], 10);
+      let isPM = match[3].toLowerCase() === 'p.m.';
+      if (isPM && h < 12) h += 12;
+      if (!isPM && h === 12) h = 0;
+      return h + m / 60;
+    };
+
+    const start = parseTime(parts[0]);
+    const end = parseTime(parts[1]);
+    
+    if (start === -1 || end === -1) continue;
+
+    if (start <= end) {
+      if (currentTime >= start && currentTime <= end) return emp;
+    } else {
+      if (currentTime >= start || currentTime <= end) return emp;
+    }
+  }
+  return EMPLOYEES[0];
+};
+
+window.MOCK = { EMPLOYEES, ZONES, PREFERENTIAL, DELIVERIES, DRAFTS, EXTRAS, STATUS_LABEL, getCurrentEmployee };
 window.fmt = { fmtMXN, fmtUSD, fmtNum };
