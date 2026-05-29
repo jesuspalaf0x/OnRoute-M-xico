@@ -1404,12 +1404,36 @@ function LocatorScreen() {
   const [zoneInfo, setZoneInfo] = useState({ zone: "", price: null });
   const [routeInfo, setRouteInfo] = useState({ km: 0, eta: "" });
 
+  const [addressName, setAddressName] = useState("");
+
+  // Helper for straight line distance
+  const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; 
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   useEffect(() => {
     if (pin) {
       const zInfo = getZoneAndPrice(pin.lat, pin.lng);
       setZoneInfo(zInfo);
 
       if (window.google && window.google.maps) {
+        // Geocoding to get place name
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode({ location: pin }, (results, status) => {
+          if (status === 'OK' && results[0]) {
+            setAddressName(results[0].formatted_address.split(',')[0]);
+          } else {
+            setAddressName("");
+          }
+        });
+
         const service = new window.google.maps.DistanceMatrixService();
         service.getDistanceMatrix(
           {
@@ -1425,10 +1449,16 @@ function LocatorScreen() {
                 eta: element.duration.text
               });
             } else {
-              setRouteInfo({ km: 0, eta: text.noRoute });
+              // Fallback to straight line distance
+              const dist = getDistanceFromLatLonInKm(20.199885881257117, -87.46305126147733, pin.lat, pin.lng);
+              setRouteInfo({ km: +dist.toFixed(1), eta: text.noRoute });
             }
           }
         );
+      } else {
+        // No google maps loaded
+        const dist = getDistanceFromLatLonInKm(20.199885881257117, -87.46305126147733, pin.lat, pin.lng);
+        setRouteInfo({ km: +dist.toFixed(1), eta: text.noRoute });
       }
     }
   }, [pin, lang]);
@@ -1460,7 +1490,7 @@ function LocatorScreen() {
       id: "UBI-" + Math.floor(Math.random()*1000).toString().padStart(3,"0"),
       client: name || "Sin nombre",
       ref: ref || "—",
-      addr: `${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)}`,
+      addr: addressName ? `${addressName}|${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)}` : `${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)}`,
       zone: zoneInfo.zone,
       cost: zoneInfo.price || 0,
       km: routeInfo.km,

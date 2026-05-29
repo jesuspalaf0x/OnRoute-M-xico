@@ -1016,12 +1016,42 @@ function EmpLocalizador({ navigate }) {
       clearInterval(interval);
     };
   }, []);
-  const fresh = incoming.filter(i => i.status === "nueva").length;
+  const fresh = incoming.filter(i => {
+    if (i.status !== "nueva") return false;
+    if (!i.created_at) return true;
+    const created = new Date(i.created_at.replace(' ', 'T'));
+    return (Date.now() - created.getTime()) < 24 * 60 * 60 * 1000;
+  }).length;
+
   const SHARE_LINK = "holybakery.onroutemx.com/ubicacion";
   const waMsgEncoded = "Hello!%20%F0%9F%91%8B%20Please%20share%20your%20delivery%20location%20using%20this%20link.%0A%0AIt's%20super%20easy%3A%20open%20the%20map%2C%20select%20your%20exact%20location%20(or%20use%20your%20current%20location)%20and%20send%20it.%20Thank%20you!%20%E2%9C%A8%0A%0A%F0%9F%93%8D%20" + encodeURIComponent(SHARE_LINK);
   const waLink = `https://api.whatsapp.com/send?text=${waMsgEncoded}`;
   const copy = () => { navigator.clipboard.writeText(SHARE_LINK); setCopied(true); setTimeout(() => setCopied(false), 1800); };
-  const statusPill = (s) => s === "nueva" ? <span className="status status-confirmada">Nueva</span> : s === "revisar" ? <span className="status status-pendiente">Revisar zona</span> : <span className="status status-pagada">Convertida</span>;
+  
+  const statusPill = (i) => {
+    if (i.status === "nueva") {
+      if (i.created_at) {
+        const created = new Date(i.created_at.replace(' ', 'T'));
+        if ((Date.now() - created.getTime()) >= 24 * 60 * 60 * 1000) return null;
+      }
+      return <span className="status status-confirmada">Nueva</span>;
+    }
+    return i.status === "revisar" ? <span className="status status-pendiente">Revisar zona</span> : <span className="status status-pagada">Convertida</span>;
+  };
+
+  const renderAddress = (addr) => {
+    if (!addr) return null;
+    const parts = addr.split('|');
+    if (parts.length === 2) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <span style={{ fontWeight: 600, color: '#1f2937' }}>{parts[0]}</span>
+          <span style={{ fontSize: '12px', color: '#6b7280' }}>{parts[1]}</span>
+        </div>
+      );
+    }
+    return <span>{addr}</span>;
+  };
 
   const handleConvert = (loc) => {
     navigate("/cotizador"); 
@@ -1041,7 +1071,7 @@ function EmpLocalizador({ navigate }) {
         <div className="section-card">
           <div className="flex-between" style={{ marginBottom: 14 }}>
             <div><h3 style={{margin:"0 0 4px"}}>Ubicaciones recibidas</h3><p className="desc" style={{ margin: 0 }}>Enviadas por clientes en tiempo real.</p></div>
-            <span className="loc-count"><ID.Inbox size={13}/> {fresh} nuevas</span>
+            {fresh > 0 && <span className="loc-count"><ID.Inbox size={13}/> {fresh} nuevas</span>}
           </div>
           <div className="loc-list">
             {incoming.map(i => (
@@ -1050,9 +1080,9 @@ function EmpLocalizador({ navigate }) {
                 <div className="loc-card-body">
                   <div className="loc-card-top">
                     <div><strong>{i.client}</strong><span className="mono loc-id">{i.id}</span></div>
-                    {statusPill(i.status)}
+                    {statusPill(i)}
                   </div>
-                  <div className="loc-addr"><ID.Pin size={13}/> {i.addr}</div>
+                  <div className="loc-addr" style={{ alignItems: 'flex-start' }}><ID.Pin size={13} style={{ marginTop: 2, flexShrink: 0 }}/> {renderAddress(i.addr)}</div>
                   {i.ref !== "—" && <div className="loc-ref">Referencia: {i.ref}</div>}
                   <div className="loc-meta">
                     <span className="loc-chip"><ID.Map size={12}/> {i.zone}</span>

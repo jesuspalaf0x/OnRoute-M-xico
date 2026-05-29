@@ -21,7 +21,8 @@ try {
             "cost" => $row['cost'] ? (float)$row['cost'] : null,
             "km" => $row['km'] ? (float)$row['km'] : 0,
             "eta" => $row['eta'],
-            "time" => date("h:i a", strtotime($row['created_at'])), // Basic time format
+            "time" => date("h:i a", strtotime($row['created_at'])),
+            "created_at" => $row['created_at'],
             "status" => $row['status'],
             "x" => (float)$row['lng'],
             "y" => (float)$row['lat']
