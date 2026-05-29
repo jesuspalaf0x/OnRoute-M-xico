@@ -35,7 +35,7 @@ function App() {
   else if (screen === "admin-login") body = <F.AdminLoginScreen goTo={goTo}/>;
   else if (screen.startsWith("emp/")) {
     const sec = screen.replace("emp/","");
-    const map = { resumen: <E.EmpResumen goTo={goTo}/>, reservas: <E.EmpReservas goTo={goTo}/>, guardadas: <E.EmpGuardadas goTo={goTo}/>, configuracion: <E.EmpConfig goTo={goTo}/> };
+    const map = { resumen: <E.EmpResumen goTo={goTo}/>, reservas: <E.EmpReservas goTo={goTo}/>, guardadas: <E.EmpGuardadas goTo={goTo}/>, empleados: <E.EmpEmpleados goTo={goTo}/>, bancarios: <E.EmpBancarios goTo={goTo}/> };
     body = <Shell role="employee" section={sec} setSection={(k) => setScreen("emp/"+k)} goTo={goTo}>{map[sec]}</Shell>;
   } else if (screen.startsWith("adm/")) {
     const sec = screen.replace("adm/","");

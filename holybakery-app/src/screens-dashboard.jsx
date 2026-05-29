@@ -60,9 +60,10 @@ function AppShell({ role, section, setSection, goTo, children }) {
   const isAdmin = role === "admin";
   const employeeNav = [
     { key: "resumen", label: "Resumen", icon: <ID.Home size={16}/> },
-    { key: "reservas", label: "Reservas realizadas", icon: <ID.Layers size={16}/> },
-    { key: "guardadas", label: "Guardadas", icon: <ID.Bookmark size={16}/> },
-    { key: "configuracion", label: "Configuración", icon: <ID.Settings size={16}/> },
+    { key: "reservas", label: "Reservas realizadas", icon: <ID.Layers size={16}/>, badge: "12" },
+    { key: "guardadas", label: "Guardadas", icon: <ID.Bookmark size={16}/>, badge: "3" },
+    { key: "empleados", label: "Empleados", icon: <ID.Users size={16}/> },
+    { key: "bancarios", label: "Datos bancarios", icon: <ID.Banknote size={16}/> },
   ];
   const adminNav = [
     { key: "panel", label: "Panel", icon: <ID.Home size={16}/> },
@@ -110,21 +111,17 @@ function AppShell({ role, section, setSection, goTo, children }) {
       <div className="app-body">
         <aside className="sidebar">
           <div className="section-title">{isAdmin ? "Operación" : "Mi turno"}</div>
-          {nav.slice(0, isAdmin ? 5 : 4).map(n => (
+          {nav.slice(0, isAdmin ? 5 : 3).map(n => (
             <button key={n.key} className={"nav-item " + (section===n.key ? "active" : "")} onClick={() => setSection(n.key)}>
               {n.icon} {n.label} {n.badge && <span className="badge">{n.badge}</span>}
             </button>
           ))}
-          {isAdmin && (
-            <>
-              <div className="section-title">Configuración</div>
-              {nav.slice(5).map(n => (
-                <button key={n.key} className={"nav-item " + (section===n.key ? "active" : "")} onClick={() => setSection(n.key)}>
-                  {n.icon} {n.label}
-                </button>
-              ))}
-            </>
-          )}
+          <div className="section-title" style={{marginTop: 20}}>Configuración</div>
+          {nav.slice(isAdmin ? 5 : 3).map(n => (
+            <button key={n.key} className={"nav-item " + (section===n.key ? "active" : "")} onClick={() => setSection(n.key)}>
+              {n.icon} {n.label} {n.badge && <span className="badge">{n.badge}</span>}
+            </button>
+          ))}
           <div className="employee-card">
             <div className="avatar">{isAdmin ? "OR" : "DD"}</div>
             <div className="meta">
@@ -713,41 +710,142 @@ function EmpGuardadas() {
 /* =============================================================
    EMPLOYEE — CONFIGURACIÓN
 ============================================================= */
-function EmpConfig() {
+function NuevoEmpleadoModal({ employee, onClose, onSave }) {
+  const isEditing = !!employee;
+  const [name, setName] = useStateD(employee ? employee.name : "");
+  const [role, setRole] = useStateD(employee ? employee.role : "");
+  const [start, setStart] = useStateD("");
+  const [end, setEnd] = useStateD("");
+
+  const fmtHour = (v) => {
+    if (!v) return "—";
+    const [h, m] = v.split(":").map(Number);
+    const ap = h >= 12 ? "p.m." : "a.m.";
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return `${h12}:${String(m).padStart(2,"0")} ${ap}`;
+  };
+  const initials = name.trim().split(/\s+/).slice(0,2).map(w => w[0] || "").join("").toUpperCase() || "?";
+
+  const handleSave = () => {
+    if (!name.trim()) return alert("El nombre es requerido.");
+    const shiftStr = start || end ? `${fmtHour(start)} – ${fmtHour(end)}` : (employee ? employee.shift : "Flexible");
+    onSave({
+      ...(employee || {}),
+      id: employee ? employee.id : Date.now(),
+      name: name.trim(),
+      role: role || "Apoyo",
+      shift: shiftStr,
+      initials,
+      active: true
+    });
+  };
+
+  return (
+    <div className="sol-backdrop" onClick={onClose}>
+      <div className="sol-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="sol-header">
+          <div>
+            <h3 className="sol-title">{isEditing ? "Editar empleado" : "Nuevo empleado"}</h3>
+            <p className="sol-sub">{isEditing ? "Modifica los datos del empleado." : "Alta en el equipo de Holy Bakery. La detección de turno usa el horario."}</p>
+          </div>
+          <button className="sol-close" onClick={onClose} aria-label="Cerrar"><ID.X size={18}/></button>
+        </div>
+
+        <div className="sol-body">
+          <div className="ne-preview" style={{display:"flex", gap:14, alignItems:"center", padding:16, background:"var(--surface-2)", border:"1px solid var(--line)", borderRadius:14}}>
+            <div className="ne-avatar" style={{width:48,height:48,borderRadius:"50%",background:"var(--primary)",color:"white",display:"grid",placeItems:"center",fontWeight:800,fontSize:16,flexShrink:0}}>{initials}</div>
+            <div className="ne-preview-meta" style={{display:"flex", flexDirection:"column", gap:3}}>
+              <strong style={{fontSize:15}}>{name || "Nombre del empleado"}</strong>
+              <span style={{fontSize:12.5, color:"var(--muted)"}}>{role || "Cargo"} · {start || end ? `${fmtHour(start)} – ${fmtHour(end)}` : (employee ? employee.shift : "Horario sin definir")}</span>
+            </div>
+          </div>
+
+          <div className="ne-field" style={{display:"flex", flexDirection:"column", gap:8}}>
+            <label className="label">Nombre completo</label>
+            <div className="field">
+              <ID.Users size={18} className="icon" style={{color:"var(--accent)"}}/>
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Ramiro Carbajal"/>
+            </div>
+          </div>
+
+          <div className="ne-field" style={{display:"flex", flexDirection:"column", gap:8}}>
+            <label className="label">Cargo</label>
+            <div className="field">
+              <ID.Briefcase size={18} className="icon" style={{color:"var(--accent)"}}/>
+              <select value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="">Selecciona un cargo</option>
+                <option value="Cajero">Cajero</option>
+                <option value="Repostería">Repostería</option>
+                <option value="Apoyo">Apoyo</option>
+                <option value="Mostrador">Mostrador</option>
+              </select>
+              <ID.ChevronDown size={16} className="right"/>
+            </div>
+          </div>
+
+          <div className="ne-field" style={{display:"flex", flexDirection:"column", gap:8}}>
+            <label className="label">Horario laboral</label>
+            <div className="row" style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:16}}>
+              <div className="field">
+                <ID.Clock size={18} className="icon" style={{color:"var(--accent)"}}/>
+                <input type="time" value={start} onChange={(e) => setStart(e.target.value)}/>
+              </div>
+              <div className="field">
+                <ID.Clock size={18} className="icon" style={{color:"var(--accent)"}}/>
+                <input type="time" value={end} onChange={(e) => setEnd(e.target.value)}/>
+              </div>
+            </div>
+            <div className="hint-bar" style={{marginTop: 12}}>
+              <ID.Info size={14}/>
+              <span>El sistema preselecciona al empleado en turno comparando la hora actual contra este horario.</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="ne-foot" style={{display:"flex", justifyContent:"flex-end", gap:10, padding:"16px 24px", borderTop:"1px solid var(--line)", background:"var(--surface)"}}>
+          <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
+          <button className="btn btn-primary" onClick={handleSave}><ID.Check size={16}/> {isEditing ? "Guardar cambios" : "Dar de alta"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmpEmpleados() {
   const { data: employees, loading: empLoading, setData: setEmployees } = useApi("/employees", []);
-  const { data: bankData, loading: bankLoading } = useApi("/bank-details", {
-    banco: "BBVA México",
-    titular: "OnRoute México S.A. de C.V.",
-    clabe: "012 180 01234567890 1",
-    cuenta: "0123 4567 89",
-    concepto: "Holy Bakery — Crédito entregas"
-  });
-
   const validEmployees = Array.isArray(employees) && employees.length > 0 ? employees : window.MOCK.EMPLOYEES;
+  const [modalOpen, setModalOpen] = useStateD(false);
+  const [editingEmp, setEditingEmp] = useStateD(null);
 
-  const handleAddEmployee = async () => {
-    const name = prompt("Nombre del empleado:");
-    if (!name) return;
-    const newEmp = { id: Date.now(), name, role: "Apoyo", shift: "Flexible", initials: name.substring(0, 2).toUpperCase(), active: true };
+  const handleSaveEmployee = async (empData) => {
+    const isNew = !validEmployees.find(e => e.id === empData.id);
     const token = sessionStorage.getItem("wp_token");
     try {
-      const res = await fetch(`${API_BASE}/employees`, {
-        method: "POST",
+      const method = isNew ? "POST" : "PUT";
+      const url = isNew ? `${API_BASE}/employees` : `${API_BASE}/employees/${empData.id}`;
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json", "Authorization": token ? `Bearer ${token}` : "" },
-        body: JSON.stringify(newEmp)
+        body: JSON.stringify(empData)
       });
       if (res.ok) {
         const savedEmp = await res.json();
-        setEmployees([...validEmployees, savedEmp]);
+        setEmployees(isNew ? [...validEmployees, savedEmp] : validEmployees.map(e => e.id === empData.id ? savedEmp : e));
       } else {
-        setEmployees([...validEmployees, newEmp]);
+        setEmployees(isNew ? [...validEmployees, empData] : validEmployees.map(e => e.id === empData.id ? empData : e));
       }
     } catch(e) {
-      setEmployees([...validEmployees, newEmp]);
+      setEmployees(isNew ? [...validEmployees, empData] : validEmployees.map(e => e.id === empData.id ? empData : e));
     }
+    setModalOpen(false);
+    setEditingEmp(null);
   };
 
   const handleDeleteEmployee = async (id) => {
+    if (validEmployees.length <= 1) {
+      alert("No puedes eliminar a todos los empleados. Debe quedar por lo menos uno en turno.");
+      return;
+    }
     if (!window.confirm("¿Dar de baja a este empleado?")) return;
     const token = sessionStorage.getItem("wp_token");
     try {
@@ -760,74 +858,82 @@ function EmpConfig() {
 
   return (
     <>
-      <div className="page-header">
+      <div className="page-header flex-between">
         <div>
-          <h1>Configuración</h1>
-          <p>Empleados activos y datos bancarios para transferencias.</p>
+          <h1>Empleados</h1>
+          <p>Alta y baja del equipo Holy Bakery. Detección automática por horario laboral.</p>
         </div>
+        <button className="btn btn-primary" onClick={() => { setEditingEmp(null); setModalOpen(true); }}><ID.Plus size={14}/> Nuevo empleado</button>
       </div>
 
-      <div className="row" style={{gridTemplateColumns:"1.4fr 1fr", gap: 18}}>
-        <div className="section-card">
-          <div className="flex-between" style={{marginBottom: 14}}>
-            <div>
-              <h3>Empleados Holy Bakery</h3>
-              <p className="desc" style={{margin:0}}>Detección automática por horario laboral.</p>
-            </div>
-            <button className="btn btn-primary btn-sm" onClick={handleAddEmployee}><ID.Plus size={14}/> Nuevo empleado</button>
-          </div>
-          <div className="table-wrap">
-            <table className="table">
-              <thead><tr><th>Nombre</th><th>Cargo</th><th>Horario</th><th>Estado</th><th></th></tr></thead>
-              <tbody>
-                {empLoading ? <tr><td colSpan="5" style={{textAlign:"center", padding:"20px"}}>Cargando...</td></tr> : validEmployees.map(e => (
-                  <tr key={e.id}>
-                    <td>
-                      <div style={{display:"flex", gap:10, alignItems:"center"}}>
-                        <div style={{width:32,height:32,borderRadius:"50%", background:"var(--bg-alt)", display:"grid", placeItems:"center", fontWeight:800, fontSize:11}}>{e.initials}</div>
-                        <strong>{e.name}</strong>
-                      </div>
-                    </td>
-                    <td>{e.role}</td>
-                    <td className="mono" style={{fontSize: 12.5}}>{e.shift}</td>
-                    <td>{e.id === 2 ? <span className="status status-pagada">En turno</span> : <span className="muted">Inactivo ahora</span>}</td>
-                    <td>
-                      <div className="flex gap-8">
-                        <button className="btn btn-ghost btn-sm"><ID.Edit size={12}/></button>
-                        <button className="btn btn-danger-ghost btn-sm" onClick={() => handleDeleteEmployee(e.id)}><ID.Trash size={12}/></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <div className="section-card">
+        <div className="table-wrap">
+          <table className="table">
+            <thead><tr><th>Nombre</th><th>Cargo</th><th>Horario</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              {empLoading ? <tr><td colSpan="5" style={{textAlign:"center", padding:"20px"}}>Cargando...</td></tr> : validEmployees.map(e => (
+                <tr key={e.id}>
+                  <td>
+                    <div style={{display:"flex", gap:10, alignItems:"center"}}>
+                      <div style={{width:32,height:32,borderRadius:"50%", background:"var(--bg-alt)", display:"grid", placeItems:"center", fontWeight:800, fontSize:11}}>{e.initials}</div>
+                      <strong>{e.name}</strong>
+                    </div>
+                  </td>
+                  <td>{e.role}</td>
+                  <td className="mono" style={{fontSize: 12.5}}>{e.shift}</td>
+                  <td>{window.MOCK.getCurrentEmployee().id === e.id ? <span className="status status-pagada"><span style={{width:6,height:6,borderRadius:"50%",background:"#16a34a",display:"inline-block",marginRight:6}}></span>En Turno</span> : <span className="muted">Inactivo ahora</span>}</td>
+                  <td>
+                    <div className="flex gap-8">
+                      <button className="btn btn-ghost btn-sm" onClick={() => { setEditingEmp(e); setModalOpen(true); }}><ID.Edit size={12}/></button>
+                      <button className="btn btn-danger-ghost btn-sm" onClick={() => handleDeleteEmployee(e.id)}><ID.Trash size={12}/></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
+      
+      {modalOpen && <NuevoEmpleadoModal employee={editingEmp} onClose={() => setModalOpen(false)} onSave={handleSaveEmployee}/>}
+    </>
+  );
+}
 
-        <div className="section-card">
-          <div className="flex-between" style={{marginBottom: 14}}>
-            <div>
-              <h3>Datos bancarios</h3>
-              <p className="desc" style={{margin:0}}>Solo lectura. El admin actualiza desde su panel.</p>
-            </div>
-            <span className="status status-borrador"><ID.Lock size={10}/> Read-only</span>
-          </div>
+function EmpBancarios() {
+  const { data: bankData, loading: bankLoading } = useApi("/bank-details", {
+    banco: "BBVA México",
+    titular: "OnRoute México S.A. de C.V.",
+    clabe: "012 180 01234567890 1",
+    cuenta: "0123 4567 89",
+    concepto: "Holy Bakery — Crédito entregas"
+  });
 
-          <div className="stack" style={{gap: 12}}>
-            {bankLoading ? <p>Cargando datos bancarios...</p> : (
-              <>
-                <BankRow label="Banco" value={bankData.banco || "BBVA México"}/>
-                <BankRow label="Titular" value={bankData.titular || "OnRoute México S.A. de C.V."}/>
-                <BankRow label="CLABE" value={bankData.clabe || "012 180 01234567890 1"} mono/>
-                <BankRow label="Cuenta" value={bankData.cuenta || "0123 4567 89"} mono/>
-                <BankRow label="Concepto" value={bankData.concepto || "Holy Bakery — Crédito entregas"}/>
-              </>
-            )}
-          </div>
-          <div className="hint-bar" style={{marginTop:14, marginBottom:0}}>
-            <ID.Info size={14}/>
-            <span>El cobro a Holy Bakery es libre — el admin solicita pago cuando lo decide.</span>
-          </div>
+  return (
+    <>
+      <div className="page-header flex-between" style={{alignItems:"flex-start"}}>
+        <div>
+          <h1>Datos bancarios</h1>
+          <p>Datos para transferencias. Solo lectura — el admin los actualiza desde su panel.</p>
+        </div>
+        <span className="status status-borrador"><ID.Lock size={10}/> Read-Only</span>
+      </div>
+
+      <div className="section-card" style={{maxWidth: 680}}>
+        <div className="stack" style={{gap: 12}}>
+          {bankLoading ? <p>Cargando datos bancarios...</p> : (
+            <>
+              <BankRow label="Banco" value={bankData.banco || "BBVA México"}/>
+              <BankRow label="Titular" value={bankData.titular || "OnRoute México S.A. de C.V."}/>
+              <BankRow label="CLABE" value={bankData.clabe || "012 180 01234567890 1"} mono/>
+              <BankRow label="Cuenta" value={bankData.cuenta || "0123 4567 89"} mono/>
+              <BankRow label="Concepto" value={bankData.concepto || "Holy Bakery — Crédito entregas"}/>
+            </>
+          )}
+        </div>
+        <div className="hint-bar" style={{marginTop:16, marginBottom:0}}>
+          <ID.Info size={14}/>
+          <span>El cobro a Holy Bakery es libre — el admin solicita pago cuando lo decide.</span>
         </div>
       </div>
     </>
@@ -835,13 +941,13 @@ function EmpConfig() {
 }
 
 const BankRow = ({ label, value, mono }) => (
-  <div className="flex-between" style={{padding:"10px 12px", background:"var(--surface-2)", borderRadius:10}}>
+  <div className="flex-between" style={{padding:"14px 16px", background:"var(--surface-2)", borderRadius:12}}>
     <div>
       <div className="muted" style={{fontSize:11, textTransform:"uppercase", letterSpacing:"0.12em", fontWeight:700}}>{label}</div>
-      <div style={{fontWeight:700, marginTop:2}} className={mono ? "mono" : ""}>{value}</div>
+      <div style={{fontWeight:700, marginTop:4, fontSize:15}} className={mono ? "mono" : ""}>{value}</div>
     </div>
-    <button className="btn btn-ghost btn-sm" onClick={() => { navigator.clipboard.writeText(value); alert("Copiado!"); }}><ID.Copy size={12}/></button>
+    <button className="btn btn-ghost" style={{padding:"8px 12px"}} onClick={() => { navigator.clipboard.writeText(value); alert("Copiado!"); }}><ID.Copy size={16}/></button>
   </div>
 );
 
-window.EmpScreens = { EmpResumen, EmpReservas, EmpGuardadas, EmpConfig, AppShell, StatusPill };
+window.EmpScreens = { EmpResumen, EmpReservas, EmpGuardadas, EmpEmpleados, EmpBancarios, AppShell, StatusPill };
