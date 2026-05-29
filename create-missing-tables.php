@@ -58,6 +58,11 @@ $sql_tariffs = "CREATE TABLE tariff_change_requests (
 dbDelta($sql_tariffs);
 echo "<p>Tabla <strong>tariff_change_requests</strong> creada o actualizada.</p>";
 
+// 3. Modificar enum de status en la tabla deliveries para admitir cambio_tarifa_pendiente y cambio_tarifa
+$wpdb->query("ALTER TABLE deliveries MODIFY COLUMN status ENUM('borrador', 'pendiente_envio', 'confirmada', 'entregada', 'pagada', 'cancelacion_pendiente', 'cancelada', 'cambio_tarifa_pendiente', 'cambio_tarifa') DEFAULT 'borrador';");
+echo "<p>Columna <strong>status</strong> de la tabla <strong>deliveries</strong> actualizada para admitir estados de cambio de tarifa.</p>";
+
+
 // Limpiar la caché si hay alguna
 $wpdb->flush();
 
