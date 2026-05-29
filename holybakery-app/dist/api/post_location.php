@@ -13,31 +13,32 @@ if (!$data) {
     exit();
 }
 
-$tracking_code = $data['id'] ?? "DLV-" . str_pad(rand(0, 999), 3, "0", STR_PAD_LEFT);
+$short_id = $data['id'] ?? "UBI-" . str_pad(rand(0, 999), 3, "0", STR_PAD_LEFT);
+$client_name = $data['client'] ?? "Sin nombre";
+$reference = $data['ref'] ?? "—";
 $address = $data['addr'] ?? "";
-// Si la tabla no tiene columnas para nombre/referencia, lo concatenamos a la dirección para no perderlo
-$client_name = $data['client'] ?? "";
-$ref = $data['ref'] ?? "";
-$full_address = $address . " | Cliente: " . $client_name . " | Ref: " . $ref;
-
-$cost = $data['cost'] ?? 0;
+$zone = $data['zone'] ?? "";
+$cost = $data['cost'] ?? null;
+$km = $data['km'] ?? null;
+$eta = $data['eta'] ?? "";
 $lat = $data['y'] ?? null;
 $lng = $data['x'] ?? null;
-$status = "confirmada"; // según captura
-$client_id = 1; // según captura
-$scheduled_date = date("Y-m-d H:i:s");
+$status = $data['status'] ?? "nueva";
 
 try {
-    $stmt = $pdo->prepare("INSERT INTO deliveries (tracking_code, formatted_address, cost, latitude, longitude, status, client_id, scheduled_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO holy_locations (short_id, client_name, reference, address, zone, cost, km, eta, lat, lng, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
-        $tracking_code,
-        $full_address,
+        $short_id,
+        $client_name,
+        $reference,
+        $address,
+        $zone,
         $cost,
+        $km,
+        $eta,
         $lat,
         $lng,
-        $status,
-        $client_id,
-        $scheduled_date
+        $status
     ]);
     
     echo json_encode(["success" => true, "message" => "Ubicación insertada correctamente"]);

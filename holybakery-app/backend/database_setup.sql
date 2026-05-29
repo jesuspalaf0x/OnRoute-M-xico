@@ -1,5 +1,5 @@
 -- Tabla de Ubicaciones (Entregas)
-CREATE TABLE IF NOT EXISTS `deliveries` (
+CREATE TABLE IF NOT EXISTS `holy_locations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `short_id` varchar(20) NOT NULL,
   `client_name` varchar(255) DEFAULT NULL,
