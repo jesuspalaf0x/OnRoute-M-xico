@@ -5,6 +5,8 @@ import * as turf from '@turf/turf';
 import mapData from './map.json';
 import pricesData from './data/prices.json';
 import MapPickerModal from './components/MapPickerModal';
+import InteractiveMap from './components/InteractiveMap';
+import { getZoneAndPrice } from './utils/pricing';
 
 const I = window.Icons;
 const libraries = ['places'];
@@ -1347,29 +1349,51 @@ Comentarios: ${commentsDisplay}`;
 
 }
 
-function ZoneMapStatic({ pin, onMapClick }) {
-  return (
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} onClick={onMapClick}>
-      <defs>
-        <pattern id="g" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M 6 0 L 0 0 0 6" fill="none" stroke="#e7e7e2" strokeWidth="0.2"/></pattern>
-        <linearGradient id="s" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stopColor="#cfe6f5"/><stop offset="1" stopColor="#aed4ec"/></linearGradient>
-      </defs>
-      <rect width="100" height="100" fill="#f5f4ee"/>
-      <rect width="100" height="100" fill="url(#g)"/>
-      <path d="M 100 0 L 88 8 L 92 22 L 86 36 L 92 50 L 84 66 L 90 80 L 86 100 L 100 100 Z" fill="url(#s)"/>
-      <path d="M 26 30 L 42 26 L 50 38 L 44 50 L 28 52 L 22 42 Z" fill="rgba(22,163,74,0.16)" stroke="#16a34a" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
-      <path d="M 60 50 L 78 48 L 86 64 L 80 80 L 64 80 L 56 66 Z" fill="rgba(14,106,50,0.18)" stroke="#0e6a32" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
-      <path d="M 40 44 L 58 46 L 60 60 L 48 62 L 36 56 Z" fill="rgba(59,130,246,0.14)" stroke="#3b82f6" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
-      <path d="M 10 40 Q 40 42 70 60 T 100 88" fill="none" stroke="#d6d3c6" strokeWidth="0.9"/>
-      <path d="M 30 12 Q 50 30 70 60" fill="none" stroke="#d6d3c6" strokeWidth="0.6"/>
-      {pin && (
-        <path d={`M ${pin.x} ${pin.y - 5.5} C ${pin.x - 3} ${pin.y - 5.5} ${pin.x - 3.6} ${pin.y - 2.4} ${pin.x - 3.6} ${pin.y - 0.6} C ${pin.x - 3.6} ${pin.y + 2} ${pin.x - 1.4} ${pin.y + 3.6} ${pin.x} ${pin.y + 5} C ${pin.x + 1.4} ${pin.y + 3.6} ${pin.x + 3.6} ${pin.y + 2} ${pin.x + 3.6} ${pin.y - 0.6} C ${pin.x + 3.6} ${pin.y - 2.4} ${pin.x + 3} ${pin.y - 5.5} ${pin.x} ${pin.y - 5.5} Z`} fill="#0d2618"/>
-      )}
-    </svg>
-  );
-}
-
 function LocatorScreen() {
+  const [lang, setLang] = useState("en"); // "en" or "es"
+  const t = {
+    en: {
+      where: "Where should we deliver your order?",
+      pinText: "Set the exact point. You don't need to know the address — just use the map.",
+      tapMap: "Tap the map to mark",
+      detected: "Location detected",
+      useCurrent: "Use my current location",
+      orTap: "or tap the map to set it",
+      namePlace: "Name or event (optional)",
+      refPlace: "Reference: e.g., tent, reception... (optional)",
+      confirmBtn: "Confirm location",
+      confirmNote: "Upon confirmation, your point goes directly to Holy Bakery.",
+      sentTitle: "Location sent!",
+      sentDesc: "Holy Bakery has received your delivery point. You don't need to do anything else.",
+      backupLink: "Your backup link",
+      saveNote: "Save it in case you want to resend it yourself.",
+      markAnother: "Mark another location",
+      noRoute: "No route",
+      locError: "Could not get current location."
+    },
+    es: {
+      where: "¿Dónde entregamos tu pedido?",
+      pinText: "Fija el punto exacto. No necesitas saber la dirección — con el mapa basta.",
+      tapMap: "Toca el mapa para marcar",
+      detected: "Ubicación detectada",
+      useCurrent: "Usar mi ubicación actual",
+      orTap: "o toca el mapa para fijarlo",
+      namePlace: "Nombre o evento (opcional)",
+      refPlace: "Referencia: ej. carpa, recepción… (opcional)",
+      confirmBtn: "Confirmar ubicación",
+      confirmNote: "Al confirmar, tu punto llega directo a Holy Bakery.",
+      sentTitle: "¡Ubicación enviada!",
+      sentDesc: "Holy Bakery ya recibió tu punto de entrega. No necesitas hacer nada más.",
+      backupLink: "Tu enlace de respaldo",
+      saveNote: "Guárdalo por si quieres reenviarlo tú mismo.",
+      markAnother: "Marcar otra ubicación",
+      noRoute: "Sin ruta",
+      locError: "No se pudo obtener la ubicación actual."
+    }
+  };
+
+  const text = t[lang];
+
   const [pin, setPin] = useState(null);
   const [step, setStep] = useState("pick");
   const [name, setName] = useState("");
@@ -1377,97 +1401,157 @@ function LocatorScreen() {
   const [located, setLocated] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const detected = pin ? { addr: "Carretera Tulum-Boca Paila Km 7.2", zone: "Zona 2", lat: (20.30 - (pin.y / 100) * 0.45).toFixed(4), lng: (-87.55 + (pin.x / 100) * 0.30).toFixed(4) } : null;
-  const onMapClick = (e) => { const r = e.currentTarget.getBoundingClientRect(); setPin({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }); setLocated(false); };
-  const useMyLocation = () => { setPin({ x: 68, y: 58 }); setLocated(true); };
-  const genLink = window.MOCK.SHARE_LINK;
+  const [zoneInfo, setZoneInfo] = useState({ zone: "", price: null });
+  const [routeInfo, setRouteInfo] = useState({ km: 0, eta: "" });
+
+  useEffect(() => {
+    if (pin) {
+      const zInfo = getZoneAndPrice(pin.lat, pin.lng);
+      setZoneInfo(zInfo);
+
+      if (window.google && window.google.maps) {
+        const service = new window.google.maps.DistanceMatrixService();
+        service.getDistanceMatrix(
+          {
+            origins: [{ lat: 20.199885881257117, lng: -87.46305126147733 }],
+            destinations: [pin],
+            travelMode: 'DRIVING'
+          },
+          (response, status) => {
+            if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
+              const element = response.rows[0].elements[0];
+              setRouteInfo({
+                km: +(element.distance.value / 1000).toFixed(1),
+                eta: element.duration.text
+              });
+            } else {
+              setRouteInfo({ km: 0, eta: text.noRoute });
+            }
+          }
+        );
+      }
+    }
+  }, [pin, lang]);
+
+  const onPinChange = (newPin) => {
+    setPin(newPin);
+    setLocated(false);
+  };
+
+  const useMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setPin({ lat: position.coords.latitude, lng: position.coords.longitude });
+          setLocated(true);
+        },
+        () => { alert(text.locError); },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      alert(text.locError);
+    }
+  };
+
+  const genLink = window.MOCK && window.MOCK.SHARE_LINK ? window.MOCK.SHARE_LINK : "https://onroute.mx/loc/HB-12345";
 
   const handleConfirm = () => {
     const newLoc = {
       id: "UBI-" + Math.floor(Math.random()*1000).toString().padStart(3,"0"),
       client: name || "Sin nombre",
       ref: ref || "—",
-      addr: detected.addr,
-      zone: detected.zone,
-      cost: 200,
-      km: 4.5,
-      eta: "14 min",
+      addr: `${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)}`,
+      zone: zoneInfo.zone,
+      cost: zoneInfo.price || 0,
+      km: routeInfo.km,
+      eta: routeInfo.eta,
       time: "Justo ahora",
       status: "nueva",
-      x: pin.x,
-      y: pin.y
+      x: pin.lng,
+      y: pin.lat
     };
-    window.MOCK.INCOMING_LOCATIONS.unshift(newLoc);
+    if (window.MOCK && window.MOCK.INCOMING_LOCATIONS) {
+      window.MOCK.INCOMING_LOCATIONS.unshift(newLoc);
+      localStorage.setItem('holy_incoming', JSON.stringify(window.MOCK.INCOMING_LOCATIONS));
+    }
+    
+    // Enviar a la base de datos (PHP)
+    fetch('/api/post_location.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newLoc)
+    }).catch(err => console.error("Error saving to DB:", err));
+
     setStep("confirmed");
   };
 
+  const toggleLang = () => {
+    setLang(l => l === "en" ? "es" : "en");
+  };
+
   return (
-    <div className="cli-stage">
-      <div className="cli-phone">
-        <div className="cli-notch"></div>
-        <div className="cli-screen">
-          <div className="cli-head">
-            <div className="cli-brand">
-              <span className="cli-logo"><I.Cake size={15}/></span>
-              <div><strong>Holy Bakery</strong><span>Entregas · OnRoute</span></div>
+    <div className="cli-screen fullscreen-mode">
+      <div className="cli-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="cli-brand">
+          <span className="cli-logo"><I.Cake size={15}/></span>
+          <div><strong>Holy Bakery</strong><span>Entregas · OnRoute</span></div>
+        </div>
+        <button className="lang-toggle" onClick={toggleLang}>
+          {lang === "en" ? <><strong>en</strong> / ES</> : <>en / <strong>ES</strong></>}
+        </button>
+      </div>
+
+      {step === "pick" && (
+        <div className="cli-scroll">
+          <div className="cli-intro">
+            <h2>{text.where}</h2>
+            <p>{text.pinText}</p>
+          </div>
+          <div className="cli-map" style={{ position: 'relative', width: '100%', height: 250, borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
+            <InteractiveMap pin={pin} onPinChange={onPinChange} />
+            {!pin && <div className="cli-map-hint" style={{ pointerEvents: 'none', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(255,255,255,0.8)', padding: '6px 12px', borderRadius: 20, zIndex: 10 }}><I.Pin size={13}/> {text.tapMap}</div>}
+            {located && <div className="cli-map-badge" style={{ position: 'absolute', top: 10, right: 10, background: '#16a34a', color: 'white', padding: '4px 8px', borderRadius: 12, fontSize: 11, zIndex: 10 }}><I.Crosshair size={12}/> {text.detected}</div>}
+          </div>
+          <button className="cli-locate" onClick={useMyLocation}><I.Crosshair size={18}/> {text.useCurrent}</button>
+          <div className="cli-or"><span>{text.orTap}</span></div>
+          {pin && (
+            <div className="cli-detected">
+              <div className="cli-detected-row"><I.Pin size={16}/><div><strong>{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</strong><span>{zoneInfo.zone} · {zoneInfo.price ? `$${zoneInfo.price}` : ''}</span></div></div>
+            </div>
+          )}
+          <div className="cli-fields">
+            <input className="cli-input" placeholder={text.namePlace} value={name} onChange={e => setName(e.target.value)}/>
+            <input className="cli-input" placeholder={text.refPlace} value={ref} onChange={e => setRef(e.target.value)}/>
+          </div>
+          <button className="cli-confirm" disabled={!pin} onClick={handleConfirm}>{text.confirmBtn} <I.ArrowRight size={18}/></button>
+          <p className="cli-foot-note">{text.confirmNote}</p>
+        </div>
+      )}
+
+      {step === "confirmed" && (
+        <div className="cli-scroll cli-success">
+          <div className="cli-check"><I.Check size={34}/></div>
+          <h2>{text.sentTitle}</h2>
+          <p>{text.sentDesc}</p>
+          <div className="cli-summary">
+            <div className="cli-sum-map" style={{ width: '100%', height: 120, borderRadius: 8, overflow: 'hidden', pointerEvents: 'none' }}>
+              <InteractiveMap pin={pin} readOnly={true} />
+            </div>
+            <div className="cli-sum-rows">
+              <div className="cli-sum-row"><I.Pin size={14}/><span>{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</span></div>
+              <div className="cli-sum-row"><I.Map size={14}/><span>{zoneInfo.zone}</span></div>
+              {name && <div className="cli-sum-row"><I.Users size={14}/><span>{name}</span></div>}
             </div>
           </div>
-
-          {step === "pick" && (
-            <div className="cli-scroll">
-              <div className="cli-intro">
-                <h2>¿Dónde entregamos tu pedido?</h2>
-                <p>Fija el punto exacto. No necesitas saber la dirección — con el mapa basta.</p>
-              </div>
-              <div className="cli-map" onClick={onMapClick}>
-                <ZoneMapStatic pin={pin} onMapClick={onMapClick}/>
-                {!pin && <div className="cli-map-hint"><I.Pin size={13}/> Toca el mapa para marcar</div>}
-                {located && <div className="cli-map-badge"><I.Crosshair size={12}/> Ubicación detectada</div>}
-              </div>
-              <button className="cli-locate" onClick={useMyLocation}><I.Crosshair size={18}/> Usar mi ubicación actual</button>
-              <div className="cli-or"><span>o toca el mapa para fijarlo</span></div>
-              {detected && (
-                <div className="cli-detected">
-                  <div className="cli-detected-row"><I.Pin size={16}/><div><strong>{detected.addr}</strong><span>{detected.zone} · {detected.lat}, {detected.lng}</span></div></div>
-                </div>
-              )}
-              <div className="cli-fields">
-                <input className="cli-input" placeholder="Nombre o evento (opcional)" value={name} onChange={e => setName(e.target.value)}/>
-                <input className="cli-input" placeholder="Referencia: ej. carpa, recepción… (opcional)" value={ref} onChange={e => setRef(e.target.value)}/>
-              </div>
-              <button className="cli-confirm" disabled={!pin} onClick={handleConfirm}>Confirmar ubicación <I.ArrowRight size={18}/></button>
-              <p className="cli-foot-note">Al confirmar, tu punto llega directo a Holy Bakery.</p>
-            </div>
-          )}
-
-          {step === "confirmed" && (
-            <div className="cli-scroll cli-success">
-              <div className="cli-check"><I.Check size={34}/></div>
-              <h2>¡Ubicación enviada!</h2>
-              <p>Holy Bakery ya recibió tu punto de entrega. No necesitas hacer nada más.</p>
-              <div className="cli-summary">
-                <div className="cli-sum-map"><ZoneMapStatic pin={pin}/></div>
-                <div className="cli-sum-rows">
-                  <div className="cli-sum-row"><I.Pin size={14}/><span>{detected?.addr}</span></div>
-                  <div className="cli-sum-row"><I.Map size={14}/><span>{detected?.zone}</span></div>
-                  {name && <div className="cli-sum-row"><I.Users size={14}/><span>{name}</span></div>}
-                </div>
-              </div>
-              <div className="cli-link-label">Tu enlace de respaldo</div>
-              <div className="cli-linkbox">
-                <span className="mono">{genLink}</span>
-                <button onClick={() => { navigator.clipboard.writeText(genLink); setCopied(true); setTimeout(() => setCopied(false), 1600); }}>{copied ? <I.Check size={15}/> : <I.Copy size={15}/>}</button>
-              </div>
-              <p className="cli-foot-note">Guárdalo por si quieres reenviarlo tú mismo.</p>
-              <button className="cli-secondary" onClick={() => { setStep("pick"); setPin(null); setLocated(false); }}>Marcar otra ubicación</button>
-            </div>
-          )}
+          <div className="cli-link-label">{text.backupLink}</div>
+          <div className="cli-linkbox">
+            <span className="mono">{genLink}</span>
+            <button onClick={() => { navigator.clipboard.writeText(genLink); setCopied(true); setTimeout(() => setCopied(false), 1600); }}>{copied ? <I.Check size={15}/> : <I.Copy size={15}/>}</button>
+          </div>
+          <p className="cli-foot-note">{text.saveNote}</p>
+          <button className="cli-secondary" onClick={() => { setStep("pick"); setPin(null); setLocated(false); setName(""); setRef(""); }}>{text.markAnother}</button>
         </div>
-      </div>
-      <div className="cli-context">
-        <span className="loc-chip"><I.Phone size={12}/> Vista del cliente final</span>
-        <p>Así se ve el enlace que abre el cliente en su teléfono. Optimizado para móvil.</p>
-      </div>
+      )}
     </div>
   );
 }

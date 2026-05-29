@@ -1,4 +1,5 @@
 import React from 'react';
+import InteractiveMap from './components/InteractiveMap';
 
 // Dashboard (employee) and Admin screens
 
@@ -973,10 +974,52 @@ function ZoneMap({ pin }) {
 }
 
 function EmpLocalizador({ navigate }) {
-  const [copied, setCopied] = useState(false);
-  const [incoming, setIncoming] = useState(window.MOCK.INCOMING_LOCATIONS || []);
+  const [copied, setCopied] = useStateD(false);
+  const [incoming, setIncoming] = useStateD(window.MOCK.INCOMING_LOCATIONS || []);
+  
+  React.useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await fetch('/api/get_locations.php');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setIncoming(data);
+            window.MOCK.INCOMING_LOCATIONS = data;
+          }
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    };
+
+    // Initial fetch
+    fetchLocations();
+
+    // Poll every 30 seconds
+    const interval = setInterval(fetchLocations, 30000);
+
+    const handleStorage = (e) => {
+      if (e.key === 'holy_incoming') {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) {
+            setIncoming(parsed);
+            window.MOCK.INCOMING_LOCATIONS = parsed;
+          }
+        } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
   const fresh = incoming.filter(i => i.status === "nueva").length;
-  const SHARE_LINK = window.MOCK.SHARE_LINK;
+  const SHARE_LINK = "holybakery.onroutemx.com/ubicacion";
+  const waMsgEncoded = "Hello!%20%F0%9F%91%8B%20Please%20share%20your%20delivery%20location%20using%20this%20link.%0A%0AIt's%20super%20easy%3A%20open%20the%20map%2C%20select%20your%20exact%20location%20(or%20use%20your%20current%20location)%20and%20send%20it.%20Thank%20you!%20%E2%9C%A8%0A%0A%F0%9F%93%8D%20" + encodeURIComponent(SHARE_LINK);
+  const waLink = `https://api.whatsapp.com/send?text=${waMsgEncoded}`;
   const copy = () => { navigator.clipboard.writeText(SHARE_LINK); setCopied(true); setTimeout(() => setCopied(false), 1800); };
   const statusPill = (s) => s === "nueva" ? <span className="status status-confirmada">Nueva</span> : s === "revisar" ? <span className="status status-pendiente">Revisar zona</span> : <span className="status status-pagada">Convertida</span>;
 
@@ -986,17 +1029,6 @@ function EmpLocalizador({ navigate }) {
 
   return (
     <>
-      <div className="page-header flex-between">
-        <div>
-          <h1>Localizador de entregas</h1>
-          <p>Comparte un enlace. El cliente fija su ubicación desde el móvil y entra directo aquí.</p>
-        </div>
-        <div className="flex gap-8">
-          <a className="btn btn-ghost btn-sm" href="/ubicacion" target="_blank"><ID.Eye size={14}/> Previsualizar</a>
-          <button className="btn btn-primary btn-sm"><ID.Plus size={14}/> Generar enlace</button>
-        </div>
-      </div>
-
       <div className="loc-flow">
         <div className="loc-step"><span className="loc-step-n">1</span><div><strong>Comparte el enlace</strong><span>A organizadores o directo al cliente final.</span></div></div>
         <ID.ChevronRight size={16} className="loc-flow-arrow"/>
@@ -1005,7 +1037,7 @@ function EmpLocalizador({ navigate }) {
         <div className="loc-step"><span className="loc-step-n">3</span><div><strong>Llega al dashboard</strong><span>Con zona, costo, distancia y ETA.</span></div></div>
       </div>
 
-      <div className="row loc-grid" style={{ gridTemplateColumns: "1fr 340px", alignItems: "start", gap: 18 }}>
+      <div className="row loc-grid" style={{ gridTemplateColumns: "minmax(0, 1fr) 340px", alignItems: "start", gap: 18 }}>
         <div className="section-card">
           <div className="flex-between" style={{ marginBottom: 14 }}>
             <div><h3 style={{margin:"0 0 4px"}}>Ubicaciones recibidas</h3><p className="desc" style={{ margin: 0 }}>Enviadas por clientes en tiempo real.</p></div>
@@ -1014,7 +1046,7 @@ function EmpLocalizador({ navigate }) {
           <div className="loc-list">
             {incoming.map(i => (
               <div key={i.id} className={"loc-card " + (i.status === "convertida" ? "is-done" : "")}>
-                <div className="loc-card-map"><ZoneMap pin={{ x: i.x, y: i.y }}/></div>
+                <div className="loc-card-map"><InteractiveMap readOnly pin={{ lat: i.y, lng: i.x }} /></div>
                 <div className="loc-card-body">
                   <div className="loc-card-top">
                     <div><strong>{i.client}</strong><span className="mono loc-id">{i.id}</span></div>
@@ -1048,12 +1080,25 @@ function EmpLocalizador({ navigate }) {
             <div className="loc-linkbox"><ID.Link size={15}/><span className="loc-link-text mono">{SHARE_LINK}</span></div>
             <div className="row row-2" style={{ marginTop: 12, gap: 10 }}>
               <button className={"btn btn-sm " + (copied ? "btn-accent" : "btn-soft")} onClick={copy}>{copied ? <><ID.Check size={14}/> Copiado</> : <><ID.Copy size={14}/> Copiar</>}</button>
-              <button className="btn btn-accent btn-sm"><ID.WhatsApp size={14}/> WhatsApp</button>
+              <a className="btn btn-accent btn-sm pulse-btn" style={{ display: "flex", justifyContent: "center" }} href={waLink} target="_blank" rel="noopener noreferrer"><ID.WhatsApp size={14}/> WhatsApp</a>
             </div>
             <button className="btn btn-ghost btn-sm btn-block" style={{ marginTop: 10 }}><ID.Share size={14}/> Más opciones de envío</button>
-            <div className="loc-qr">
-              <div className="loc-qr-code"><ID.QrCode size={64}/></div>
-              <div><strong>Código QR</strong><p style={{margin:"3px 0 0", fontSize: 12, color: "var(--muted)"}}>Para imprimir en mostrador o catálogo de bodas.</p></div>
+            <div className="loc-qr" style={{ alignItems: "flex-start" }}>
+              <img src="/qr-code.svg" width="64" height="64" alt="Código QR" style={{ borderRadius: 8, flexShrink: 0 }} />
+              <div>
+                <strong>Código QR</strong>
+                <p style={{margin:"3px 0 8px", fontSize: 12, color: "var(--muted)", lineHeight: 1.3}}>Para imprimir en mostrador o catálogo de bodas.</p>
+                <a href="/qr-code.svg" download="HolyBakery_QR.svg" className="btn btn-soft btn-sm" style={{ padding: "5px 10px", fontSize: 12, height: "auto" }}>
+                  <ID.Download size={13} /> Descargar SVG
+                </a>
+              </div>
+            </div>
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--line-strong)" }}>
+              <h3 style={{margin:"0 0 4px", fontSize: 14}}>Vista del cliente final</h3>
+              <p style={{margin:"0 0 12px", fontSize: 12, color: "var(--muted)", lineHeight: 1.4}}>
+                Abre el localizador en una nueva pestaña para visualizar exactamente lo que ve el cliente en su dispositivo móvil al entrar al enlace.
+              </p>
+              <a className="btn btn-soft btn-sm btn-block" href="/ubicacion" target="_blank" style={{ display: "flex", justifyContent: "center" }}><ID.Eye size={14}/> Previsualizar mapa</a>
             </div>
           </div>
           <div className="section-card info-soft">

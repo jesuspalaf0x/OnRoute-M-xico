@@ -96,11 +96,22 @@ const getCurrentEmployee = () => {
 const SHARE_LINK = "holybakery.onroutemx.com/ubicacion/HB-7K2P";
 
 const INCOMING_LOCATIONS = [
-  { id: "UBI-021", client: "Boda Marcela & Tom", ref: "Carpa junto a la alberca", addr: "Dreams Tulum Resort & Spa", zone: "Zona 2", cost: 250, km: 6.4, eta: "18 min", time: "Hace 4 min", status: "nueva", x: 70, y: 60 },
-  { id: "UBI-020", client: "Aniversario Petersen", ref: "Recepción, preguntar por Ana", addr: "Aldea Zama, Calle Coatí Lote 8", zone: "Zona 3", cost: 250, km: 3.1, eta: "11 min", time: "Hace 22 min", status: "nueva", x: 44, y: 52 },
-  { id: "UBI-019", client: "Sin nombre", ref: "—", addr: "Punto sobre Carretera Cobá Km 4", zone: "Sin zona", cost: null, km: 9.8, eta: "26 min", time: "Hace 1 h", status: "revisar", x: 22, y: 40 },
-  { id: "UBI-018", client: "Evento Casa Malca", ref: "Entrada de servicio", addr: "Casa Malca, Carretera Boca Paila Km 9.5", zone: "Especial", cost: 400, km: 8.2, eta: "23 min", time: "Hoy 9:10 a.m.", status: "convertida", x: 82, y: 78 },
+  { id: "UBI-021", client: "Boda Marcela & Tom", ref: "Carpa junto a la alberca", addr: "Dreams Tulum Resort & Spa", zone: "Zona 2", cost: 250, km: 6.4, eta: "18 min", time: "Hace 4 min", status: "nueva", x: -87.4585, y: 20.1921 },
+  { id: "UBI-020", client: "Aniversario Petersen", ref: "Recepción, preguntar por Ana", addr: "Aldea Zama, Calle Coatí Lote 8", zone: "Zona 3", cost: 250, km: 3.1, eta: "11 min", time: "Hace 22 min", status: "nueva", x: -87.4676, y: 20.1866 },
+  { id: "UBI-019", client: "Sin nombre", ref: "—", addr: "Punto sobre Carretera Cobá Km 4", zone: "Sin zona", cost: null, km: 9.8, eta: "26 min", time: "Hace 1 h", status: "revisar", x: -87.4853, y: 20.2039 },
+  { id: "UBI-018", client: "Evento Casa Malca", ref: "Entrada de servicio", addr: "Casa Malca, Carretera Boca Paila Km 9.5", zone: "Especial", cost: 400, km: 8.2, eta: "23 min", time: "Hoy 9:10 a.m.", status: "convertida", x: -87.4279, y: 20.2243 },
 ];
+
+try {
+  const savedIncoming = localStorage.getItem('holy_incoming');
+  if (savedIncoming) {
+    const parsed = JSON.parse(savedIncoming);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      INCOMING_LOCATIONS.length = 0;
+      INCOMING_LOCATIONS.push(...parsed);
+    }
+  }
+} catch (e) {}
 
 window.MOCK = { EMPLOYEES, ZONES, PREFERENTIAL, DELIVERIES, DRAFTS, EXTRAS, STATUS_LABEL, getCurrentEmployee, SHARE_LINK, INCOMING_LOCATIONS };
 window.fmt = { fmtMXN, fmtUSD, fmtNum };
