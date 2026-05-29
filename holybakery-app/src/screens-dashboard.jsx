@@ -140,8 +140,8 @@ function AppShell({ role, section, setSection, goTo, children }) {
    STATUS PILL
 ============================================================= */
 const StatusPill = ({ s }) => (
-  <span className={"status status-" + (s === "cancelacion_pendiente" || s === "cambio_tarifa_pendiente" ? "pendiente" : s)}>
-    {window.MOCK.STATUS_LABEL[s]}
+  <span className={"status status-" + (s === "cancelacion_pendiente" || s === "cambio_tarifa_pendiente" || s === "cambio_tarifa" ? "pendiente" : s)}>
+    {window.MOCK.STATUS_LABEL[s] || (s === "cambio_tarifa" ? "Cambio de tarifa" : s)}
   </span>
 );
 
