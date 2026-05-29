@@ -983,7 +983,7 @@ function EmpLocalizador({ navigate }) {
         const res = await fetch('/api/get_locations.php');
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
+          if (Array.isArray(data)) {
             setIncoming(data);
             window.MOCK.INCOMING_LOCATIONS = data;
           }
