@@ -771,7 +771,7 @@ function NuevoEmpleadoModal({ employee, onClose, onSave }) {
           <div className="ne-field" style={{display:"flex", flexDirection:"column", gap:8}}>
             <label className="label">Cargo</label>
             <div className="field">
-              <ID.Briefcase size={18} className="icon" style={{color:"var(--accent)"}}/>
+              <ID.Cake size={18} className="icon" style={{color:"var(--accent)"}}/>
               <select value={role} onChange={(e) => setRole(e.target.value)}>
                 <option value="">Selecciona un cargo</option>
                 <option value="Cajero">Cajero</option>
