@@ -4,7 +4,7 @@ require_once 'db.php';
 header("Content-Type: application/json");
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM deliveries ORDER BY created_at DESC LIMIT 50");
+    $stmt = $pdo->prepare("SELECT * FROM deliveries ORDER BY scheduled_date DESC LIMIT 50");
     $stmt->execute();
     
     $results = $stmt->fetchAll();
@@ -13,18 +13,18 @@ try {
     $formatted = [];
     foreach ($results as $row) {
         $formatted[] = [
-            "id" => $row['short_id'],
-            "client" => $row['client_name'],
-            "ref" => $row['reference'],
-            "addr" => $row['address'],
-            "zone" => $row['zone'],
+            "id" => $row['tracking_code'],
+            "client" => "Cliente App", // Ficticio ya que no hay columna
+            "ref" => $row['formatted_address'], // Usamos la dirección/notas concatenadas aquí
+            "addr" => $row['formatted_address'],
+            "zone" => "Ver admin",
             "cost" => $row['cost'] ? (float)$row['cost'] : null,
-            "km" => $row['km'] ? (float)$row['km'] : 0,
-            "eta" => $row['eta'],
-            "time" => date("h:i a", strtotime($row['created_at'])), // Basic time format
+            "km" => 0,
+            "eta" => "Ver admin",
+            "time" => date("h:i a", strtotime($row['scheduled_date'])), 
             "status" => $row['status'],
-            "x" => (float)$row['lng'],
-            "y" => (float)$row['lat']
+            "x" => (float)$row['longitude'],
+            "y" => (float)$row['latitude']
         ];
     }
     
