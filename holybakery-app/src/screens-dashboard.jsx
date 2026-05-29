@@ -542,8 +542,9 @@ function EmpReservas() {
           <tbody>
             {loading ? <tr><td colSpan="9" style={{textAlign: "center", padding: "20px"}}>Cargando...</td></tr> : list.map(d => {
               const dt = formatDateTime(d.date);
+              const statusKey = d.status || "confirmada";
               return (
-                <tr key={d.id} style={d.status==="cancelada" ? {opacity:0.55} : {}}>
+                <tr key={d.id} style={statusKey==="cancelada" ? {opacity:0.55} : {}}>
                   <td className="id-cell">{d.tracking_code || d.id}</td>
                   <td className="nowrap">
                     <strong>{dt.date}</strong>
@@ -559,15 +560,15 @@ function EmpReservas() {
                   <td>{d.paid
                     ? <span style={{color:"var(--accent)", fontWeight:700}}><ID.Check size={12}/> Pagada</span>
                     : <span className="muted">Pendiente</span>}</td>
-                  <td><StatusPill s={d.status}/></td>
+                  <td><StatusPill s={statusKey}/></td>
                   <td>
                     <div className="flex gap-8">
                       <button 
                         className="btn btn-soft btn-sm flex" 
                         onClick={() => setActiveReqDelivery(d)} 
                         style={{gap: 6, whiteSpace: "nowrap"}}
-                        disabled={d.status !== "confirmada"}
-                        title={d.status !== "confirmada" ? "Solo disponible en estado Confirmada" : "Solicitudes"}
+                        disabled={statusKey !== "confirmada"}
+                        title={statusKey !== "confirmada" ? "Solo disponible en estado Confirmada" : "Solicitudes"}
                       >
                         <ID.Settings size={14}/> Solicitudes
                       </button>

@@ -235,9 +235,10 @@ function AdminReservas() {
           <tbody>
             {deliveries.map(d => {
               const dt = formatDateTime(d.date);
+              const statusKey = d.status || "confirmada";
               return (
-                <tr key={d.id} style={d.status==="cancelada" ? {opacity:0.55} : {}}>
-                  <td><input type="checkbox" defaultChecked={d.status==="entregada" && !d.paid}/></td>
+                <tr key={d.id} style={statusKey==="cancelada" ? {opacity:0.55} : {}}>
+                  <td><input type="checkbox" defaultChecked={statusKey==="entregada" && !d.paid}/></td>
                   <td className="id-cell">{d.tracking_code || d.id}</td>
                   <td className="nowrap">
                     <strong>{dt.date}</strong>
@@ -249,11 +250,11 @@ function AdminReservas() {
                   </td>
                   <td>{d.employee}</td>
                   <td className="money">{fmtMXN_A(d.cost)}</td>
-                  <td><StatusPillA s={d.status}/></td>
+                  <td><StatusPillA s={statusKey}/></td>
                   <td>
                     <div className="flex gap-8">
-                      {d.status === "confirmada" && <button className="btn btn-soft btn-sm" onClick={() => updateStatus(d.id, "entregada")}>Marcar entregada</button>}
-                      {d.status === "entregada" && <button className="btn btn-accent btn-sm" onClick={() => updateStatus(d.id, "pagada", { paid: true })}>Marcar pagada</button>}
+                      {statusKey === "confirmada" && <button className="btn btn-soft btn-sm" onClick={() => updateStatus(d.id, "entregada")}>Marcar entregada</button>}
+                      {statusKey === "entregada" && <button className="btn btn-accent btn-sm" onClick={() => updateStatus(d.id, "pagada", { paid: true })}>Marcar pagada</button>}
                       <button className="btn btn-ghost btn-sm" title="Detalle"><IA.Eye size={12}/></button>
                     </div>
                   </td>
