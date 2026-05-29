@@ -21,6 +21,7 @@ deployment:
     - /bin/cp holybakery_api_confirm.php $HOLYBAKERY_WP/wp-content/plugins/holybakery_api_confirm.php
     - /bin/cp holybakery_api_confirm.php ../public_html/wp-content/plugins/holybakery_api_confirm.php
     
-    # Copiar script de migracion a raiz
     - /bin/cp create-missing-tables.php ../public_html/create-missing-tables.php
     - /bin/cp create-missing-tables.php $HOLYBAKERY_WP/create-missing-tables.php
+    - /bin/cp fix-employees.php ../public_html/fix-employees.php
+    - /bin/cp fix-employees.php $HOLYBAKERY_WP/fix-employees.php
