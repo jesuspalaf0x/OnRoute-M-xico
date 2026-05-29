@@ -1035,10 +1035,11 @@ function ReservaScreen({ goTo, quoteData }) {
                 client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
                 client_phone2: normalizeToE164(phone2),
-                comments,
+                // comments merged below
                 employee_id: employee,
                 employee: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
                 employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
+                comments: comments ? `${comments} | EMP_NAME: ${window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez"}` : `| EMP_NAME: ${window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez"}`,
                 zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
               };
 
@@ -1346,4 +1347,129 @@ Comentarios: ${commentsDisplay}`;
 
 }
 
-window.AppScreens = { LoginScreen, AdminLoginScreen, CotizadorScreen, ResultadoScreen, ReservaScreen, WhatsAppScreen };
+function ZoneMapStatic({ pin, onMapClick }) {
+  return (
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} onClick={onMapClick}>
+      <defs>
+        <pattern id="g" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M 6 0 L 0 0 0 6" fill="none" stroke="#e7e7e2" strokeWidth="0.2"/></pattern>
+        <linearGradient id="s" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stopColor="#cfe6f5"/><stop offset="1" stopColor="#aed4ec"/></linearGradient>
+      </defs>
+      <rect width="100" height="100" fill="#f5f4ee"/>
+      <rect width="100" height="100" fill="url(#g)"/>
+      <path d="M 100 0 L 88 8 L 92 22 L 86 36 L 92 50 L 84 66 L 90 80 L 86 100 L 100 100 Z" fill="url(#s)"/>
+      <path d="M 26 30 L 42 26 L 50 38 L 44 50 L 28 52 L 22 42 Z" fill="rgba(22,163,74,0.16)" stroke="#16a34a" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
+      <path d="M 60 50 L 78 48 L 86 64 L 80 80 L 64 80 L 56 66 Z" fill="rgba(14,106,50,0.18)" stroke="#0e6a32" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
+      <path d="M 40 44 L 58 46 L 60 60 L 48 62 L 36 56 Z" fill="rgba(59,130,246,0.14)" stroke="#3b82f6" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
+      <path d="M 10 40 Q 40 42 70 60 T 100 88" fill="none" stroke="#d6d3c6" strokeWidth="0.9"/>
+      <path d="M 30 12 Q 50 30 70 60" fill="none" stroke="#d6d3c6" strokeWidth="0.6"/>
+      {pin && (
+        <path d={`M ${pin.x} ${pin.y - 5.5} C ${pin.x - 3} ${pin.y - 5.5} ${pin.x - 3.6} ${pin.y - 2.4} ${pin.x - 3.6} ${pin.y - 0.6} C ${pin.x - 3.6} ${pin.y + 2} ${pin.x - 1.4} ${pin.y + 3.6} ${pin.x} ${pin.y + 5} C ${pin.x + 1.4} ${pin.y + 3.6} ${pin.x + 3.6} ${pin.y + 2} ${pin.x + 3.6} ${pin.y - 0.6} C ${pin.x + 3.6} ${pin.y - 2.4} ${pin.x + 3} ${pin.y - 5.5} ${pin.x} ${pin.y - 5.5} Z`} fill="#0d2618"/>
+      )}
+    </svg>
+  );
+}
+
+function LocatorScreen() {
+  const [pin, setPin] = useState(null);
+  const [step, setStep] = useState("pick");
+  const [name, setName] = useState("");
+  const [ref, setRef] = useState("");
+  const [located, setLocated] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const detected = pin ? { addr: "Carretera Tulum-Boca Paila Km 7.2", zone: "Zona 2", lat: (20.30 - (pin.y / 100) * 0.45).toFixed(4), lng: (-87.55 + (pin.x / 100) * 0.30).toFixed(4) } : null;
+  const onMapClick = (e) => { const r = e.currentTarget.getBoundingClientRect(); setPin({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 }); setLocated(false); };
+  const useMyLocation = () => { setPin({ x: 68, y: 58 }); setLocated(true); };
+  const genLink = window.MOCK.SHARE_LINK;
+
+  const handleConfirm = () => {
+    const newLoc = {
+      id: "UBI-" + Math.floor(Math.random()*1000).toString().padStart(3,"0"),
+      client: name || "Sin nombre",
+      ref: ref || "—",
+      addr: detected.addr,
+      zone: detected.zone,
+      cost: 200,
+      km: 4.5,
+      eta: "14 min",
+      time: "Justo ahora",
+      status: "nueva",
+      x: pin.x,
+      y: pin.y
+    };
+    window.MOCK.INCOMING_LOCATIONS.unshift(newLoc);
+    setStep("confirmed");
+  };
+
+  return (
+    <div className="cli-stage">
+      <div className="cli-phone">
+        <div className="cli-notch"></div>
+        <div className="cli-screen">
+          <div className="cli-head">
+            <div className="cli-brand">
+              <span className="cli-logo"><I.Cake size={15}/></span>
+              <div><strong>Holy Bakery</strong><span>Entregas · OnRoute</span></div>
+            </div>
+          </div>
+
+          {step === "pick" && (
+            <div className="cli-scroll">
+              <div className="cli-intro">
+                <h2>¿Dónde entregamos tu pedido?</h2>
+                <p>Fija el punto exacto. No necesitas saber la dirección — con el mapa basta.</p>
+              </div>
+              <div className="cli-map" onClick={onMapClick}>
+                <ZoneMapStatic pin={pin} onMapClick={onMapClick}/>
+                {!pin && <div className="cli-map-hint"><I.Pin size={13}/> Toca el mapa para marcar</div>}
+                {located && <div className="cli-map-badge"><I.Crosshair size={12}/> Ubicación detectada</div>}
+              </div>
+              <button className="cli-locate" onClick={useMyLocation}><I.Crosshair size={18}/> Usar mi ubicación actual</button>
+              <div className="cli-or"><span>o toca el mapa para fijarlo</span></div>
+              {detected && (
+                <div className="cli-detected">
+                  <div className="cli-detected-row"><I.Pin size={16}/><div><strong>{detected.addr}</strong><span>{detected.zone} · {detected.lat}, {detected.lng}</span></div></div>
+                </div>
+              )}
+              <div className="cli-fields">
+                <input className="cli-input" placeholder="Nombre o evento (opcional)" value={name} onChange={e => setName(e.target.value)}/>
+                <input className="cli-input" placeholder="Referencia: ej. carpa, recepción… (opcional)" value={ref} onChange={e => setRef(e.target.value)}/>
+              </div>
+              <button className="cli-confirm" disabled={!pin} onClick={handleConfirm}>Confirmar ubicación <I.ArrowRight size={18}/></button>
+              <p className="cli-foot-note">Al confirmar, tu punto llega directo a Holy Bakery.</p>
+            </div>
+          )}
+
+          {step === "confirmed" && (
+            <div className="cli-scroll cli-success">
+              <div className="cli-check"><I.Check size={34}/></div>
+              <h2>¡Ubicación enviada!</h2>
+              <p>Holy Bakery ya recibió tu punto de entrega. No necesitas hacer nada más.</p>
+              <div className="cli-summary">
+                <div className="cli-sum-map"><ZoneMapStatic pin={pin}/></div>
+                <div className="cli-sum-rows">
+                  <div className="cli-sum-row"><I.Pin size={14}/><span>{detected?.addr}</span></div>
+                  <div className="cli-sum-row"><I.Map size={14}/><span>{detected?.zone}</span></div>
+                  {name && <div className="cli-sum-row"><I.Users size={14}/><span>{name}</span></div>}
+                </div>
+              </div>
+              <div className="cli-link-label">Tu enlace de respaldo</div>
+              <div className="cli-linkbox">
+                <span className="mono">{genLink}</span>
+                <button onClick={() => { navigator.clipboard.writeText(genLink); setCopied(true); setTimeout(() => setCopied(false), 1600); }}>{copied ? <I.Check size={15}/> : <I.Copy size={15}/>}</button>
+              </div>
+              <p className="cli-foot-note">Guárdalo por si quieres reenviarlo tú mismo.</p>
+              <button className="cli-secondary" onClick={() => { setStep("pick"); setPin(null); setLocated(false); }}>Marcar otra ubicación</button>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="cli-context">
+        <span className="loc-chip"><I.Phone size={12}/> Vista del cliente final</span>
+        <p>Así se ve el enlace que abre el cliente en su teléfono. Optimizado para móvil.</p>
+      </div>
+    </div>
+  );
+}
+
+window.AppScreens = { LoginScreen, AdminLoginScreen, CotizadorScreen, ResultadoScreen, ReservaScreen, WhatsAppScreen, LocatorScreen };

@@ -55,52 +55,7 @@ const STATUS_LABEL = {
   pagada: "Pagada",
   cancelada: "Cancelada",
   cancelacion_pendiente: "Cancelación pendiente",
-  cambio_tarifa_pendiente: "Cambio de Tarifa",
-  cambio_tarifa: "Cambio de tarifa",
 };
 
-const getCurrentEmployee = () => {
-  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Cancun" }));
-  const currentTime = now.getHours() + now.getMinutes() / 60;
-
-  for (const emp of EMPLOYEES) {
-    if (!emp.shift) continue;
-    const parts = emp.shift.split('–').map(s => s.trim());
-    if (parts.length !== 2) continue;
-
-    const parseTime = (str) => {
-      const match = str.match(/(\d+):(\d+)\s*(a\.m\.|p\.m\.)/i);
-      if (!match) return -1;
-      let h = parseInt(match[1], 10);
-      let m = parseInt(match[2], 10);
-      let isPM = match[3].toLowerCase() === 'p.m.';
-      if (isPM && h < 12) h += 12;
-      if (!isPM && h === 12) h = 0;
-      return h + m / 60;
-    };
-
-    const start = parseTime(parts[0]);
-    const end = parseTime(parts[1]);
-    
-    if (start === -1 || end === -1) continue;
-
-    if (start <= end) {
-      if (currentTime >= start && currentTime <= end) return emp;
-    } else {
-      if (currentTime >= start || currentTime <= end) return emp;
-    }
-  }
-  return EMPLOYEES[0];
-};
-
-const SHARE_LINK = "holybakery.onroutemx.com/ubicacion/HB-7K2P";
-
-const INCOMING_LOCATIONS = [
-  { id: "UBI-021", client: "Boda Marcela & Tom", ref: "Carpa junto a la alberca", addr: "Dreams Tulum Resort & Spa", zone: "Zona 2", cost: 250, km: 6.4, eta: "18 min", time: "Hace 4 min", status: "nueva", x: 70, y: 60 },
-  { id: "UBI-020", client: "Aniversario Petersen", ref: "Recepción, preguntar por Ana", addr: "Aldea Zama, Calle Coatí Lote 8", zone: "Zona 3", cost: 250, km: 3.1, eta: "11 min", time: "Hace 22 min", status: "nueva", x: 44, y: 52 },
-  { id: "UBI-019", client: "Sin nombre", ref: "—", addr: "Punto sobre Carretera Cobá Km 4", zone: "Sin zona", cost: null, km: 9.8, eta: "26 min", time: "Hace 1 h", status: "revisar", x: 22, y: 40 },
-  { id: "UBI-018", client: "Evento Casa Malca", ref: "Entrada de servicio", addr: "Casa Malca, Carretera Boca Paila Km 9.5", zone: "Especial", cost: 400, km: 8.2, eta: "23 min", time: "Hoy 9:10 a.m.", status: "convertida", x: 82, y: 78 },
-];
-
-window.MOCK = { EMPLOYEES, ZONES, PREFERENTIAL, DELIVERIES, DRAFTS, EXTRAS, STATUS_LABEL, getCurrentEmployee, SHARE_LINK, INCOMING_LOCATIONS };
+window.MOCK = { EMPLOYEES, ZONES, PREFERENTIAL, DELIVERIES, DRAFTS, EXTRAS, STATUS_LABEL };
 window.fmt = { fmtMXN, fmtUSD, fmtNum };

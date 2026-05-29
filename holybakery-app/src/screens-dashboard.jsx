@@ -61,6 +61,7 @@ function AppShell({ role, section, setSection, goTo, children }) {
   const employeeNav = [
     { key: "resumen", label: "Resumen", icon: <ID.Home size={16}/> },
     { key: "reservas", label: "Reservas realizadas", icon: <ID.Layers size={16}/>, badge: "12" },
+    { key: "localizador", label: "Localizador", icon: <ID.Map size={16}/>, badge: "2" },
     { key: "guardadas", label: "Guardadas", icon: <ID.Bookmark size={16}/>, badge: "3" },
     { key: "empleados", label: "Empleados", icon: <ID.Users size={16}/> },
     { key: "bancarios", label: "Datos bancarios", icon: <ID.Banknote size={16}/> },
@@ -111,13 +112,13 @@ function AppShell({ role, section, setSection, goTo, children }) {
       <div className="app-body">
         <aside className="sidebar">
           <div className="section-title">{isAdmin ? "Operación" : "Mi turno"}</div>
-          {nav.slice(0, isAdmin ? 5 : 3).map(n => (
+          {nav.slice(0, isAdmin ? 5 : 4).map(n => (
             <button key={n.key} className={"nav-item " + (section===n.key ? "active" : "")} onClick={() => setSection(n.key)}>
               {n.icon} {n.label} {n.badge && <span className="badge">{n.badge}</span>}
             </button>
           ))}
           <div className="section-title" style={{marginTop: 20}}>Configuración</div>
-          {nav.slice(isAdmin ? 5 : 3).map(n => (
+          {nav.slice(isAdmin ? 5 : 4).map(n => (
             <button key={n.key} className={"nav-item " + (section===n.key ? "active" : "")} onClick={() => setSection(n.key)}>
               {n.icon} {n.label} {n.badge && <span className="badge">{n.badge}</span>}
             </button>
@@ -950,4 +951,122 @@ const BankRow = ({ label, value, mono }) => (
   </div>
 );
 
-window.EmpScreens = { EmpResumen, EmpReservas, EmpGuardadas, EmpEmpleados, EmpBancarios, AppShell, StatusPill };
+function ZoneMap({ pin }) {
+  return (
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+      <defs>
+        <pattern id="g" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M 6 0 L 0 0 0 6" fill="none" stroke="#e7e7e2" strokeWidth="0.2"/></pattern>
+        <linearGradient id="s" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stopColor="#cfe6f5"/><stop offset="1" stopColor="#aed4ec"/></linearGradient>
+      </defs>
+      <rect width="100" height="100" fill="#f5f4ee"/>
+      <rect width="100" height="100" fill="url(#g)"/>
+      <path d="M 100 0 L 88 8 L 92 22 L 86 36 L 92 50 L 84 66 L 90 80 L 86 100 L 100 100 Z" fill="url(#s)"/>
+      <path d="M 26 30 L 42 26 L 50 38 L 44 50 L 28 52 L 22 42 Z" fill="rgba(22,163,74,0.16)" stroke="#16a34a" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
+      <path d="M 60 50 L 78 48 L 86 64 L 80 80 L 64 80 L 56 66 Z" fill="rgba(14,106,50,0.18)" stroke="#0e6a32" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
+      <path d="M 40 44 L 58 46 L 60 60 L 48 62 L 36 56 Z" fill="rgba(59,130,246,0.14)" stroke="#3b82f6" strokeWidth="0.35" strokeDasharray="0.8 0.6"/>
+      <path d="M 10 40 Q 40 42 70 60 T 100 88" fill="none" stroke="#d6d3c6" strokeWidth="0.9"/>
+      {pin && (
+        <path d={`M ${pin.x} ${pin.y - 5.5} C ${pin.x - 3} ${pin.y - 5.5} ${pin.x - 3.6} ${pin.y - 2.4} ${pin.x - 3.6} ${pin.y - 0.6} C ${pin.x - 3.6} ${pin.y + 2} ${pin.x - 1.4} ${pin.y + 3.6} ${pin.x} ${pin.y + 5} C ${pin.x + 1.4} ${pin.y + 3.6} ${pin.x + 3.6} ${pin.y + 2} ${pin.x + 3.6} ${pin.y - 0.6} C ${pin.x + 3.6} ${pin.y - 2.4} ${pin.x + 3} ${pin.y - 5.5} ${pin.x} ${pin.y - 5.5} Z`} fill="#0d2618"/>
+      )}
+    </svg>
+  );
+}
+
+function EmpLocalizador({ navigate }) {
+  const [copied, setCopied] = useState(false);
+  const [incoming, setIncoming] = useState(window.MOCK.INCOMING_LOCATIONS || []);
+  const fresh = incoming.filter(i => i.status === "nueva").length;
+  const SHARE_LINK = window.MOCK.SHARE_LINK;
+  const copy = () => { navigator.clipboard.writeText(SHARE_LINK); setCopied(true); setTimeout(() => setCopied(false), 1800); };
+  const statusPill = (s) => s === "nueva" ? <span className="status status-confirmada">Nueva</span> : s === "revisar" ? <span className="status status-pendiente">Revisar zona</span> : <span className="status status-pagada">Convertida</span>;
+
+  const handleConvert = (loc) => {
+    navigate("/cotizador"); 
+  };
+
+  return (
+    <>
+      <div className="page-header flex-between">
+        <div>
+          <h1>Localizador de entregas</h1>
+          <p>Comparte un enlace. El cliente fija su ubicación desde el móvil y entra directo aquí.</p>
+        </div>
+        <div className="flex gap-8">
+          <a className="btn btn-ghost btn-sm" href="/ubicacion" target="_blank"><ID.Eye size={14}/> Previsualizar</a>
+          <button className="btn btn-primary btn-sm"><ID.Plus size={14}/> Generar enlace</button>
+        </div>
+      </div>
+
+      <div className="loc-flow">
+        <div className="loc-step"><span className="loc-step-n">1</span><div><strong>Comparte el enlace</strong><span>A organizadores o directo al cliente final.</span></div></div>
+        <ID.ChevronRight size={16} className="loc-flow-arrow"/>
+        <div className="loc-step"><span className="loc-step-n">2</span><div><strong>El cliente fija el punto</strong><span>Con su ubicación o tocando el mapa.</span></div></div>
+        <ID.ChevronRight size={16} className="loc-flow-arrow"/>
+        <div className="loc-step"><span className="loc-step-n">3</span><div><strong>Llega al dashboard</strong><span>Con zona, costo, distancia y ETA.</span></div></div>
+      </div>
+
+      <div className="row loc-grid" style={{ gridTemplateColumns: "1fr 340px", alignItems: "start", gap: 18 }}>
+        <div className="section-card">
+          <div className="flex-between" style={{ marginBottom: 14 }}>
+            <div><h3 style={{margin:"0 0 4px"}}>Ubicaciones recibidas</h3><p className="desc" style={{ margin: 0 }}>Enviadas por clientes en tiempo real.</p></div>
+            <span className="loc-count"><ID.Inbox size={13}/> {fresh} nuevas</span>
+          </div>
+          <div className="loc-list">
+            {incoming.map(i => (
+              <div key={i.id} className={"loc-card " + (i.status === "convertida" ? "is-done" : "")}>
+                <div className="loc-card-map"><ZoneMap pin={{ x: i.x, y: i.y }}/></div>
+                <div className="loc-card-body">
+                  <div className="loc-card-top">
+                    <div><strong>{i.client}</strong><span className="mono loc-id">{i.id}</span></div>
+                    {statusPill(i.status)}
+                  </div>
+                  <div className="loc-addr"><ID.Pin size={13}/> {i.addr}</div>
+                  {i.ref !== "—" && <div className="loc-ref">Referencia: {i.ref}</div>}
+                  <div className="loc-meta">
+                    <span className="loc-chip"><ID.Map size={12}/> {i.zone}</span>
+                    <span className="loc-chip"><ID.Route size={12}/> {i.km} km</span>
+                    <span className="loc-chip"><ID.Clock size={12}/> {i.eta}</span>
+                    <span className={"loc-chip " + (i.cost == null ? "loc-chip-warn" : "loc-chip-cost")}><ID.DollarSign size={12}/> {i.cost == null ? "A consultar" : `$${i.cost}.00`}</span>
+                  </div>
+                  <div className="loc-card-foot">
+                    <span className="loc-time">{i.time}</span>
+                    <div className="flex gap-8">
+                      <button className="btn btn-ghost btn-sm"><ID.Eye size={12}/> Ver</button>
+                      {i.status === "convertida" ? <button className="btn btn-soft btn-sm" disabled><ID.Check size={12}/> En reservas</button> : <button className="btn btn-primary btn-sm" onClick={() => handleConvert(i)}><ID.ArrowRight size={12}/> Convertir a reserva</button>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <aside className="stack">
+          <div className="section-card">
+            <h3 style={{margin:"0 0 4px"}}>Tu enlace para compartir</h3>
+            <p className="desc">Mismo enlace para todos los clientes. Cada punto entra etiquetado.</p>
+            <div className="loc-linkbox"><ID.Link size={15}/><span className="loc-link-text mono">{SHARE_LINK}</span></div>
+            <div className="row row-2" style={{ marginTop: 12, gap: 10 }}>
+              <button className={"btn btn-sm " + (copied ? "btn-accent" : "btn-soft")} onClick={copy}>{copied ? <><ID.Check size={14}/> Copiado</> : <><ID.Copy size={14}/> Copiar</>}</button>
+              <button className="btn btn-accent btn-sm"><ID.WhatsApp size={14}/> WhatsApp</button>
+            </div>
+            <button className="btn btn-ghost btn-sm btn-block" style={{ marginTop: 10 }}><ID.Share size={14}/> Más opciones de envío</button>
+            <div className="loc-qr">
+              <div className="loc-qr-code"><ID.QrCode size={64}/></div>
+              <div><strong>Código QR</strong><p style={{margin:"3px 0 0", fontSize: 12, color: "var(--muted)"}}>Para imprimir en mostrador o catálogo de bodas.</p></div>
+            </div>
+          </div>
+          <div className="section-card info-soft">
+            <div className="flex" style={{ gap: 10 }}>
+              <ID.Info size={18} style={{ color: "var(--accent)", flexShrink: 0 }}/>
+              <div style={{ fontSize: 12.5, color: "#0e5a2c" }}><strong style={{ color: "var(--accent)" }}>Pensado para turistas.</strong> Si el cliente no sabe su dirección, solo fija el punto en el mapa — no necesita escribir nada.</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </>
+  );
+}
+
+window.EmpScreens = { EmpResumen, EmpReservas, EmpGuardadas, EmpEmpleados, EmpBancarios, EmpLocalizador, AppShell, StatusPill };
+
