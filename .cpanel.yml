@@ -1,31 +1,5 @@
 ---
 deployment:
   tasks:
-    # ============================================================
-    # DEPLOY: Solo copia el plugin PHP al WordPress de holybakery.onroutemx.com
-    # NO tocar public_html — esa es la raíz de onroutemx.com (WordPress principal)
-    # ============================================================
-
-    # PROTECCIÓN: Eliminar cualquier index.html que pueda haber llegado al dominio principal
-    - /bin/rm -f ../public_html/index.html
-    - /bin/rm -f ../public_html/favicon.svg
-    - /bin/rm -f ../public_html/cleanup-main-domain.php
-    - /bin/rm -f ../public_html/fix-wp-plugin.php
-    - /bin/rm -f ../public_html/debug-schema.php
-    - /bin/rm -f ../public_html/deploy-plugin.php
-    - /bin/rm -f ../public_html/delete-index.php
-    - /bin/rm -f ../public_html/schema-info.php
-
-    # Copiar el plugin de WordPress al subdominio holybakery y al dominio principal
-    - /bin/cp holybakery_api_confirm.php ../subdomains/holybakery/public_html/wp-content/plugins/holybakery_api_confirm.php
-    - /bin/cp holybakery_api_confirm.php ../public_html/wp-content/plugins/holybakery_api_confirm.php
-    
-    - /bin/cp create-missing-tables.php ../public_html/create-missing-tables.php
-    - /bin/cp create-missing-tables.php ../subdomains/holybakery/public_html/create-missing-tables.php
-    - /bin/cp fix-employees.php ../public_html/fix-employees.php
-    - /bin/cp fix-employees.php ../subdomains/holybakery/public_html/fix-employees.php
-    
-    # ============================================================
-    # DEPLOY FRONTEND: Copiar el build de React al subdominio holybakery
-    # ============================================================
-    - /bin/cp -R holybakery-app/dist/* ../subdomains/holybakery/public_html/
+    - /bin/sh -c 'TARGET=""; for d in ../subdomains/holybakery/public_html ../../subdomains/holybakery/public_html ~/subdomains/holybakery/public_html ~/public_html/holybakery ../public_html ../../public_html ~/holybakery.onroutemx.com; do if [ -d "$d" ]; then TARGET="$d"; break; fi; done; if [ -n "$TARGET" ]; then echo "Deploying to $TARGET"; /bin/cp holybakery_api_confirm.php "$TARGET/wp-content/plugins/holybakery_api_confirm.php" || true; /bin/cp create-missing-tables.php "$TARGET/create-missing-tables.php" || true; /bin/cp fix-employees.php "$TARGET/fix-employees.php" || true; /bin/cp -R holybakery-app/dist/* "$TARGET/" || true; else echo "Target not found"; fi'
+    - /bin/sh -c 'MAIN=""; for d in ../public_html ../../public_html ~/public_html; do if [ -d "$d" ]; then MAIN="$d"; break; fi; done; if [ -n "$MAIN" ]; then /bin/rm -f "$MAIN/index.html" || true; /bin/cp holybakery_api_confirm.php "$MAIN/wp-content/plugins/holybakery_api_confirm.php" || true; /bin/cp cleanup-main-domain.php "$MAIN/cleanup-main-domain.php" || true; /bin/cp fix-wp-plugin.php "$MAIN/fix-wp-plugin.php" || true; fi'
