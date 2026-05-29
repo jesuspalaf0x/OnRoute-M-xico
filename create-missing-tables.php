@@ -62,6 +62,16 @@ echo "<p>Tabla <strong>tariff_change_requests</strong> creada o actualizada.</p>
 $wpdb->query("ALTER TABLE deliveries MODIFY COLUMN status ENUM('borrador', 'pendiente_envio', 'confirmada', 'entregada', 'pagada', 'cancelacion_pendiente', 'cancelada', 'cambio_tarifa_pendiente', 'cambio_tarifa') DEFAULT 'borrador';");
 echo "<p>Columna <strong>status</strong> de la tabla <strong>deliveries</strong> actualizada para admitir estados de cambio de tarifa.</p>";
 
+// 4. Agregar columna employee_name si no existe
+$col_exists = $wpdb->get_results("SHOW COLUMNS FROM deliveries LIKE 'employee_name'");
+if (empty($col_exists)) {
+    $wpdb->query("ALTER TABLE deliveries ADD COLUMN employee_name varchar(255) NULL AFTER zone_id;");
+    echo "<p>Columna <strong>employee_name</strong> agregada a la tabla <strong>deliveries</strong>.</p>";
+} else {
+    echo "<p>Columna <strong>employee_name</strong> ya existe en <strong>deliveries</strong>.</p>";
+}
+
+
 
 // Limpiar la caché si hay alguna
 $wpdb->flush();
