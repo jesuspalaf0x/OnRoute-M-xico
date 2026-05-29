@@ -248,7 +248,7 @@ function AdminReservas() {
                     <strong>{getDestinationShortName(d.destinationName || d.destination)}</strong>
                     <div className="muted" style={{fontSize:11, marginTop:2}}>{getZoneText(d)}</div>
                   </td>
-                  <td>{d.employee}</td>
+                  <td>{d.comments && d.comments.includes('| EMP_NAME:') ? d.comments.split('| EMP_NAME:')[1].trim() : (d.employee && d.employee.trim() !== "Empleado" ? d.employee : window.MOCK.getCurrentEmployee().name)}</td>
                   <td className="money">{fmtMXN_A(d.cost)}</td>
                   <td><StatusPillA s={statusKey}/></td>
                   <td>
@@ -371,7 +371,7 @@ function AdminSolicitudes() {
         labelType: "Cancelación",
         cost: c.cost,
         destination: c.destination_name || "Sin destino",
-        employee: c.employee_name || `Empleado ${c.driver_id || ""}`,
+        employee: c.employee_name ? c.employee_name : (c.driver_id ? `Empleado ${c.driver_id}` : window.MOCK.getCurrentEmployee().name),
         date: c.scheduled_date || c.created_at,
         tracking: c.tracking_code || `DLV-${c.delivery_id}`
       }));
@@ -382,7 +382,7 @@ function AdminSolicitudes() {
         labelType: "Cambio de tarifa",
         cost: t.cost,
         destination: t.destination_name || "Sin destino",
-        employee: t.employee_name || `Empleado ${t.driver_id || ""}`,
+        employee: t.employee_name ? t.employee_name : (t.driver_id ? `Empleado ${t.driver_id}` : window.MOCK.getCurrentEmployee().name),
         date: t.scheduled_date || t.created_at,
         tracking: t.tracking_code || `DLV-${t.delivery_id}`
       }));

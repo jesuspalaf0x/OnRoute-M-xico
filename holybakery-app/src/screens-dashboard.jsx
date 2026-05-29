@@ -239,7 +239,7 @@ function EmpResumen({ goTo }) {
                     <td className="id-cell">{d.tracking_code || d.id}</td>
                     <td>{d.date}</td>
                     <td><strong>{d.destinationName || d.destination}</strong> <span className="muted" style={{fontSize:11}}> · {d.zoneName || d.zone}</span></td>
-                    <td>{d.employee}</td>
+                    <td>{d.comments && d.comments.includes('| EMP_NAME:') ? d.comments.split('| EMP_NAME:')[1].trim() : (d.employee && d.employee.trim() !== "Empleado" ? d.employee : window.MOCK.getCurrentEmployee().name)}</td>
                     <td className="money">{fmtMXN(d.cost)}</td>
                     <td><StatusPill s={d.status}/></td>
                   </tr>
@@ -559,7 +559,7 @@ function EmpReservas() {
                     <div className="muted" style={{fontSize:11, marginTop:2}}>{getZoneText(d)}</div>
                   </td>
                   <td>{d.client}<div className="muted" style={{fontSize:11}}>{d.phone}</div></td>
-                  <td>{d.employee}</td>
+                  <td>{d.comments && d.comments.includes('| EMP_NAME:') ? d.comments.split('| EMP_NAME:')[1].trim() : (d.employee && d.employee.trim() !== "Empleado" ? d.employee : window.MOCK.getCurrentEmployee().name)}</td>
                   <td className="money">{fmtMXN(d.cost)}</td>
                   <td>{d.paid
                     ? <span style={{color:"var(--accent)", fontWeight:700}}><ID.Check size={12}/> Pagada</span>

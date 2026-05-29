@@ -601,9 +601,10 @@ function ResultadoScreen({ goTo, quoteData }) {
       maps_link,
       cost: foreignPrice,
       cost_type: "foreign",
-      employee_id: 2, // Diana Dominguez default for quick drafts
-      employee: "Diana Domínguez",
-      employee_name: "Diana Domínguez",
+      employee_id: window.MOCK.getCurrentEmployee().id,
+      employee: window.MOCK.getCurrentEmployee().name,
+      employee_name: window.MOCK.getCurrentEmployee().name,
+      comments: `| EMP_NAME: ${window.MOCK.getCurrentEmployee().name}`,
       zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
     };
 
@@ -743,7 +744,8 @@ function ReservaScreen({ goTo, quoteData }) {
   const localPrice = prices ? prices.local_price : 0;
   const foreignPrice = prices ? prices.foreign_price : 0;
 
-  const [employee, setEmployee] = useState(2);
+  const currentEmp = window.MOCK.getCurrentEmployee();
+  const [employee, setEmployee] = useState(currentEmp.id);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState("18:15");
   const [costType, setCostType] = useState("foreign");
@@ -1100,10 +1102,11 @@ function ReservaScreen({ goTo, quoteData }) {
                 client_phone: normalizeToE164(phone),
                 phone2: normalizeToE164(phone2),
                 client_phone2: normalizeToE164(phone2),
-                comments,
+                // comments merged below
                 employee_id: employee,
                 employee: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
                 employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
+                comments: comments ? `${comments} | EMP_NAME: ${window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez"}` : `| EMP_NAME: ${window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez"}`,
                 zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
               };
 
