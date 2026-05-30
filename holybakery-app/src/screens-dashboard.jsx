@@ -1,5 +1,6 @@
 import React from 'react';
 import InteractiveMap from './components/InteractiveMap';
+import pricesData from './data/prices.json';
 
 // Dashboard (employee) and Admin screens
 
@@ -1086,10 +1087,13 @@ function EmpLocalizador({ navigate }) {
       destName = loc.client;
     }
 
+    const priceObj = pricesData.find(p => p.name.trim().toLowerCase() === (loc.zone || "").trim().toLowerCase());
+    const finalPrices = priceObj || (loc.cost != null ? { local_price: loc.cost, foreign_price: loc.cost } : null);
+
     navigate("resultado", {
       destinationName: destName,
       zoneName: loc.zone || "Sin zona",
-      prices: loc.cost != null ? { local_price: loc.cost, foreign_price: loc.cost } : null,
+      prices: finalPrices,
       lat: loc.y,
       lng: loc.x,
       place_id: null,
