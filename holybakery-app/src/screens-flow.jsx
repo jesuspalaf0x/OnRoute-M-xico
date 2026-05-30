@@ -1390,6 +1390,17 @@ function LocatorScreen() {
   const [routeInfo, setRouteInfo] = useState({ km: 0, eta: "" });
 
   const [addressName, setAddressName] = useState("");
+  const [mapsLoaded, setMapsLoaded] = useState(false);
+
+  useEffect(() => {
+    const checkMaps = setInterval(() => {
+      if (window.google && window.google.maps) {
+        setMapsLoaded(true);
+        clearInterval(checkMaps);
+      }
+    }, 500);
+    return () => clearInterval(checkMaps);
+  }, []);
 
   // Helper for straight line distance
   const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
@@ -1446,7 +1457,7 @@ function LocatorScreen() {
         setRouteInfo({ km: +dist.toFixed(1), eta: text.noRoute });
       }
     }
-  }, [pin, lang]);
+  }, [pin, lang, mapsLoaded]);
 
   const onPinChange = (newPin) => {
     setPin(newPin);
