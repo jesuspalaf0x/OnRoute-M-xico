@@ -592,7 +592,16 @@ function ResultadoScreen({ goTo, quoteData }) {
   const handleSaveDraft = () => {
     try {
       const drafts = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
-      const newId = `BRR-${String(drafts.length + 1).padStart(3, '0')}`;
+      let existingIndex = -1;
+      let newId = "";
+      
+      if (quoteData && quoteData.draftId) {
+        existingIndex = drafts.findIndex(d => d.id === quoteData.draftId);
+        newId = quoteData.draftId;
+      } else {
+        newId = `BRR-${String(drafts.length + 1).padStart(3, '0')}`;
+      }
+
       const draftData = {
         id: newId,
         status: "borrador",
@@ -600,7 +609,7 @@ function ResultadoScreen({ goTo, quoteData }) {
         zoneName,
         cost: foreignPrice,
         employee_name: window.MOCK.getCurrentEmployee().name,
-        created_at: new Date().toISOString(),
+        created_at: existingIndex > -1 ? drafts[existingIndex].created_at : new Date().toISOString(),
         quoteData: {
           destinationName,
           zoneName,
@@ -610,11 +619,17 @@ function ResultadoScreen({ goTo, quoteData }) {
           place_id,
           formatted_address,
           maps_link,
-          is_out_of_zone
+          is_out_of_zone,
+          draftId: newId
         }
       };
       
-      drafts.unshift(draftData);
+      if (existingIndex > -1) {
+        drafts[existingIndex] = { ...drafts[existingIndex], ...draftData };
+      } else {
+        drafts.unshift(draftData);
+      }
+      
       localStorage.setItem('holy_drafts', JSON.stringify(drafts));
       goTo("dashboard");
     } catch(e) {
@@ -738,15 +753,15 @@ function ReservaScreen({ goTo, quoteData }) {
   const foreignPrice = prices ? prices.foreign_price : 0;
 
   const currentEmp = window.MOCK.getCurrentEmployee();
-  const [employee, setEmployee] = useState(currentEmp.id);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [time, setTime] = useState("18:15");
-  const [costType, setCostType] = useState("foreign");
-  const [costCustom, setCostCustom] = useState("");
-  const [client, setClient] = useState("");
-  const [phone, setPhone] = useState("");
-  const [phone2, setPhone2] = useState("");
-  const [comments, setComments] = useState("");
+  const [employee, setEmployee] = useState(quoteData?.employee || currentEmp.id);
+  const [date, setDate] = useState(quoteData?.date || new Date().toISOString().split('T')[0]);
+  const [time, setTime] = useState(quoteData?.time || "18:15");
+  const [costType, setCostType] = useState(quoteData?.costType || "foreign");
+  const [costCustom, setCostCustom] = useState(quoteData?.costCustom || "");
+  const [client, setClient] = useState(quoteData?.client || "");
+  const [phone, setPhone] = useState(quoteData?.phone || "");
+  const [phone2, setPhone2] = useState(quoteData?.phone2 || "");
+  const [comments, setComments] = useState(quoteData?.comments || "");
   const [files, setFiles] = useState([]);
 
   const formatTo12h = (time24) => {
@@ -1005,69 +1020,54 @@ function ReservaScreen({ goTo, quoteData }) {
           </div>
 
           <div className="flex" style={{ gap: 12 }}>
-            <button className="btn btn-soft" style={{ flex: 1 }} onClick={async () => {
-              const token = sessionStorage.getItem("wp_token");
-              const draftData = {
-                status: "borrador",
-                destinationName,
-                destination_name: destinationName,
-                zoneName,
-                place_id,
-                latitude: lat,
-                longitude: lng,
-                formatted_address,
-                maps_link,
-                cost,
-                date,
-                delivery_date: date,
-                time,
-                delivery_time: time,
-                client,
-                client_name: client,
-                phone: normalizeToE164(phone),
-                client_phone: normalizeToE164(phone),
-                phone2: normalizeToE164(phone2),
-                client_phone2: normalizeToE164(phone2),
-                // comments merged below
-                employee_id: employee,
-                employee: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
-                employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez",
-                comments: comments ? `${comments} | EMP_NAME: ${window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez"}` : `| EMP_NAME: ${window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || "Diana Domínguez"}`,
-                zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
-              };
-
+            <button className="btn btn-soft" style={{ flex: 1 }} onClick={() => {
               try {
-                const res = await fetch("https://onroutemx.com/wp-json/hb/v1/deliveries", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": token ? `Bearer ${token}` : ""
-                  },
-                  body: JSON.stringify(draftData)
-                });
-                if (res.ok) {
-                  let data = {};
-                  try { data = await res.json(); } catch(e) {}
-                  const newId = data.id || data.post_id || "43";
-                  
-                  if (files.length > 0) {
-                    const formData = new FormData();
-                    files.forEach(f => formData.append('files[]', f));
-                    try {
-                      await fetch(`https://onroutemx.com/wp-json/hb/v1/deliveries/${newId}/upload`, {
-                        method: 'POST',
-                        headers: { "Authorization": token ? `Bearer ${token}` : "" },
-                        body: formData
-                      });
-                    } catch(err) { console.error("Upload error", err); }
-                  }
-                  goTo("dashboard");
+                const drafts = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
+                let existingIndex = -1;
+                let newId = "";
+                
+                if (quoteData && quoteData.draftId) {
+                  existingIndex = drafts.findIndex(d => d.id === quoteData.draftId);
+                  newId = quoteData.draftId;
                 } else {
-                  console.warn("API Error, navigating anyway for prototype demo");
-                  goTo("dashboard");
+                  newId = `BRR-${String(drafts.length + 1).padStart(3, '0')}`;
                 }
+
+                const finalCost = costType === "foreign" ? foreignPrice : costType === "local" ? localPrice : Number(costCustom) || 0;
+
+                const draftData = {
+                  id: newId,
+                  status: "borrador",
+                  destinationName: destinationName.split(',')[0],
+                  zoneName,
+                  cost: finalCost,
+                  employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || currentEmp.name,
+                  created_at: existingIndex > -1 ? drafts[existingIndex].created_at : new Date().toISOString(),
+                  quoteData: {
+                    ...quoteData,
+                    draftId: newId,
+                    employee,
+                    date,
+                    time,
+                    costType,
+                    costCustom,
+                    client,
+                    phone,
+                    phone2,
+                    comments
+                  }
+                };
+
+                if (existingIndex > -1) {
+                  drafts[existingIndex] = { ...drafts[existingIndex], ...draftData };
+                } else {
+                  drafts.unshift(draftData);
+                }
+                
+                localStorage.setItem('holy_drafts', JSON.stringify(drafts));
+                goTo("dashboard");
               } catch(e) {
-                console.error("Network error saving draft:", e);
+                console.error("Error saving draft:", e);
                 goTo("dashboard");
               }
             }}>
