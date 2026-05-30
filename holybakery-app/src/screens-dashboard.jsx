@@ -1076,7 +1076,30 @@ function EmpLocalizador({ navigate }) {
   };
 
   const handleConvert = (loc) => {
-    navigate("/cotizador"); 
+    let destName = "Punto seleccionado en mapa";
+    let formatted = loc.addr;
+    if (loc.addr && loc.addr.includes('|')) {
+      const parts = loc.addr.split('|');
+      destName = parts[0];
+      formatted = parts[1];
+    } else if (loc.client && loc.client !== "Sin nombre") {
+      destName = loc.client;
+    }
+
+    navigate("resultado", {
+      destinationName: destName,
+      zoneName: loc.zone || "Sin zona",
+      prices: loc.cost != null ? { local_price: loc.cost, foreign_price: loc.cost } : null,
+      lat: loc.y,
+      lng: loc.x,
+      place_id: null,
+      formatted_address: formatted,
+      maps_link: `https://www.google.com/maps?q=${loc.y},${loc.x}`,
+      is_out_of_zone: loc.zone === "Fuera de polígonos" || loc.cost == null,
+      client: loc.client !== "Sin nombre" ? loc.client : "",
+      comments: loc.ref !== "—" ? `Referencia compartida por cliente: ${loc.ref}` : "",
+      draftId: loc.id
+    });
   };
 
   return (
