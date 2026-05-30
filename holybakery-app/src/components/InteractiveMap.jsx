@@ -14,7 +14,8 @@ const defaultCenter = {
 export default function InteractiveMap({ pin, onPinChange, readOnly }) {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: 'AIzaSyCa0KLqz3D9t42MEAYcEEzgDPo6n-uYja4'
+    googleMapsApiKey: 'AIzaSyCa0KLqz3D9t42MEAYcEEzgDPo6n-uYja4',
+    libraries: ['places']
   });
 
   const [map, setMap] = React.useState(null);
