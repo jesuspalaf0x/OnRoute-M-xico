@@ -589,17 +589,15 @@ function ResultadoScreen({ goTo, quoteData }) {
   const foreignPrice = prices ? prices.foreign_price : 0;
   const usdPrice = foreignPrice ? (foreignPrice / 17.50).toFixed(2) : 0;
 
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     try {
-      const drafts = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
       let existingIndex = -1;
       let newId = "";
       
       if (quoteData && quoteData.draftId) {
-        existingIndex = drafts.findIndex(d => d.id === quoteData.draftId);
         newId = quoteData.draftId;
       } else {
-        newId = `BRR-${String(drafts.length + 1).padStart(3, '0')}`;
+        newId = `BRR-${Math.floor(1000 + Math.random() * 9000)}`;
       }
 
       const draftData = {
@@ -609,7 +607,7 @@ function ResultadoScreen({ goTo, quoteData }) {
         zoneName,
         cost: foreignPrice,
         employee_name: window.MOCK.getCurrentEmployee().name,
-        created_at: existingIndex > -1 ? drafts[existingIndex].created_at : new Date().toISOString(),
+        created_at: new Date().toISOString(),
         quoteData: {
           destinationName,
           zoneName,
@@ -624,13 +622,12 @@ function ResultadoScreen({ goTo, quoteData }) {
         }
       };
       
-      if (existingIndex > -1) {
-        drafts[existingIndex] = { ...drafts[existingIndex], ...draftData };
-      } else {
-        drafts.unshift(draftData);
-      }
+      await fetch('/api/post_draft.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(draftData)
+      });
       
-      localStorage.setItem('holy_drafts', JSON.stringify(drafts));
       goTo("dashboard");
     } catch(e) {
       console.error("Error saving draft:", e);
@@ -1020,17 +1017,15 @@ function ReservaScreen({ goTo, quoteData }) {
           </div>
 
           <div className="flex" style={{ gap: 12 }}>
-            <button className="btn btn-soft" style={{ flex: 1 }} onClick={() => {
+            <button className="btn btn-soft" style={{ flex: 1 }} onClick={async () => {
               try {
-                const drafts = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
                 let existingIndex = -1;
                 let newId = "";
                 
                 if (quoteData && quoteData.draftId) {
-                  existingIndex = drafts.findIndex(d => d.id === quoteData.draftId);
                   newId = quoteData.draftId;
                 } else {
-                  newId = `BRR-${String(drafts.length + 1).padStart(3, '0')}`;
+                  newId = `BRR-${Math.floor(1000 + Math.random() * 9000)}`;
                 }
 
                 const finalCost = costType === "foreign" ? foreignPrice : costType === "local" ? localPrice : Number(costCustom) || 0;
@@ -1042,7 +1037,7 @@ function ReservaScreen({ goTo, quoteData }) {
                   zoneName,
                   cost: finalCost,
                   employee_name: window.MOCK.EMPLOYEES.find(e => e.id === employee)?.name || currentEmp.name,
-                  created_at: existingIndex > -1 ? drafts[existingIndex].created_at : new Date().toISOString(),
+                  created_at: new Date().toISOString(),
                   quoteData: {
                     ...quoteData,
                     draftId: newId,
@@ -1058,13 +1053,12 @@ function ReservaScreen({ goTo, quoteData }) {
                   }
                 };
 
-                if (existingIndex > -1) {
-                  drafts[existingIndex] = { ...drafts[existingIndex], ...draftData };
-                } else {
-                  drafts.unshift(draftData);
-                }
+                await fetch('/api/post_draft.php', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(draftData)
+                });
                 
-                localStorage.setItem('holy_drafts', JSON.stringify(drafts));
                 goTo("dashboard");
               } catch(e) {
                 console.error("Error saving draft:", e);

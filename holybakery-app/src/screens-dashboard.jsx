@@ -623,18 +623,26 @@ function EmpGuardadas({ goTo }) {
   const [loading, setLoading] = useStateD(true);
 
   React.useEffect(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
-      setDrafts(stored);
-    } catch(e) {
-      console.error(e);
-    }
-    setLoading(false);
+    let isMounted = true;
+    const fetchDrafts = async () => {
+      try {
+        const res = await fetch('/api/get_drafts.php');
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) setDrafts(data);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      if (isMounted) setLoading(false);
+    };
+    fetchDrafts();
+    return () => { isMounted = false; };
   }, []);
 
   const formatDraftDate = (isoString) => {
     if (!isoString) return "";
-    const d = new Date(isoString);
+    const d = new Date(isoString.replace(' ', 'T')); // Handle SQL dates
     if (isNaN(d.getTime())) return isoString;
     
     const now = new Date();
@@ -672,11 +680,14 @@ function EmpGuardadas({ goTo }) {
     }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este borrador?")) return;
-    const updated = drafts.filter(d => d.id !== id);
-    setDrafts(updated);
-    localStorage.setItem('holy_drafts', JSON.stringify(updated));
+    try {
+      await fetch(`/api/delete_draft.php?id=${id}`, { method: 'DELETE' });
+      setDrafts(drafts.filter(d => d.id !== id));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
