@@ -600,7 +600,18 @@ function ResultadoScreen({ goTo, quoteData }) {
         zoneName,
         cost: foreignPrice,
         employee_name: window.MOCK.getCurrentEmployee().name,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        quoteData: {
+          destinationName,
+          zoneName,
+          prices,
+          lat,
+          lng,
+          place_id,
+          formatted_address,
+          maps_link,
+          is_out_of_zone
+        }
       };
       
       drafts.unshift(draftData);

@@ -652,11 +652,24 @@ function EmpGuardadas({ goTo }) {
   };
 
   const handleEdit = (d) => {
-    if (goTo) goTo("cotizador");
+    if (goTo) {
+      if (d.quoteData) {
+        goTo("resultado", d.quoteData);
+      } else {
+        goTo("cotizador");
+      }
+    }
   };
 
   const handleConfirm = (id) => {
-    if (goTo) goTo("cotizador");
+    const d = drafts.find(x => x.id === id);
+    if (d && goTo) {
+      if (d.quoteData) {
+        goTo("resultado", d.quoteData);
+      } else {
+        goTo("cotizador");
+      }
+    }
   };
 
   const handleDelete = (id) => {
