@@ -618,54 +618,52 @@ function EmpReservas() {
 /* =============================================================
    EMPLOYEE — GUARDADAS
 ============================================================= */
-function EmpGuardadas() {
-  const { data: deliveriesData, loading, setData } = useApi("/deliveries?status[]=borrador", {total:0, items:[]});
-  
-  const drafts = deliveriesData?.items || [];
+function EmpGuardadas({ goTo }) {
+  const [drafts, setDrafts] = useStateD([]);
+  const [loading, setLoading] = useStateD(true);
+
+  React.useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
+      setDrafts(stored);
+    } catch(e) {
+      console.error(e);
+    }
+    setLoading(false);
+  }, []);
+
+  const formatDraftDate = (isoString) => {
+    if (!isoString) return "";
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return isoString;
+    
+    const now = new Date();
+    const dateD = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const dateNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffDays = Math.floor((dateNow - dateD) / (1000 * 60 * 60 * 24));
+    
+    let timeStr = d.toLocaleTimeString('es-MX', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
+    timeStr = timeStr.replace(/\./g, '').replace('a m', 'a.m.').replace('p m', 'p.m.');
+
+    if (diffDays === 0) return `creada Hoy, ${timeStr}`;
+    if (diffDays === 1) return `creada Ayer, ${timeStr}`;
+    if (diffDays === 2) return `creada Antier`;
+    return `creada hace ${diffDays} días`;
+  };
 
   const handleEdit = (d) => {
-    alert(`Editando borrador: ${d.id}`);
+    if (goTo) goTo("cotizador");
   };
 
-  const handleConfirm = async (id) => {
-    const token = sessionStorage.getItem("wp_token");
-    try {
-      const res = await fetch(`${API_BASE}/deliveries/${id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token ? `Bearer ${token}` : ""
-        },
-        body: JSON.stringify({ status: "confirmada" })
-      });
-      if (res.ok) {
-        setData({ ...deliveriesData, items: drafts.map(d => d.id === id ? { ...d, status: "confirmada" } : d) });
-      } else {
-        console.warn("API Error, updating UI anyway for prototype demo");
-        setData({ ...deliveriesData, items: drafts.map(d => d.id === id ? { ...d, status: "confirmada" } : d) });
-      }
-    } catch(e) {
-      console.error(e);
-    }
+  const handleConfirm = (id) => {
+    if (goTo) goTo("cotizador");
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este borrador?")) return;
-    const token = sessionStorage.getItem("wp_token");
-    try {
-      const res = await fetch(`${API_BASE}/deliveries/${id}`, {
-        method: "DELETE",
-        headers: { "Authorization": token ? `Bearer ${token}` : "" }
-      });
-      if (res.ok) {
-        setData({ ...deliveriesData, items: drafts.filter(d => d.id !== id) });
-      } else {
-        console.warn("API Error, updating UI anyway for prototype demo");
-        setData({ ...deliveriesData, items: drafts.filter(d => d.id !== id) });
-      }
-    } catch(e) {
-      console.error(e);
-    }
+    const updated = drafts.filter(d => d.id !== id);
+    setDrafts(updated);
+    localStorage.setItem('holy_drafts', JSON.stringify(updated));
   };
 
   return (
@@ -675,7 +673,7 @@ function EmpGuardadas() {
           <h1>Cotizaciones guardadas</h1>
           <p>Borradores en espera de confirmación. Editables libremente.</p>
         </div>
-        <button className="btn btn-primary btn-sm"><ID.Plus size={14}/> Nueva cotización</button>
+        <button className="btn btn-primary btn-sm" onClick={() => goTo && goTo("cotizador")}><ID.Plus size={14}/> Nueva cotización</button>
       </div>
 
       {loading ? <p>Cargando borradores...</p> : (
@@ -686,15 +684,15 @@ function EmpGuardadas() {
                 <span className="status status-borrador">Borrador</span>
                 <span className="mono muted" style={{fontSize: 11}}>{d.id}</span>
               </div>
-              <h3 style={{margin:"4px 0", fontSize: 16}}>{d.destinationName || d.destination}</h3>
-              <div className="muted" style={{fontSize: 12.5, marginBottom: 12}}>{d.zoneName || d.zone} · creada {d.created || d.date}</div>
+              <h3 style={{margin:"4px 0", fontSize: 16}}>{d.destinationName}</h3>
+              <div className="muted" style={{fontSize: 12.5, marginBottom: 12}}>{d.zoneName} · {formatDraftDate(d.created_at)}</div>
               <div className="price-row" style={{padding:"8px 0"}}>
                 <span className="lbl">Costo estimado</span>
                 <span className="val">{fmtMXN(d.cost)}</span>
               </div>
               <div className="price-row" style={{padding:"8px 0", borderBottom: 0}}>
                 <span className="lbl">Empleado</span>
-                <span style={{fontWeight: 600, fontSize: 12.5}}>{d.employee}</span>
+                <span style={{fontWeight: 600, fontSize: 12.5}}>{d.employee_name}</span>
               </div>
               <div className="flex gap-8" style={{marginTop: 14}}>
                 <button className="btn btn-soft btn-sm" style={{flex:1}} onClick={() => handleEdit(d)}><ID.Edit size={12}/> Editar</button>

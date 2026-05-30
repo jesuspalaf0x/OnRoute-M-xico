@@ -589,45 +589,25 @@ function ResultadoScreen({ goTo, quoteData }) {
   const foreignPrice = prices ? prices.foreign_price : 0;
   const usdPrice = foreignPrice ? (foreignPrice / 17.50).toFixed(2) : 0;
 
-  const handleSaveDraft = async () => {
-    const token = sessionStorage.getItem("wp_token");
-    const draftData = {
-      status: "borrador",
-      destinationName,
-      destination_name: destinationName,
-      zoneName,
-      place_id,
-      latitude: lat,
-      longitude: lng,
-      formatted_address,
-      maps_link,
-      cost: foreignPrice,
-      cost_type: "foreign",
-      employee_id: window.MOCK.getCurrentEmployee().id,
-      employee: window.MOCK.getCurrentEmployee().name,
-      employee_name: window.MOCK.getCurrentEmployee().name,
-      comments: `| EMP_NAME: ${window.MOCK.getCurrentEmployee().name}`,
-      zone_id: window.MOCK.ZONES.find(z => z.name === zoneName)?.id || 1
-    };
-
+  const handleSaveDraft = () => {
     try {
-      // Connect to the real database via WP REST API custom endpoint
-      const res = await fetch("https://onroutemx.com/wp-json/hb/v1/deliveries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": token ? `Bearer ${token}` : ""
-        },
-        body: JSON.stringify(draftData)
-      });
-      if (res.ok) {
-        goTo("dashboard");
-      } else {
-        console.warn("API Error, navigating anyway for prototype demo");
-        goTo("dashboard");
-      }
+      const drafts = JSON.parse(localStorage.getItem('holy_drafts') || '[]');
+      const newId = `BRR-${String(drafts.length + 1).padStart(3, '0')}`;
+      const draftData = {
+        id: newId,
+        status: "borrador",
+        destinationName: destinationName.split(',')[0],
+        zoneName,
+        cost: foreignPrice,
+        employee_name: window.MOCK.getCurrentEmployee().name,
+        created_at: new Date().toISOString()
+      };
+      
+      drafts.unshift(draftData);
+      localStorage.setItem('holy_drafts', JSON.stringify(drafts));
+      goTo("dashboard");
     } catch(e) {
-      console.error("Network error saving draft:", e);
+      console.error("Error saving draft:", e);
       goTo("dashboard");
     }
   };
