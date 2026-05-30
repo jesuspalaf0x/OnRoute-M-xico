@@ -1391,10 +1391,11 @@ function LocatorScreen() {
 
   const [addressName, setAddressName] = useState("");
   const [mapsLoaded, setMapsLoaded] = useState(false);
+  const [isFetchingInfo, setIsFetchingInfo] = useState(false);
 
   useEffect(() => {
     const checkMaps = setInterval(() => {
-      if (window.google && window.google.maps) {
+      if (window.google && window.google.maps && window.google.maps.places) {
         setMapsLoaded(true);
         clearInterval(checkMaps);
       }
@@ -1416,20 +1417,35 @@ function LocatorScreen() {
 
   useEffect(() => {
     if (pin) {
+      setIsFetchingInfo(true);
       const zInfo = getZoneAndPrice(pin.lat, pin.lng);
       setZoneInfo(zInfo);
 
-      if (window.google && window.google.maps) {
-        // Geocoding to get place name
-        const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode({ location: pin }, (results, status) => {
-          if (status === 'OK' && results[0]) {
-            setAddressName(results[0].formatted_address.split(',')[0]);
+      if (window.google && window.google.maps && window.google.maps.places) {
+        // Fetch Address/POI Name
+        const dummyDiv = document.createElement('div');
+        const placesService = new window.google.maps.places.PlacesService(dummyDiv);
+        
+        placesService.nearbySearch({
+          location: pin,
+          radius: 50
+        }, (results, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+            setAddressName(results[0].name);
           } else {
-            setAddressName("");
+            // Fallback to Geocoder
+            const geocoder = new window.google.maps.Geocoder();
+            geocoder.geocode({ location: pin }, (geoResults, geoStatus) => {
+              if (geoStatus === 'OK' && geoResults[0]) {
+                setAddressName(geoResults[0].formatted_address.split(',')[0]);
+              } else {
+                setAddressName(""); // Will default to coordinates
+              }
+            });
           }
         });
 
+        // Fetch Route/ETA
         const service = new window.google.maps.DistanceMatrixService();
         service.getDistanceMatrix(
           {
@@ -1449,12 +1465,15 @@ function LocatorScreen() {
               const dist = getDistanceFromLatLonInKm(20.199885881257117, -87.46305126147733, pin.lat, pin.lng);
               setRouteInfo({ km: +dist.toFixed(1), eta: text.noRoute });
             }
+            setIsFetchingInfo(false);
           }
         );
       } else {
         // No google maps loaded
         const dist = getDistanceFromLatLonInKm(20.199885881257117, -87.46305126147733, pin.lat, pin.lng);
         setRouteInfo({ km: +dist.toFixed(1), eta: text.noRoute });
+        setAddressName("");
+        setIsFetchingInfo(false);
       }
     }
   }, [pin, lang, mapsLoaded]);
@@ -1549,7 +1568,11 @@ function LocatorScreen() {
             <input className="cli-input" placeholder={text.namePlace} value={name} onChange={e => setName(e.target.value)}/>
             <input className="cli-input" placeholder={text.refPlace} value={ref} onChange={e => setRef(e.target.value)}/>
           </div>
-          <button className="cli-confirm" disabled={!pin} onClick={handleConfirm}>{text.confirmBtn} <I.ArrowRight size={18}/></button>
+          <button 
+          className="cli-confirm" 
+          disabled={!pin || isFetchingInfo} 
+          onClick={handleConfirm}
+        >{text.confirmBtn} <I.ArrowRight size={18}/></button>
           <p className="cli-foot-note">{text.confirmNote}</p>
         </div>
       )}
