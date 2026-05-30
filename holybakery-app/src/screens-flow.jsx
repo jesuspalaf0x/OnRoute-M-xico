@@ -1445,20 +1445,20 @@ function LocatorScreen() {
           }
         });
 
-        // Fetch Route/ETA
-        const service = new window.google.maps.DistanceMatrixService();
-        service.getDistanceMatrix(
+        // Fetch Route/ETA using DirectionsService (DistanceMatrix is blocked as legacy)
+        const directionsService = new window.google.maps.DirectionsService();
+        directionsService.route(
           {
-            origins: [{ lat: 20.199885881257117, lng: -87.46305126147733 }],
-            destinations: [pin],
+            origin: { lat: 20.199885881257117, lng: -87.46305126147733 },
+            destination: pin,
             travelMode: 'DRIVING'
           },
-          (response, status) => {
-            if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
-              const element = response.rows[0].elements[0];
+          (result, status) => {
+            if (status === 'OK' && result.routes && result.routes.length > 0) {
+              const leg = result.routes[0].legs[0];
               setRouteInfo({
-                km: +(element.distance.value / 1000).toFixed(1),
-                eta: element.duration.text
+                km: +(leg.distance.value / 1000).toFixed(1),
+                eta: leg.duration.text
               });
             } else {
               // Fallback to straight line distance
