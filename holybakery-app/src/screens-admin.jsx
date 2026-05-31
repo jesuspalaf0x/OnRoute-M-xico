@@ -30,17 +30,50 @@ function AdminPanel() {
 
   const fetchDashboard = async () => {
     const pendReq = await apiFetch("/admin/pending-requests");
-    const credSum = await apiFetch("/admin/credit-summary");
+    const allDeliveries = await apiFetch("/deliveries?limit=1000");
 
+    let requestsCount = 0;
     if (pendReq) {
       const formatted = [
         ...(pendReq.cancellations || []).map(c => ({ id: c.id, dlv_id: c.tracking_code || `DLV-${c.delivery_id}`, type: "Cancelación", desc: `Motivo: ${c.reason}`, cta: "Aprobar", raw: c })),
         ...(pendReq.tariff_changes || []).map(t => ({ id: t.id, dlv_id: t.tracking_code || `DLV-${t.delivery_id}`, type: "Cambio de tarifa", desc: `De $${t.current_cost} a $${t.requested_cost}`, cta: "Aprobar", raw: t }))
       ];
       setApprovals(formatted);
+      requestsCount = (pendReq.cancellations?.length || 0) + (pendReq.tariff_changes?.length || 0);
     }
-    if (credSum) {
-      setKpis({ total: credSum.total_reservations, credit: credSum.total_pendiente, collected: credSum.total_acumulado, requests: ((pendReq?.cancellations?.length || 0) + (pendReq?.tariff_changes?.length || 0)), extras: credSum.extras_mes });
+
+    if (allDeliveries && allDeliveries.items) {
+      const items = allDeliveries.items;
+      const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Cancun" }));
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      let credit = 0;
+      let collected = 0;
+
+      items.forEach(d => {
+        if (!d.paid && (d.status === "entregada" || d.status === "confirmada")) {
+          credit += Number(d.cost || 0);
+        }
+        
+        if (d.paid) {
+          const dDate = d.delivered_at ? new Date(d.delivered_at.replace(" ", "T")) : (d.date ? new Date(d.date.replace(" ", "T")) : null);
+          if (dDate && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear) {
+            collected += Number(d.cost || 0);
+          } else if (!dDate) {
+            // fallback
+            collected += Number(d.cost || 0);
+          }
+        }
+      });
+
+      setKpis({ 
+        total: allDeliveries.total || items.length, 
+        credit, 
+        collected, 
+        requests: requestsCount, 
+        extras: 0 // Will implement extra fetching if needed, currently 0
+      });
     }
   };
 

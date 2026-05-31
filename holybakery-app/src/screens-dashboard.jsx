@@ -162,10 +162,10 @@ function EmpResumen({ goTo }) {
   const dateFrom = `${y}-${m}-01`;
   const dateTo = `${y}-${m}-${dLast}`;
 
-  const { data: mesData, loading: l1 } = useApi(`/deliveries?status[]=entregada&status[]=pagada&date_from=${dateFrom}&date_to=${dateTo}`, {total:0, items:[]}, 45000);
-  const { data: pendientesData, loading: l2 } = useApi(`/deliveries?status[]=entregada`, {total:0, items:[]}, 45000);
-  const { data: pagadasData, loading: l3 } = useApi(`/deliveries?status[]=pagada&date_from=${dateFrom}&date_to=${dateTo}`, {total:0, items:[]}, 45000);
-  const { data: borradorData, loading: l4 } = useApi(`/deliveries?status[]=borrador`, {total:0, items:[]}, 45000);
+  const { data: mesData, loading: l1 } = useApi(`/deliveries?status[]=entregada&status[]=pagada&limit=500&date_from=${dateFrom}&date_to=${dateTo}`, {total:0, items:[]}, 45000);
+  const { data: pendientesData, loading: l2 } = useApi(`/deliveries?status[]=entregada&limit=500`, {total:0, items:[]}, 45000);
+  const { data: pagadasData, loading: l3 } = useApi(`/deliveries?status[]=pagada&limit=500&date_from=${dateFrom}&date_to=${dateTo}`, {total:0, items:[]}, 45000);
+  const { data: borradorData, loading: l4 } = useApi(`/deliveries?status[]=borrador&limit=500`, {total:0, items:[]}, 45000);
   const { data: empData, loading: lEmp } = useApi(`/employees/on-shift`, null, 45000);
   const { data: upcomingData, loading: lUp } = useApi(`/deliveries?limit=5`, {total:0, items:[]}, 45000);
 
