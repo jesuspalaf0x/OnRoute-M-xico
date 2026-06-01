@@ -350,13 +350,33 @@ function AdminPagos() {
 
   const markSelectedAsPaid = async () => {
     for (const id of selectedIds) {
-      await apiFetch(`/admin/deliveries/${id}/status`, "PATCH", { status: "pagada", paid: true });
+      await apiFetch(`/deliveries/${id}/status`, "PUT", { status: "pagada", paid: true });
     }
     setSelectedIds([]);
     fetchDeliveries();
   };
 
   const selectedTotal = pending.filter(d => selectedIds.includes(d.id)).reduce((s,d) => s + d.cost, 0);
+
+  const getDestinationShortName = (dest) => dest ? dest.split(",")[0].trim() : "";
+  const getEmployeeName = (d) => d.comments && d.comments.includes('| EMP_NAME:') ? d.comments.split('| EMP_NAME:')[1].trim() : (d.employee && d.employee.trim() !== "Empleado" ? d.employee : window.MOCK.getCurrentEmployee().name);
+  
+  const formatDt = (dateStr) => {
+    if (!dateStr) return { date: '', time: '' };
+    try {
+      const d = new Date(dateStr.replace(" ", "T"));
+      const formatterDate = new Intl.DateTimeFormat('es-MX', { weekday: 'short', day: 'numeric', month: 'short' });
+      let fDate = formatterDate.format(d);
+      fDate = fDate.charAt(0).toUpperCase() + fDate.slice(1) + ",";
+      
+      const formatterTime = new Intl.DateTimeFormat('es-MX', { hour: 'numeric', minute: '2-digit', hour12: true });
+      const fTime = formatterTime.format(d);
+      
+      return { date: fDate, time: fTime };
+    } catch(e) {
+      return { date: dateStr, time: '' };
+    }
+  };
 
   return (
     <>
@@ -383,16 +403,21 @@ function AdminPagos() {
           <table className="table">
             <thead><tr><th style={{width:32}}><input type="checkbox" onChange={(e) => setSelectedIds(e.target.checked ? pending.map(d=>d.id) : [])} checked={selectedIds.length === pending.length && pending.length > 0}/></th><th>ID</th><th>Cuándo</th><th>Destino</th><th>Empleado</th><th>Costo</th></tr></thead>
             <tbody>
-              {pending.map(d => (
+              {pending.map(d => {
+                const dt = formatDt(d.date || d.scheduled_date);
+                return (
                 <tr key={d.id}>
                   <td><input type="checkbox" checked={selectedIds.includes(d.id)} onChange={() => toggleSelect(d.id)}/></td>
                   <td className="id-cell">{d.tracking_code || d.id}</td>
-                  <td className="nowrap">{d.date}</td>
-                  <td><strong>{d.destination}</strong></td>
-                  <td>{d.employee}</td>
+                  <td className="nowrap">
+                    <strong>{dt.date}</strong>
+                    <div style={{fontSize:11, color:"var(--muted)", marginTop:2}}>{dt.time}</div>
+                  </td>
+                  <td><strong>{getDestinationShortName(d.destinationName || d.destination)}</strong></td>
+                  <td>{getEmployeeName(d)}</td>
                   <td className="money">{fmtMXN_A(d.cost)}</td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
           <div className="table-foot">
