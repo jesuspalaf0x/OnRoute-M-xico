@@ -350,7 +350,10 @@ function AdminPagos() {
 
   const markSelectedAsPaid = async () => {
     for (const id of selectedIds) {
-      await apiFetch(`/deliveries/${id}/status`, "PUT", { status: "pagada", paid: true });
+      const res = await apiFetch(`/admin/deliveries/${id}/status`, "PATCH", { status: "pagada", paid: true });
+      if (!res || !res.success) {
+        await apiFetch(`/deliveries/${id}`, "PUT", { status: "pagada", paid: true });
+      }
     }
     setSelectedIds([]);
     fetchDeliveries();
