@@ -698,11 +698,21 @@ function AdminExtras() {
   const [desc, setDesc] = useStateA("");
   const [cost, setCost] = useStateA("");
   const [linked, setLinked] = useStateA("");
+  const [dateStr, setDateStr] = useStateA(new Date().toISOString().split('T')[0]);
 
   const fetchExtras = async () => {
-    const res = await apiFetch("/admin/extra-services");
-    if (res && res.items) setExtras(res.items);
-    else setExtras([]);
+    try {
+      const res = await fetch("/api/get_extras.php");
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setExtras(data);
+      } else {
+        setExtras([]);
+      }
+    } catch (e) {
+      console.error("Error fetching extras", e);
+      setExtras([]);
+    }
   };
 
   useEffect(() => { fetchExtras(); }, []);
@@ -713,20 +723,30 @@ function AdminExtras() {
       delivery_id: linked || null,
       description: desc,
       cost: Number(cost),
-      service_date: new Date().toISOString().split('T')[0],
-      service_time: new Date().toTimeString().split(' ')[0],
-      added_by_admin_id: 1
+      date: dateStr
     };
-    const res = await apiFetch("/admin/extra-services", "POST", newExtra);
-    if (res && res.success) {
-      fetchExtras();
-    } else {
-      // Optimistic update for demo if API fails
-      setExtras([{ id: "EXT-" + Math.floor(Math.random() * 1000), ...newExtra, date: newExtra.service_date }, ...extras]);
+    try {
+      const res = await fetch("/api/post_extra.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newExtra)
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        fetchExtras();
+        // Disparar recarga de datos global si es necesario
+      } else {
+        alert("Error al guardar el extra: " + (data.error || ""));
+      }
+    } catch (e) {
+      alert("Error de conexión.");
+      // Optimistic fallback for demo
+      setExtras([{ id: "EXT-" + Math.floor(Math.random() * 1000), ...newExtra, created_at: new Date().toISOString() }, ...extras]);
     }
     setDesc("");
     setCost("");
     setLinked("");
+    setDateStr(new Date().toISOString().split('T')[0]);
   };
 
   return (
@@ -773,7 +793,7 @@ function AdminExtras() {
             <div className="row row-2">
               <div>
                 <label className="label">Fecha</label>
-                <div className="field"><IA.Calendar size={18} className="icon"/><input type="date" defaultValue={new Date().toISOString().split('T')[0]}/></div>
+                <div className="field"><IA.Calendar size={18} className="icon"/><input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)}/></div>
               </div>
               <div>
                 <label className="label">Costo</label>

@@ -1,0 +1,16 @@
+--- src/screens-admin.jsx
++++ src/screens-admin.jsx
+@@ -794,7 +794,7 @@
+               <div>
+                 <label className="label">Fecha</label>
+-                <div className="field"><IA.Calendar size={18} className="icon"/><input type="date" defaultValue={new Date().toISOString().split('T')[0]}/></div>
++                <div className="field"><IA.Calendar size={18} className="icon"/><input type="date" value={dateStr} onChange={e => setDateStr(e.target.value)}/></div>
+               </div>
+               <div>
+                 <label className="label">Costo</label>
+                 <div className="field"><IA.DollarSign size={18} className="icon"/><input type="number" value={cost} onChange={e => setCost(e.target.value)} placeholder="0.00"/></div>
+               </div>
+             </div>
++            <button className="btn btn-primary" style={{width: "100%", marginTop: 8}} onClick={handleAdd}>Registrar extra</button>
+           </div>
+         </div>
