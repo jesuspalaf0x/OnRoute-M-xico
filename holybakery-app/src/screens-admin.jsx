@@ -1,5 +1,6 @@
 import React from 'react';
 import pricesData from './data/prices.json';
+import DateRangePicker from './components/DateRangePicker';
 // Admin screens — panel, reservas, pagos, cancelaciones, extras, configuración
 
 const { useState: useStateA, useEffect, useRef } = React;
@@ -24,6 +25,8 @@ async function apiFetch(endpoint, method = "GET", body = null) {
 
 /* ============ ADMIN — PANEL ============ */
 function AdminPanel() {
+  const [dateFrom, setDateFrom] = useStateA(null);
+  const [dateTo, setDateTo] = useStateA(null);
   const [approvals, setApprovals] = useStateA([]);
   const [kpis, setKpis] = useStateA({ total: 147, credit: 3180, collected: 5420, requests: 1, extras: 2 });
   const [zonesData, setZonesData] = useStateA(window.MOCK.ZONES.slice(0,5));
@@ -44,24 +47,31 @@ function AdminPanel() {
 
     if (allDeliveries && allDeliveries.items) {
       const items = allDeliveries.items;
-      const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Cancun" }));
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
 
       let credit = 0;
       let collected = 0;
 
       items.forEach(d => {
-        if (!d.paid && (d.status === "entregada" || d.status === "confirmada")) {
-          credit += Number(d.cost || 0);
+        let inRange = true;
+        if (dateFrom && dateTo) {
+          const dDateStr = d.delivered_at || d.date;
+          const dDate = dDateStr ? new Date(dDateStr.replace(" ", "T")) : null;
+          if (dDate) {
+            const df = new Date(dateFrom);
+            const dt = new Date(dateTo);
+            df.setHours(0,0,0,0);
+            dt.setHours(23,59,59,999);
+            if (dDate < df || dDate > dt) {
+              inRange = false;
+            }
+          }
         }
         
-        if (d.paid) {
-          const dDate = d.delivered_at ? new Date(d.delivered_at.replace(" ", "T")) : (d.date ? new Date(d.date.replace(" ", "T")) : null);
-          if (dDate && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear) {
-            collected += Number(d.cost || 0);
-          } else if (!dDate) {
-            // fallback
+        if (inRange) {
+          if (!d.paid && (d.status === "entregada" || d.status === "confirmada")) {
+            credit += Number(d.cost || 0);
+          }
+          if (d.paid) {
             collected += Number(d.cost || 0);
           }
         }
@@ -81,7 +91,7 @@ function AdminPanel() {
     fetchDashboard();
     const interval = setInterval(fetchDashboard, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [dateFrom, dateTo]);
 
   const handleAction = async (item, action) => {
     const endpoint = item.type === "Cancelación" ? `/cancellation-requests/${item.id}` : `/tariff-change-requests/${item.id}`;
@@ -97,7 +107,7 @@ function AdminPanel() {
           <p>Visión global · todos los empleados, todos los periodos.</p>
         </div>
         <div className="flex gap-8">
-          <button className="btn btn-ghost btn-sm"><IA.Filter size={14}/> Rango: Mayo 2026</button>
+          <DateRangePicker onApply={(from, to) => { setDateFrom(from); setDateTo(to); }} />
           <button className="btn btn-ghost btn-sm"><IA.Download size={14}/> Exportar</button>
         </div>
       </div>
@@ -169,6 +179,8 @@ const ApprovalRow = ({ icon, title, desc, cta, onApprove, onReject }) => (
 
 /* ============ ADMIN — RESERVAS ============ */
 function AdminReservas() {
+  const [dateFrom, setDateFrom] = useStateA(null);
+  const [dateTo, setDateTo] = useStateA(null);
   const [deliveries, setDeliveries] = useStateA([]);
 
   const formatDateTime = (dateStr) => {
@@ -224,7 +236,11 @@ function AdminReservas() {
   };
 
   const fetchDeliveries = async () => {
-    const res = await apiFetch("/deliveries");
+    let url = "/deliveries?limit=1000";
+    if (dateFrom && dateTo) {
+      url += `&date_from=${dateFrom}&date_to=${dateTo}`;
+    }
+    const res = await apiFetch(url);
     if (res && res.items) setDeliveries(res.items);
     else setDeliveries([]);
   };
@@ -233,7 +249,7 @@ function AdminReservas() {
     fetchDeliveries();
     const interval = setInterval(fetchDeliveries, 30000); // polling 30s
     return () => clearInterval(interval);
-  }, []);
+  }, [dateFrom, dateTo]);
 
   const updateStatus = async (id, status, extra = {}) => {
     try {
@@ -254,6 +270,7 @@ function AdminReservas() {
       <div className="page-header">
         <div><h1>Gestión de reservas</h1><p>Marca entregadas, pagadas, aprueba cambios. Sin eliminación permanente.</p></div>
         <div className="flex gap-8">
+          <DateRangePicker onApply={(from, to) => { setDateFrom(from); setDateTo(to); }} />
           <button className="btn btn-ghost btn-sm"><IA.Filter size={14}/> Filtros</button>
           <button className="btn btn-primary btn-sm" onClick={() => fetchDeliveries()}><IA.RefreshCcw size={14}/> Actualizar</button>
         </div>
@@ -303,16 +320,22 @@ function AdminReservas() {
 
 /* ============ ADMIN — PAGOS ============ */
 function AdminPagos() {
+  const [dateFrom, setDateFrom] = useStateA(null);
+  const [dateTo, setDateTo] = useStateA(null);
   const [deliveries, setDeliveries] = useStateA([]);
   const [selectedIds, setSelectedIds] = useStateA([]);
 
   const fetchDeliveries = async () => {
-    const res = await apiFetch("/deliveries?status[]=entregada&status[]=pagada&limit=500");
+    let url = "/deliveries?status[]=entregada&status[]=pagada&limit=1000";
+    if (dateFrom && dateTo) {
+      url += `&date_from=${dateFrom}&date_to=${dateTo}`;
+    }
+    const res = await apiFetch(url);
     if (res && res.items) setDeliveries(res.items);
     else setDeliveries([]);
   };
 
-  useEffect(() => { fetchDeliveries(); }, []);
+  useEffect(() => { fetchDeliveries(); }, [dateFrom, dateTo]);
 
   const pending = deliveries.filter(d => !d.paid && (d.status==="entregada" || d.status==="confirmada"));
   const paid = deliveries.filter(d => d.paid);
@@ -351,7 +374,7 @@ function AdminPagos() {
         <div className="flex-between" style={{marginBottom: 12}}>
           <h3>Entregas pendientes de pago</h3>
           <div className="flex gap-8">
-            <button className="btn btn-ghost btn-sm"><IA.Filter size={14}/> Rango de fechas</button>
+            <DateRangePicker onApply={(from, to) => { setDateFrom(from); setDateTo(to); }} />
             <button className="btn btn-accent btn-sm" onClick={markSelectedAsPaid} disabled={selectedIds.length===0}><IA.Check size={14}/> Marcar seleccionadas como pagadas</button>
           </div>
         </div>

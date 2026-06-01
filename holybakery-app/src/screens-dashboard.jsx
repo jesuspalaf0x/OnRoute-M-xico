@@ -1,5 +1,6 @@
 import React from 'react';
 import InteractiveMap from './components/InteractiveMap';
+import DateRangePicker from './components/DateRangePicker';
 import pricesData from './data/prices.json';
 
 // Dashboard (employee) and Admin screens
@@ -155,17 +156,15 @@ const StatusPill = ({ s }) => {
    EMPLOYEE — RESUMEN
 ============================================================= */
 function EmpResumen({ goTo }) {
-  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Cancun" }));
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const dLast = new Date(y, now.getMonth() + 1, 0).getDate();
-  const dateFrom = `${y}-${m}-01`;
-  const dateTo = `${y}-${m}-${dLast}`;
+  const [dateFrom, setDateFrom] = useStateD(null);
+  const [dateTo, setDateTo] = useStateD(null);
 
-  const { data: mesData, loading: l1 } = useApi(`/deliveries?status[]=entregada&status[]=pagada&limit=500`, {total:0, items:[]}, 45000);
-  const { data: pendientesData, loading: l2 } = useApi(`/deliveries?status[]=entregada&limit=500`, {total:0, items:[]}, 45000);
-  const { data: pagadasData, loading: l3 } = useApi(`/deliveries?status[]=pagada&limit=500`, {total:0, items:[]}, 45000);
-  const { data: borradorData, loading: l4 } = useApi(`/deliveries?status[]=borrador&limit=500`, {total:0, items:[]}, 45000);
+  const dateParams = dateFrom && dateTo ? `&date_from=${dateFrom}&date_to=${dateTo}` : "";
+
+  const { data: mesData, loading: l1 } = useApi(`/deliveries?status[]=entregada&status[]=pagada&limit=500${dateParams}`, {total:0, items:[]}, 45000);
+  const { data: pendientesData, loading: l2 } = useApi(`/deliveries?status[]=entregada&limit=500${dateParams}`, {total:0, items:[]}, 45000);
+  const { data: pagadasData, loading: l3 } = useApi(`/deliveries?status[]=pagada&limit=500${dateParams}`, {total:0, items:[]}, 45000);
+  const { data: borradorData, loading: l4 } = useApi(`/deliveries?status[]=borrador&limit=500${dateParams}`, {total:0, items:[]}, 45000);
   const { data: empData, loading: lEmp } = useApi(`/employees/on-shift`, null, 45000);
   const { data: upcomingData, loading: lUp } = useApi(`/deliveries?limit=5`, {total:0, items:[]}, 45000);
 
@@ -188,6 +187,7 @@ function EmpResumen({ goTo }) {
           <p>Vista compartida del equipo Holy Bakery — todos ven todo.</p>
         </div>
         <div className="flex gap-8">
+          <DateRangePicker onApply={(from, to) => { setDateFrom(from); setDateTo(to); }} />
           <button className="btn btn-ghost btn-sm"><ID.Download size={14}/> Exportar</button>
           <button className="btn btn-primary btn-sm" onClick={() => goTo("cotizador")}><ID.Plus size={14}/> Nueva reserva</button>
         </div>
@@ -444,6 +444,8 @@ function SolicitudesModal({ delivery, onClose, onSuccess }) {
 ============================================================= */
 function EmpReservas() {
   const [filter, setFilter] = useStateD("todos");
+  const [dateFrom, setDateFrom] = useStateD(null);
+  const [dateTo, setDateTo] = useStateD(null);
 
   const formatDateTime = (dateStr) => {
     if (!dateStr) return { date: '', time: '' };
@@ -499,9 +501,13 @@ function EmpReservas() {
   
   // Create dynamic URL query based on filter
   const queryParams = new URLSearchParams();
-  queryParams.append("limit", "50");
+  queryParams.append("limit", "500");
   if (filter !== "todos") {
     queryParams.append("status[]", filter);
+  }
+  if (dateFrom && dateTo) {
+    queryParams.append("date_from", dateFrom);
+    queryParams.append("date_to", dateTo);
   }
   
   const { data: deliveriesData, loading, setData } = useApi(`/deliveries?${queryParams.toString()}`, {total:0, items:[]});
@@ -518,7 +524,7 @@ function EmpReservas() {
           <p>Historial completo de todos los empleados.</p>
         </div>
         <div className="flex gap-8">
-          <button className="btn btn-ghost btn-sm"><ID.Filter size={14}/> Filtrar fechas</button>
+          <DateRangePicker onApply={(from, to) => { setDateFrom(from); setDateTo(to); }} />
           <button className="btn btn-ghost btn-sm"><ID.Download size={14}/> Exportar CSV</button>
         </div>
       </div>
