@@ -790,6 +790,14 @@ function ReservaScreen({ goTo, quoteData }) {
   const [comments, setComments] = useState(quoteData?.comments || "");
   const [files, setFiles] = useState([]);
 
+  const [exchangeRate, setExchangeRate] = useState(17.50);
+  useEffect(() => {
+    fetch("/api/exchange_rate.php")
+      .then(res => res.json())
+      .then(data => { if(data && data.rate) setExchangeRate(data.rate); })
+      .catch(e => console.error("Error fetching exchange rate:", e));
+  }, []);
+
   const formatTo12h = (time24) => {
     if (!time24) return '';
     const [hours, minutes] = time24.split(':');
@@ -1200,7 +1208,7 @@ function ReservaScreen({ goTo, quoteData }) {
               {cost > 0 && (
                 <div className="price-row" style={{ padding: "10px 0" }}>
                   <span className="lbl">Equivalente</span>
-                  <span style={{ fontWeight: 700, opacity: 0.6 }}>~${(cost / 17.5).toFixed(2)} USD</span>
+                  <span style={{ fontWeight: 700, opacity: 0.6 }}>~${(cost / exchangeRate).toFixed(2)} USD</span>
                 </div>
               )}
               {client && (
