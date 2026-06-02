@@ -93,7 +93,7 @@ function AppShell({ role, section, setSection, goTo, children }) {
   };
   const [exchangeRate, setExchangeRate] = useStateD(17.50);
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetch("/api/exchange_rate.php")
       .then(res => res.json())
       .then(data => {
