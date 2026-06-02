@@ -65,6 +65,17 @@ function LoginScreen({ goTo }) {
     }
   };
 
+  const [exchangeRate, setExchangeRate] = useState(17.50);
+
+  useEffect(() => {
+    fetch("/api/exchange_rate.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.rate) setExchangeRate(data.rate);
+      })
+      .catch(e => console.error("Error fetching exchange rate:", e));
+  }, []);
+
   return (
     <div className="login-frame">
       <aside className="login-aside">
@@ -80,7 +91,7 @@ function LoginScreen({ goTo }) {
           <div className="stats">
             <div className="stat"><div className="num">38</div><div className="lbl">Entregas / mes</div></div>
             <div className="stat"><div className="num">5</div><div className="lbl">Zonas activas</div></div>
-            <div className="stat"><div className="num">17.50</div><div className="lbl">MXN / USD</div></div>
+            <div className="stat"><div className="num">{exchangeRate.toFixed(2)}</div><div className="lbl">MXN / USD</div></div>
           </div>
         </div>
 
@@ -367,7 +378,7 @@ function CotizadorScreen({ goTo }) {
                 <div>
                   <p style={{ fontWeight: '600', margin: 0, color: '#111827', fontSize: '15px', textAlign: 'left' }}>Tipo de cambio</p>
                   <p style={{ color: '#6b7280', margin: 0, fontSize: '13px', textAlign: 'left' }}>
-                    $17.50 MXN/USD · actualizado por OnRoute hoy 9:14 a.m.
+                    ${exchangeRate.toFixed(2)} MXN/USD · actualizado hoy.
                   </p>
                 </div>
               </div>
@@ -583,11 +594,19 @@ function ResultadoScreen({ goTo, quoteData }) {
     is_out_of_zone: true
   };
 
+  const [exchangeRate, setExchangeRate] = useState(17.50);
+  useEffect(() => {
+    fetch("/api/exchange_rate.php")
+      .then(res => res.json())
+      .then(data => { if(data && data.rate) setExchangeRate(data.rate); })
+      .catch(e => console.error("Error fetching exchange rate:", e));
+  }, []);
+
   const isOutOfZone = is_out_of_zone || zoneName === "Sin zona" || zoneName === "Fuera de polígonos";
 
   const localPrice = prices ? prices.local_price : 0;
   const foreignPrice = prices ? prices.foreign_price : 0;
-  const usdPrice = foreignPrice ? (foreignPrice / 17.50).toFixed(2) : 0;
+  const usdPrice = foreignPrice ? (foreignPrice / exchangeRate).toFixed(2) : 0;
 
   const handleSaveDraft = async () => {
     try {

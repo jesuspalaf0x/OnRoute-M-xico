@@ -91,6 +91,24 @@ function AppShell({ role, section, setSection, goTo, children }) {
       goTo("login");
     }
   };
+  const [exchangeRate, setExchangeRate] = useStateA(17.50);
+
+  useEffect(() => {
+    fetch("/api/exchange_rate.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.rate) setExchangeRate(data.rate);
+      })
+      .catch(e => console.error("Error fetching exchange rate:", e));
+      
+    const onRateChange = () => {
+      fetch("/api/exchange_rate.php")
+        .then(res => res.json())
+        .then(data => { if(data && data.rate) setExchangeRate(data.rate); });
+    };
+    window.addEventListener("exchangeRateUpdated", onRateChange);
+    return () => window.removeEventListener("exchangeRateUpdated", onRateChange);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -102,7 +120,7 @@ function AppShell({ role, section, setSection, goTo, children }) {
           </div>
         </div>
         <div className="top-right">
-          <span className="pill"><ID.RefreshCcw size={12}/> $17.50 MXN/USD</span>
+          <span className="pill"><ID.RefreshCcw size={12}/> ${exchangeRate.toFixed(2)} MXN/USD</span>
           {!isAdmin && (() => {
             const currentEmp = window.MOCK.getCurrentEmployee();
             return <span className="muted">En turno: <strong style={{color:"var(--ink)"}}>{currentEmp.name}</strong> · {currentEmp.shift}</span>;

@@ -951,14 +951,31 @@ function AdminTC() {
   const [rate, setRate] = useStateA(17.50);
   
   useEffect(() => {
-    apiFetch("/settings/exchange_rate").then(res => {
-      if (res && res.rate) setRate(res.rate);
-    });
+    fetch("/api/exchange_rate.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.rate) setRate(data.rate);
+      })
+      .catch(err => console.error("Error fetching exchange rate:", err));
   }, []);
 
   const handleUpdate = async () => {
-    await apiFetch("/settings/exchange_rate", "PUT", { rate });
-    alert("Tipo de cambio actualizado");
+    try {
+      const res = await fetch("/api/exchange_rate.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rate })
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        alert("Tipo de cambio actualizado correctamente");
+        window.dispatchEvent(new Event("exchangeRateUpdated")); // trigger reload on other components if needed
+      } else {
+        alert("Error al actualizar tipo de cambio");
+      }
+    } catch (e) {
+      alert("Error de conexión");
+    }
   };
   return (
     <>
