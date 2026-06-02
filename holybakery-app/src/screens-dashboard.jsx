@@ -950,13 +950,21 @@ function EmpEmpleados() {
 }
 
 function EmpBancarios() {
-  const { data: bankData, loading: bankLoading } = useApi("/bank-details", {
-    banco: "BBVA México",
-    titular: "OnRoute México S.A. de C.V.",
-    clabe: "012 180 01234567890 1",
-    cuenta: "0123 4567 89",
-    concepto: "Holy Bakery — Crédito entregas"
-  });
+  const [bankData, setBankData] = useStateD({});
+  const [bankLoading, setBankLoading] = useStateD(true);
+
+  React.useEffect(() => {
+    fetch("/api/bank_data.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.banco) setBankData(data);
+        setBankLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching bank data:", err);
+        setBankLoading(false);
+      });
+  }, []);
 
   return (
     <>

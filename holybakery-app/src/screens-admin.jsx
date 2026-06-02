@@ -1021,14 +1021,30 @@ function AdminBank() {
   const [bankData, setBankData] = useStateA({ banco: "BBVA México", titular: "OnRoute México S.A. de C.V.", clabe: "012 180 01234567890 1", cuenta: "0123 4567 89", concepto: "Holy Bakery — Crédito entregas" });
 
   useEffect(() => {
-    apiFetch("/settings/bank").then(res => {
-      if (res && res.banco) setBankData(res);
-    });
+    fetch("/api/bank_data.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.banco) setBankData(data);
+      })
+      .catch(err => console.error("Error fetching bank data:", err));
   }, []);
 
   const handleSave = async () => {
-    await apiFetch("/settings/bank", "PUT", bankData);
-    alert("Datos bancarios guardados");
+    try {
+      const res = await fetch("/api/bank_data.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bankData)
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        alert("Datos bancarios guardados correctamente");
+      } else {
+        alert("Error al guardar datos bancarios");
+      }
+    } catch (e) {
+      alert("Error de conexión");
+    }
   };
 
   return (
