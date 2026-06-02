@@ -218,6 +218,16 @@ function AdminLoginScreen({ goTo }) {
 function CotizadorScreen({ goTo }) {
   const [from, setFrom] = useState("Holy Bakery Tulum");
   const [to, setTo] = useState("");
+  const [exchangeRate, setExchangeRate] = useState(17.50);
+
+  useEffect(() => {
+    fetch("/api/exchange_rate.php")
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.rate) setExchangeRate(data.rate);
+      })
+      .catch(e => console.error("Error fetching exchange rate:", e));
+  }, []);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',

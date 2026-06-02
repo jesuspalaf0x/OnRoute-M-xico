@@ -91,7 +91,7 @@ function AppShell({ role, section, setSection, goTo, children }) {
       goTo("login");
     }
   };
-  const [exchangeRate, setExchangeRate] = useStateA(17.50);
+  const [exchangeRate, setExchangeRate] = useStateD(17.50);
 
   useEffect(() => {
     fetch("/api/exchange_rate.php")
