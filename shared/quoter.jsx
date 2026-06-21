@@ -374,7 +374,7 @@ const SmartQuoter = ({ lang }) => {
             <div style={{ 
               display: 'flex', alignItems: 'center', width: '100%', 
               border: '1.5px solid rgba(10,10,10,0.1)', borderRadius: 10, background: '#fff',
-              overflow: 'hidden'
+              overflow: 'hidden', minHeight: 44
             }}>
               <div style={{ padding: '0 0 0 14px', display: 'flex', alignItems: 'center', color: accent }}>
                 <window.Icon name="calendar" size={14} stroke={2} />
@@ -383,7 +383,7 @@ const SmartQuoter = ({ lang }) => {
                 style={{ 
                   flex: 1, border: 'none', background: 'transparent', outline: 'none',
                   padding: '11px 14px 11px 10px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0a0a0a',
-                  width: '100%', minWidth: 0, WebkitAppearance: 'none'
+                  width: '100%', minWidth: 0
                 }} />
             </div>
           </div>
@@ -392,7 +392,7 @@ const SmartQuoter = ({ lang }) => {
             <div style={{ 
               display: 'flex', alignItems: 'center', width: '100%', 
               border: '1.5px solid rgba(10,10,10,0.1)', borderRadius: 10, background: '#fff',
-              overflow: 'hidden'
+              overflow: 'hidden', minHeight: 44
             }}>
               <div style={{ padding: '0 0 0 14px', display: 'flex', alignItems: 'center', color: accent }}>
                 <window.Icon name="users" size={14} stroke={2} />
