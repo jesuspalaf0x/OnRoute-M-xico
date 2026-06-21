@@ -334,7 +334,7 @@ const ArticleAudioPlayer = ({ lang, text, minutes }) => {
   const curSec = progress * totalSec;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'rgba(10,10,10,0.03)', borderRadius: 12, padding: '16px 20px', width: '100%' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: '#fff', border: '1px solid rgba(10,10,10,0.08)', borderRadius: 999, padding: '8px 16px 8px 8px', minWidth: 280 }}>
       <button onClick={state === 'playing' ? pause : play} disabled={!supported}
         aria-label={state === 'playing' ? 'Pause' : 'Play'}
         style={{ width: 42, height: 42, borderRadius: '50%', border: 'none', flexShrink: 0, background: supported ? accent : 'rgba(10,10,10,0.2)', color: '#fff', cursor: supported ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -344,20 +344,20 @@ const ArticleAudioPlayer = ({ lang, text, minutes }) => {
       </button>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a', letterSpacing: 0.5, textTransform: 'uppercase' }}>
-            {state === 'idle' ? (lang === 'es' ? 'Escuchar el artículo' : 'Listen to article') : (state === 'paused' ? (lang === 'es' ? 'En pausa' : 'Paused') : (lang === 'es' ? 'Reproduciendo…' : 'Playing…'))}
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#0a0a0a', letterSpacing: -0.1 }}>
+            {state === 'idle' ? (lang === 'es' ? 'Escuchar artículo' : 'Listen to article') : (state === 'paused' ? (lang === 'es' ? 'En pausa' : 'Paused') : (lang === 'es' ? 'Reproduciendo…' : 'Playing…'))}
           </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {state !== 'idle' && (
-              <button onClick={stopAll} style={{ fontSize: 10, color: 'rgba(10,10,10,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>{lang === 'es' ? 'Detener' : 'Stop'}</button>
-            )}
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a', letterSpacing: 0.5, textTransform: 'uppercase' }}>{minutes}</span>
-          </div>
+          {state !== 'idle' && (
+            <button onClick={stopAll} style={{ fontSize: 10, color: 'rgba(10,10,10,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>{lang === 'es' ? 'Detener' : 'Stop'}</button>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'rgba(10,10,10,0.1)', overflow: 'hidden' }}>
             <div style={{ width: `${progress * 100}%`, height: '100%', background: accent, borderRadius: 2, transition: 'width .2s linear' }}/>
           </div>
+          <span style={{ fontSize: 10, color: 'rgba(10,10,10,0.5)', fontFamily: 'ui-monospace, monospace', flexShrink: 0 }}>
+            {fmt(curSec)} / {fmt(totalSec)}
+          </span>
         </div>
       </div>
     </div>

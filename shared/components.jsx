@@ -368,7 +368,7 @@ const useWPPosts = (count = 3) => {
             excerpt,
             content: post.content.rendered,
             cat,
-            readMin: `${readMin} min`,
+            readMin,
             wordCount,
             author,
             tags,
