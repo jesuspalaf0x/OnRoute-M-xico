@@ -364,6 +364,7 @@ const useWPPosts = (count = 3) => {
 
           return {
             id: post.id,
+            slug: post.slug,
             t: post.title.rendered,
             excerpt,
             content: post.content.rendered,
