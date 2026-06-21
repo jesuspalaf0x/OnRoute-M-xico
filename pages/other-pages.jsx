@@ -374,12 +374,79 @@ const ArticleAudioPlayer = ({ lang, text, minutes }) => {
 };
 
 // BLOG POST — lee el artículo seleccionado de window._selectedPost
-const BlogPostPage = ({ lang, setPage }) => {
+const BlogPostPage = ({ lang, setPage, routeSlug }) => {
   const accent = '#1FA84A';
   const CONTENT_W = 720;
-  const post = window._selectedPost || null;
+  const [post, setPost] = React.useState(window._selectedPost || null);
+  const [loading, setLoading] = React.useState(!window._selectedPost && !!routeSlug);
+  const [error, setError] = React.useState(false);
 
-  if (!post) {
+  React.useEffect(() => {
+    if (!post && routeSlug) {
+      fetch(`https://onroutemx.com/wp-json/wp/v2/posts?_embed=true&slug=${routeSlug}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const p = data[0];
+            const img = p._embedded && p._embedded['wp:featuredmedia'] ? p._embedded['wp:featuredmedia'][0].source_url : null;
+            const cats = p._embedded && p._embedded['wp:term'] ? p._embedded['wp:term'][0] : [];
+            const cat = cats.length > 0 ? cats[0].name : 'OnRoute';
+            const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').replace(/&#8230;/g, '…').trim();
+            const wordCount = p.content.rendered.replace(/<[^>]+>/g, '').split(' ').length;
+            const readMin = Math.max(1, Math.ceil(wordCount / 200));
+            
+            const authorData = p._embedded && p._embedded.author ? p._embedded.author[0] : null;
+            const author = {
+              name: authorData ? authorData.name : 'Equipo OnRoute',
+              avatar: authorData && authorData.avatar_urls ? authorData.avatar_urls['96'] : null,
+              role: authorData && authorData.description ? authorData.description : 'Redactor de viajes',
+            };
+            
+            const terms = p._embedded && p._embedded['wp:term'] ? p._embedded['wp:term'] : [];
+            const tags = terms.length > 1 ? terms[1].map(t => t.name) : [];
+
+            const mapped = {
+              id: p.id,
+              slug: p.slug,
+              t: p.title.rendered,
+              excerpt,
+              content: p.content.rendered,
+              cat,
+              readMin,
+              wordCount,
+              author,
+              tags,
+              img,
+              isURL: !!img,
+              link: p.link,
+              date: new Date(p.date).toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' }),
+            };
+            setPost(mapped);
+            window._selectedPost = mapped;
+          } else {
+            setError(true);
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setError(true);
+          setLoading(false);
+        });
+    }
+  }, [post, routeSlug]);
+
+  if (loading) {
+    return (
+      <section style={{ padding: '80px 40px', textAlign: 'center' }}>
+        <div style={{ width: 32, height: 32, border: `3px solid ${accent}`, borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 16px' }} />
+        <p style={{ color: 'rgba(10,10,10,0.5)', fontSize: 14 }}>{lang === 'es' ? 'Cargando artículo...' : 'Loading article...'}</p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </section>
+    );
+  }
+
+  if (error || !post) {
     return (
       <section style={{ padding: '80px 40px', textAlign: 'center' }}>
         <p style={{ color: 'rgba(10,10,10,0.5)' }}>{lang === 'es' ? 'Artículo no encontrado.' : 'Article not found.'}</p>
