@@ -354,6 +354,7 @@ const useWPPosts = (count = 3) => {
             id: post.id,
             t: post.title.rendered,
             excerpt,
+            content: post.content.rendered,
             cat,
             readMin: `${readMin} min`,
             img,

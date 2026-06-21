@@ -246,17 +246,56 @@ const BlogPostPage = ({ lang, setPage }) => {
           </div>
         )}
 
-        <div style={{ fontSize: 16, color: 'rgba(10,10,10,0.85)', lineHeight: 1.7 }}>
-          <p style={{ fontSize: 18, fontWeight: 500, color: '#0a0a0a', textWrap: 'pretty' }}>{post.excerpt}</p>
-          <div style={{ marginTop: 32, padding: 24, background: '#f0f7f2', borderRadius: 12, textAlign: 'center' }}>
-            <div style={{ fontSize: 13, color: '#0F6B2E', fontWeight: 600, marginBottom: 12 }}>
-              {lang === 'es' ? 'Para leer el artículo completo visita nuestro blog en WordPress.' : 'Read the full article on our WordPress blog.'}
-            </div>
-            <a href={post.link} target="_blank" rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', background: accent, color: '#fff', borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
-              {lang === 'es' ? 'Leer artículo completo' : 'Read full article'} <window.Icon name="arrowRight" size={14} stroke={2.2} />
-            </a>
-          </div>
+        <div className="wp-content" style={{ fontSize: 16, color: 'rgba(10,10,10,0.85)', lineHeight: 1.7 }}>
+          <style>{`
+            .wp-content h1, .wp-content h2, .wp-content h3, .wp-content h4 {
+              color: #0a0a0a;
+              margin-top: 2em;
+              margin-bottom: 0.8em;
+              font-family: Archivo, sans-serif;
+              font-weight: 800;
+              letter-spacing: -0.02em;
+            }
+            .wp-content h2 { font-size: 26px; }
+            .wp-content h3 { font-size: 22px; }
+            .wp-content h4 { font-size: 18px; }
+            .wp-content p { margin-bottom: 1.5em; text-wrap: pretty; }
+            .wp-content img {
+              max-width: 100%;
+              height: auto;
+              border-radius: 12px;
+              margin: 1.5em 0;
+            }
+            .wp-content a {
+              color: #1FA84A;
+              text-decoration: none;
+              font-weight: 600;
+            }
+            .wp-content a:hover { text-decoration: underline; }
+            .wp-content ul, .wp-content ol {
+              margin-bottom: 1.5em;
+              padding-left: 1.2em;
+            }
+            .wp-content li { margin-bottom: 0.5em; }
+            .wp-content figure { margin: 2em 0; }
+            .wp-content figcaption {
+              font-size: 13px;
+              color: rgba(10,10,10,0.6);
+              text-align: center;
+              margin-top: 8px;
+            }
+            .wp-content blockquote {
+              border-left: 4px solid #1FA84A;
+              padding-left: 16px;
+              margin-left: 0;
+              font-style: italic;
+              color: rgba(10,10,10,0.7);
+              background: rgba(31,168,74,0.05);
+              padding: 16px;
+              border-radius: 8px;
+            }
+          `}</style>
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
 
         <div className="resp-stack-col" style={{ marginTop: 48, padding: 24, background: '#0a1f12', color: '#fff', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
