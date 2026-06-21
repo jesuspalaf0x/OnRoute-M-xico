@@ -73,12 +73,14 @@
         // Soporte a la ruta vieja ?v=... para compatibilidad
         if (search.get('v')) return { page: 'tour-detail', slug: search.get('v') };
 
-        // Soporte a paths (MÉTODO ANTERIOR, por si acaso)
+        // Soporte a paths (RUTAS LIMPIAS)
         if (p.startsWith('/tours/')) return { page: 'tour-detail', slug: p.replace('/tours/', '') };
-        if (p === '/tours') return { page: 'tours', slug: null };
-        if (p === '/about') return { page: 'about', slug: null };
-        if (p === '/contact') return { page: 'contact', slug: null };
-        if (p === '/blog') return { page: 'blog', slug: null };
+        if (p.startsWith('/blog/') && p !== '/blog/') return { page: 'blog-post', slug: p.replace('/blog/', '') };
+        
+        if (p === '/tours' || p === '/tours/') return { page: 'tours', slug: null };
+        if (p === '/about' || p === '/about/') return { page: 'about', slug: null };
+        if (p === '/contact' || p === '/contact/') return { page: 'contact', slug: null };
+        if (p === '/blog' || p === '/blog/') return { page: 'blog', slug: null };
         
         return { page: 'home', slug: null };
       };
@@ -100,12 +102,12 @@
           window.history.pushState(null, '', '/');
         } else if (newPage === 'tour-detail') {
           const slug = window._selectedTour?.slug || route.slug || '';
-          window.history.pushState(null, '', `/?tour=${slug}`);
+          window.history.pushState(null, '', `/tours/${slug}`);
         } else if (newPage === 'blog-post') {
           const slug = window._selectedPost?.slug || route.slug || '';
-          window.history.pushState(null, '', `/?p=blog-post&slug=${slug}`);
+          window.history.pushState(null, '', `/blog/${slug}`);
         } else {
-          window.history.pushState(null, '', `/?p=${newPage}`);
+          window.history.pushState(null, '', `/${newPage}`);
         }
         window.scrollTo({ top: 0, behavior: 'instant' });
       };
