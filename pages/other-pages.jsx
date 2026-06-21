@@ -214,6 +214,7 @@ const ShareIcon = ({ name, size = 17 }) => {
     x: <path d="M18.2 2.5h3.3l-7.2 8.2 8.5 11.3h-6.7l-5.2-6.9-6 6.9H1.6l7.7-8.8L1.1 2.5h6.8l4.7 6.3 5.6-6.3zm-1.2 17.8h1.8L7.1 4.3H5.2L17 20.3z" fill="currentColor" stroke="none"/>,
     linkedin: <path d="M20.4 3H3.6C3.3 3 3 3.3 3 3.6v16.8c0 .3.3.6.6.6h16.8c.3 0 .6-.3.6-.6V3.6c0-.3-.3-.6-.6-.6zM8.3 18.3H5.6V9.7h2.7v8.6zM7 8.5a1.5 1.5 0 110-3.1 1.5 1.5 0 010 3.1zm11.3 9.8h-2.7v-4.2c0-1 0-2.3-1.4-2.3s-1.6 1.1-1.6 2.2v4.3h-2.7V9.7h2.6v1.2h.1c.4-.7 1.2-1.4 2.5-1.4 2.7 0 3.2 1.8 3.2 4.1v4.7z" fill="currentColor" stroke="none"/>,
     telegram: <path d="M22 3.4l-3.3 15.6c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.3 13.2l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.7.2 1.4 1.4z" fill="currentColor" stroke="none"/>,
+    email: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm0 2v.5l8 5 8-5V6H4zm16 12V8.5l-8 5-8-5V18h16z" fill="currentColor" stroke="none"/>,
   };
   return <svg width={size} height={size} viewBox="0 0 24 24">{paths[name]}</svg>;
 };
@@ -224,6 +225,7 @@ const SHARE_NETWORKS = [
   { id: 'x', label: 'X', color: '#0a0a0a' },
   { id: 'linkedin', label: 'LinkedIn', color: '#0A66C2' },
   { id: 'telegram', label: 'Telegram', color: '#26A5E4' },
+  { id: 'email', label: 'Email', color: '#EA4335' },
 ];
 
 const ShareBar = ({ lang, titleText }) => {
@@ -238,16 +240,23 @@ const ShareBar = ({ lang, titleText }) => {
       x: `https://twitter.com/intent/tweet?text=${x}&url=${u}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
       telegram: `https://t.me/share/url?url=${u}&text=${x}`,
+      email: `mailto:?subject=${x}&body=${x}%20${u}`,
     };
-    try { window.open(links[id], '_blank', 'noopener,width=600,height=540'); } catch (e) {}
+    try { 
+      if (id === 'email') window.open(links[id], '_self');
+      else window.open(links[id], '_blank', 'noopener,width=600,height=540'); 
+    } catch (e) {}
   };
   const copyLink = () => {
     try { navigator.clipboard.writeText(window.location.href); } catch (e) {}
     setCopied(true); setTimeout(() => setCopied(false), 1600);
   };
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-      <div style={{ display: 'flex', gap: 8 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: 'rgba(10,10,10,0.45)', textTransform: 'uppercase' }}>
+        {lang === 'es' ? 'Compartir' : 'Share'}
+      </span>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {SHARE_NETWORKS.map(n => (
           <button key={n.id} onClick={() => share(n.id)} title={n.label} aria-label={n.label}
             style={{ width: 38, height: 38, borderRadius: '50%', border: '1px solid rgba(10,10,10,0.1)', background: '#fff', color: 'rgba(10,10,10,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .16s', padding: 0 }}
