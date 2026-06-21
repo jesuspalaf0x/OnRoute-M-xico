@@ -349,6 +349,18 @@ const useWPPosts = (count = 3) => {
           // Tiempo estimado de lectura (aprox. 200 palabras/min)
           const wordCount = post.content.rendered.replace(/<[^>]+>/g, '').split(' ').length;
           const readMin = Math.max(1, Math.ceil(wordCount / 200));
+          
+          // Autor
+          const authorData = post._embedded && post._embedded.author ? post._embedded.author[0] : null;
+          const author = {
+            name: authorData ? authorData.name : 'Equipo OnRoute',
+            avatar: authorData && authorData.avatar_urls ? authorData.avatar_urls['96'] : null,
+            role: authorData && authorData.description ? authorData.description : 'Redactor de viajes',
+          };
+          
+          // Etiquetas
+          const terms = post._embedded && post._embedded['wp:term'] ? post._embedded['wp:term'] : [];
+          const tags = terms.length > 1 ? terms[1].map(t => t.name) : [];
 
           return {
             id: post.id,
@@ -357,6 +369,9 @@ const useWPPosts = (count = 3) => {
             content: post.content.rendered,
             cat,
             readMin: `${readMin} min`,
+            wordCount,
+            author,
+            tags,
             img,
             isURL: !!img,
             link: post.link,

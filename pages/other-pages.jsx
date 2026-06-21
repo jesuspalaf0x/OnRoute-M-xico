@@ -222,10 +222,55 @@ const BlogPostPage = ({ lang, setPage }) => {
     );
   }
 
+  // Audio player state
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+
+  React.useEffect(() => {
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setProgress(p => {
+          if (p >= 100) { setIsPlaying(false); return 0; }
+          return p + 0.5;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const authorName = post.author?.name || 'Equipo OnRoute';
+  const authorRole = post.author?.role || (lang === 'es' ? 'Redactor' : 'Writer');
+  const authorAvatar = post.author?.avatar || 'https://ui-avatars.com/api/?name=On+Route&background=1FA84A&color=fff';
+  const postUrl = window.location.href;
+
+  const handleShare = (network) => {
+    const text = encodeURIComponent(post.t);
+    const url = encodeURIComponent(postUrl);
+    switch(network) {
+      case 'fb': window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank'); break;
+      case 'wa': window.open(`https://wa.me/?text=${text}%20${url}`, '_blank'); break;
+      case 'x': window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank'); break;
+      case 'in': window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank'); break;
+      case 'tg': window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); break;
+      case 'copy': 
+        navigator.clipboard.writeText(postUrl); 
+        alert(lang === 'es' ? 'Enlace copiado' : 'Link copied'); 
+        break;
+    }
+  };
+
+  const shareBtnStyle = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    width: 36, height: 36, borderRadius: '50%', background: '#fff',
+    border: '1px solid rgba(10,10,10,0.1)', cursor: 'pointer', color: '#0a0a0a',
+    transition: 'all 0.2s'
+  };
+
   return (
     <>
       <section style={{ padding: '32px 40px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+        <div style={{ maxWidth: 820, margin: '0 auto', width: '100%' }}>
           <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
             {lang === 'es' ? 'Volver al blog' : 'Back to blog'}
@@ -233,77 +278,155 @@ const BlogPostPage = ({ lang, setPage }) => {
         </div>
       </section>
       <article className="section-pad" style={{ padding: '24px 40px 60px', maxWidth: 820, margin: '0 auto' }}>
-        <div style={{ fontSize: 10, color: accent, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 }}>
-          {post.cat} · {post.readMin} · {post.date}
+        <div style={{ fontSize: 11, color: accent, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>
+          {post.cat}
         </div>
-        <h1 style={{ fontSize: 44, fontWeight: 800, margin: 0, letterSpacing: -1.4, fontFamily: 'Archivo, sans-serif', lineHeight: 1.05, textWrap: 'balance' }}>
+        <h1 style={{ fontSize: 48, fontWeight: 800, margin: 0, letterSpacing: -1.6, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance' }}>
           {post.t}
         </h1>
+        <h2 style={{ fontSize: 20, color: 'rgba(10,10,10,0.5)', fontWeight: 400, marginTop: 16, lineHeight: 1.5, fontFamily: 'Inter, sans-serif', textWrap: 'pretty' }}>
+          {post.excerpt}
+        </h2>
+
+        {/* Fila del autor e información */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '32px 0', padding: '24px 0', borderTop: '1px solid rgba(10,10,10,0.08)', borderBottom: '1px solid rgba(10,10,10,0.08)', flexWrap: 'wrap', gap: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <img src={authorAvatar} alt={authorName} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a' }}>{authorName}</div>
+              <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.5)', marginTop: 2 }}>{authorRole}</div>
+            </div>
+            <div style={{ width: 1, height: 32, background: 'rgba(10,10,10,0.1)', margin: '0 8px' }} />
+            <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.5)' }}>
+              <div>{post.readMin} · {post.wordCount || 0} {lang === 'es' ? 'palabras' : 'words'}</div>
+              <div style={{ marginTop: 2 }}>{post.date}</div>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button style={shareBtnStyle} onClick={() => handleShare('fb')} title="Facebook" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </button>
+            <button style={shareBtnStyle} onClick={() => handleShare('wa')} title="WhatsApp" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            </button>
+            <button style={shareBtnStyle} onClick={() => handleShare('x')} title="X (Twitter)" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </button>
+            <button style={shareBtnStyle} onClick={() => handleShare('in')} title="LinkedIn" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </button>
+            <button style={shareBtnStyle} onClick={() => handleShare('copy')} title={lang === 'es' ? 'Copiar enlace' : 'Copy link'} onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Reproductor de Audio Simulado */}
+        <div style={{ background: '#f0f2ef', borderRadius: 12, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
+          <button onClick={() => setIsPlaying(!isPlaying)} style={{ width: 44, height: 44, borderRadius: '50%', background: accent, border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'transform 0.1s' }} onMouseDown={(e) => e.currentTarget.style.transform='scale(0.95)'} onMouseUp={(e) => e.currentTarget.style.transform='scale(1)'}>
+            {isPlaying 
+              ? <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              : <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
+            }
+          </button>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'rgba(10,10,10,0.6)', fontWeight: 600, marginBottom: 8, letterSpacing: 0.5, textTransform: 'uppercase' }}>
+              <span>{lang === 'es' ? 'Escuchar el artículo' : 'Listen to article'}</span>
+              <span>{post.readMin}</span>
+            </div>
+            <div style={{ width: '100%', height: 4, background: 'rgba(10,10,10,0.1)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ width: `${progress}%`, height: '100%', background: accent, transition: 'width 1s linear' }} />
+            </div>
+          </div>
+        </div>
 
         {post.img && (
-          <div style={{ margin: '30px 0', borderRadius: 12, overflow: 'hidden' }}>
-            <img src={post.img} alt={post.t} style={{ width: '100%', maxHeight: 460, objectFit: 'cover', display: 'block' }} />
+          <div style={{ margin: '0 0 40px 0', borderRadius: 16, overflow: 'hidden' }}>
+            <img src={post.img} alt={post.t} style={{ width: '100%', maxHeight: 520, objectFit: 'cover', display: 'block' }} />
           </div>
         )}
 
-        <div className="wp-content" style={{ fontSize: 16, color: 'rgba(10,10,10,0.85)', lineHeight: 1.7 }}>
+        <div className="wp-content" style={{ fontSize: 18, color: 'rgba(10,10,10,0.85)', lineHeight: 1.8, fontFamily: 'Inter, sans-serif' }}>
           <style>{`
             .wp-content h1, .wp-content h2, .wp-content h3, .wp-content h4 {
               color: #0a0a0a;
-              margin-top: 2em;
+              margin-top: 2.2em;
               margin-bottom: 0.8em;
               font-family: Archivo, sans-serif;
               font-weight: 800;
-              letter-spacing: -0.02em;
+              letter-spacing: -0.03em;
+              line-height: 1.2;
             }
-            .wp-content h2 { font-size: 26px; }
-            .wp-content h3 { font-size: 22px; }
-            .wp-content h4 { font-size: 18px; }
-            .wp-content p { margin-bottom: 1.5em; text-wrap: pretty; }
+            .wp-content h2 { font-size: 28px; }
+            .wp-content h3 { font-size: 24px; }
+            .wp-content h4 { font-size: 20px; }
+            .wp-content p { margin-bottom: 1.6em; text-wrap: pretty; }
             .wp-content img {
               max-width: 100%;
               height: auto;
               border-radius: 12px;
-              margin: 1.5em 0;
+              margin: 2em 0;
             }
             .wp-content a {
               color: #1FA84A;
               text-decoration: none;
-              font-weight: 600;
+              border-bottom: 1px solid rgba(31,168,74,0.3);
+              padding-bottom: 1px;
             }
-            .wp-content a:hover { text-decoration: underline; }
+            .wp-content a:hover { border-bottom-color: #1FA84A; }
             .wp-content ul, .wp-content ol {
-              margin-bottom: 1.5em;
-              padding-left: 1.2em;
+              margin-bottom: 1.6em;
+              padding-left: 1.5em;
             }
-            .wp-content li { margin-bottom: 0.5em; }
-            .wp-content figure { margin: 2em 0; }
+            .wp-content li { margin-bottom: 0.6em; }
+            .wp-content figure { margin: 2.5em 0; }
             .wp-content figcaption {
               font-size: 13px;
-              color: rgba(10,10,10,0.6);
+              color: rgba(10,10,10,0.5);
               text-align: center;
-              margin-top: 8px;
+              margin-top: 10px;
             }
             .wp-content blockquote {
               border-left: 4px solid #1FA84A;
-              padding-left: 16px;
+              padding-left: 20px;
               margin-left: 0;
               font-style: italic;
               color: rgba(10,10,10,0.7);
-              background: rgba(31,168,74,0.05);
+              background: rgba(31,168,74,0.04);
+              padding: 24px;
+              border-radius: 0 12px 12px 0;
+              font-size: 19px;
+            }
+            .wp-content pre {
+              background: #2d2d2d;
+              color: #fff;
               padding: 16px;
               border-radius: 8px;
+              overflow-x: auto;
+              font-size: 14px;
             }
           `}</style>
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
 
-        <div className="resp-stack-col" style={{ marginTop: 48, padding: 24, background: '#0a1f12', color: '#fff', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
+        {/* Etiquetas (Tags) */}
+        {post.tags && post.tags.length > 0 && (
+          <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid rgba(10,10,10,0.08)', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {post.tags.map((tag, idx) => (
+              <span key={idx} style={{ background: 'rgba(10,10,10,0.04)', color: 'rgba(10,10,10,0.7)', fontSize: 12, padding: '6px 12px', borderRadius: 999, fontWeight: 600 }}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="resp-stack-col" style={{ marginTop: 60, padding: 32, background: '#0a1f12', color: '#fff', borderRadius: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
           <div>
             <div style={{ fontSize: 11, color: '#7dd87e', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>{lang === 'es' ? '¿Quieres el traslado privado?' : 'Want a private transfer?'}</div>
-            <div style={{ fontSize: 20, fontWeight: 800, fontFamily: 'Archivo, sans-serif', marginTop: 4, letterSpacing: -0.4 }}>{lang === 'es' ? 'CUN → Tu destino. Tarifa fija.' : 'CUN → Your destination. Flat rate.'}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Archivo, sans-serif', marginTop: 6, letterSpacing: -0.4 }}>{lang === 'es' ? 'CUN → Tu destino. Tarifa fija.' : 'CUN → Your destination. Flat rate.'}</div>
           </div>
-          <button onClick={() => setPage('contact')} style={{ padding: '12px 20px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>{lang === 'es' ? 'Cotizar' : 'Quote'}</button>
+          <button onClick={() => setPage('contact')} style={{ padding: '14px 24px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>{lang === 'es' ? 'Cotizar' : 'Quote'}</button>
         </div>
       </article>
     </>
