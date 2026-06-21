@@ -371,19 +371,39 @@ const SmartQuoter = ({ lang }) => {
         <div className="resp-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
           <div>
             <label style={labelStyle}>{t.date}</label>
-            <div style={{ position: 'relative' }}>
-              <span style={iconWrap()}><window.Icon name="calendar" size={14} stroke={2} /></span>
+            <div style={{ 
+              display: 'flex', alignItems: 'center', width: '100%', 
+              border: '1.5px solid rgba(10,10,10,0.1)', borderRadius: 10, background: '#fff',
+              overflow: 'hidden'
+            }}>
+              <div style={{ padding: '0 0 0 14px', display: 'flex', alignItems: 'center', color: accent }}>
+                <window.Icon name="calendar" size={14} stroke={2} />
+              </div>
               <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                style={{ ...inputStyle, paddingRight: 8 }} />
+                style={{ 
+                  flex: 1, border: 'none', background: 'transparent', outline: 'none',
+                  padding: '11px 14px 11px 10px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0a0a0a',
+                  width: '100%', minWidth: 0, WebkitAppearance: 'none'
+                }} />
             </div>
           </div>
           <div>
             <label style={labelStyle}>{t.pax}</label>
-            <div style={{ position: 'relative' }}>
-              <span style={iconWrap()}><window.Icon name="users" size={14} stroke={2} /></span>
+            <div style={{ 
+              display: 'flex', alignItems: 'center', width: '100%', 
+              border: '1.5px solid rgba(10,10,10,0.1)', borderRadius: 10, background: '#fff',
+              overflow: 'hidden'
+            }}>
+              <div style={{ padding: '0 0 0 14px', display: 'flex', alignItems: 'center', color: accent }}>
+                <window.Icon name="users" size={14} stroke={2} />
+              </div>
               <input type="number" min={1} max={20} value={pax}
                 onChange={e => { setPax(parseInt(e.target.value) || 1); setResult(null); }}
-                style={inputStyle} />
+                style={{ 
+                  flex: 1, border: 'none', background: 'transparent', outline: 'none',
+                  padding: '11px 14px 11px 10px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0a0a0a',
+                  width: '100%', minWidth: 0, WebkitAppearance: 'none'
+                }} />
             </div>
           </div>
         </div>
