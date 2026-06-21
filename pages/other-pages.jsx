@@ -367,8 +367,8 @@ const ArticleAudioPlayer = ({ lang, text, minutes }) => {
 // BLOG POST — lee el artículo seleccionado de window._selectedPost
 const BlogPostPage = ({ lang, setPage }) => {
   const accent = '#1FA84A';
-  const post = window._selectedPost || null;
   const CONTENT_W = 720;
+  const post = window._selectedPost || null;
 
   if (!post) {
     return (
@@ -381,68 +381,79 @@ const BlogPostPage = ({ lang, setPage }) => {
     );
   }
 
-  const authorName = post.author?.name || 'Equipo OnRoute';
-  const authorRole = post.author?.role || (lang === 'es' ? 'Redactor' : 'Writer');
-  const authorAvatar = post.author?.avatar || 'https://ui-avatars.com/api/?name=On+Route&background=1FA84A&color=fff';
   const rawText = post.content.replace(/<[^>]+>/g, '').trim();
+  const authorName = post.author?.name || 'Luis García';
+  const authorRole = post.author?.role || (lang === 'es' ? 'Fundador OnRoute' : 'OnRoute founder');
+  const authorAvatar = post.author?.avatar || 'https://ui-avatars.com/api/?name=LG&background=0F6B2E&color=fff';
+  const authorInitials = authorName.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
 
   return (
     <>
       <article style={{ padding: '32px 40px 70px', maxWidth: CONTENT_W, margin: '0 auto' }}>
-        <div style={{ marginBottom: 24 }}>
-          <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
-            {lang === 'es' ? 'Volver al blog' : 'Back to blog'}
-          </a>
-        </div>
-
-        {/* Categoría principal */}
-        <div style={{ fontSize: 11, fontWeight: 800, color: accent, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>
-          {post.cat}
+        {/* Fecha de publicación + categoría principal — alineadas al ancho de contenido */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(10,10,10,0.55)' }}>
+            {lang === 'es' ? 'Publicado el ' : 'Published '}{post.date}
+          </span>
+          <span style={{ width: 1, height: 14, background: 'rgba(10,10,10,0.2)' }}/>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(31,168,74,0.1)', color: '#0F6B2E', fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', padding: '6px 13px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent }}/>
+            {post.cat}
+          </span>
         </div>
 
         {/* Título */}
-        <h1 style={{ fontSize: 48, fontWeight: 800, margin: '0', letterSpacing: -1.6, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance', color: '#0a0a0a' }}>
+        <h1 style={{ fontSize: 46, fontWeight: 800, margin: '18px 0 0 0', letterSpacing: -1.6, fontFamily: 'Archivo, sans-serif', lineHeight: 1.04, textWrap: 'balance' }}>
           {post.t}
         </h1>
 
-        {/* Subtítulo / Extracto */}
-        <p style={{ fontSize: 20, color: 'rgba(10,10,10,0.6)', lineHeight: 1.5, marginTop: 16, marginBottom: 0, fontWeight: 500, textWrap: 'pretty' }}>
+        {/* Bajada / dek */}
+        <p style={{ fontSize: 19, color: 'rgba(10,10,10,0.6)', lineHeight: 1.5, marginTop: 18, marginBottom: 0, fontWeight: 400, textWrap: 'pretty' }}>
           {post.excerpt}
         </p>
 
-        {/* Autor + Compartir */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 32, padding: '24px 0', borderTop: '1px solid rgba(10,10,10,0.06)', borderBottom: '1px solid rgba(10,10,10,0.06)', flexWrap: 'wrap', gap: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <img src={authorAvatar} alt={authorName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>{authorName}</div>
-              <div style={{ fontSize: 13, color: 'rgba(10,10,10,0.55)' }}>{authorRole}</div>
-            </div>
-            <div style={{ width: 1, height: 36, background: 'rgba(10,10,10,0.1)', margin: '0 8px' }} />
-            <div style={{ fontSize: 13, color: 'rgba(10,10,10,0.55)' }}>
-              <div>{post.readMin} · {post.wordCount || 0} {lang === 'es' ? 'palabras' : 'words'}</div>
-              <div>{post.date}</div>
-            </div>
+        {/* Autor + fecha */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 26 }}>
+          {post.author?.avatar ? (
+            <img src={authorAvatar} alt={authorName} style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #0F6B2E, #1FA84A)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 16, fontFamily: 'Archivo, sans-serif', flexShrink: 0 }}>{authorInitials}</div>
+          )}
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#0a0a0a' }}>{authorName}</div>
+            <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.55)' }}>{authorRole} · {post.date}</div>
           </div>
-          
-          <ShareBar lang={lang} titleText={post.t} />
         </div>
 
-        {/* Reproductor de Audio */}
-        <div style={{ margin: '32px 0' }}>
-          <ArticleAudioPlayer lang={lang} text={rawText} minutes={post.readMin} />
+        {/* Barra de compartir — debajo del autor, por encima de la imagen */}
+        <div style={{ marginTop: 24, paddingTop: 22, borderTop: '1px solid rgba(10,10,10,0.08)' }}>
+          <ShareBar lang={lang} titleText={post.t}/>
         </div>
 
         {/* Imagen principal */}
         {post.img && (
-          <div style={{ margin: '32px 0', borderRadius: 16, overflow: 'hidden' }}>
-            <img src={post.img} alt={post.t} style={{ width: '100%', maxHeight: 500, objectFit: 'cover', display: 'block' }} />
+          <div style={{ margin: '26px 0 0' }}>
+            <img src={post.img} alt={post.t} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', borderRadius: 14, display: 'block' }} />
           </div>
         )}
 
+        {/* Meta: tiempo de lectura + reproducir audio — debajo de la imagen */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', margin: '24px 0 8px', padding: '16px 0', borderTop: '1px solid rgba(10,10,10,0.08)', borderBottom: '1px solid rgba(10,10,10,0.08)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 600, color: 'rgba(10,10,10,0.7)' }}>
+              <window.Icon name="clock" size={16} stroke={2} color={accent}/>
+              {post.readMin} {lang === 'es' ? 'min de lectura' : 'min read'}
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, color: 'rgba(10,10,10,0.5)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h16M4 12h10M4 17h13"/></svg>
+              {(post.wordCount || 0).toLocaleString()} {lang === 'es' ? 'palabras' : 'words'}
+            </span>
+          </div>
+          <ArticleAudioPlayer lang={lang} text={rawText} minutes={post.readMin}/>
+        </div>
+
         {/* Cuerpo del post renderizado desde WordPress */}
-        <div className="wp-content" style={{ fontSize: 18, color: '#0a0a0a', lineHeight: 1.75, fontFamily: 'Inter, sans-serif' }}>
+        <div className="wp-content" style={{ fontSize: 17, color: 'rgba(10,10,10,0.85)', lineHeight: 1.75 }}>
           <style>{`
             .wp-content h1, .wp-content h2, .wp-content h3, .wp-content h4 {
               color: #0a0a0a;
@@ -450,13 +461,12 @@ const BlogPostPage = ({ lang, setPage }) => {
               margin-bottom: 0.8em;
               font-family: Archivo, sans-serif;
               font-weight: 800;
-              letter-spacing: -0.5px;
+              letter-spacing: -0.7px;
               line-height: 1.2;
             }
-            .wp-content h2 { font-size: 28px; }
-            .wp-content h3 { font-size: 24px; }
-            .wp-content h4 { font-size: 20px; }
-            .wp-content p { margin-bottom: 1.6em; text-wrap: pretty; }
+            .wp-content h2 { font-size: 27px; margin-top: 44px; margin-bottom: 0; }
+            .wp-content h3 { font-size: 19px; margin-top: 32px; margin-bottom: 0; letter-spacing: -0.3px; }
+            .wp-content p { margin-top: 16px; margin-bottom: 0; text-wrap: pretty; }
             .wp-content img {
               max-width: 100%;
               height: auto;
@@ -469,7 +479,8 @@ const BlogPostPage = ({ lang, setPage }) => {
             }
             .wp-content a:hover { border-bottom: 1px solid #1FA84A; }
             .wp-content ul, .wp-content ol {
-              margin-bottom: 1.6em;
+              margin-top: 16px;
+              margin-bottom: 16px;
               padding-left: 1.5em;
             }
             .wp-content li { margin-bottom: 0.6em; }
@@ -503,15 +514,31 @@ const BlogPostPage = ({ lang, setPage }) => {
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
 
-        {/* Etiquetas (Tags) */}
+        {/* CTA */}
+        <div style={{ marginTop: 48, padding: 26, background: '#0a1f12', color: '#fff', borderRadius: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ fontSize: 11, color: '#7dd87e', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>{lang === 'es' ? '¿Quieres el traslado privado?' : 'Want a private transfer?'}</div>
+            <div style={{ fontSize: 21, fontWeight: 800, fontFamily: 'Archivo, sans-serif', marginTop: 4, letterSpacing: -0.4 }}>{lang === 'es' ? 'CUN → Tu destino. Tarifa fija.' : 'CUN → Your destination. Flat rate.'}</div>
+          </div>
+          <button onClick={() => setPage('contact')} style={{ padding: '13px 22px', borderRadius: 9, border: 'none', background: accent, color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            {lang === 'es' ? 'Cotizar ahora' : 'Quote now'} <window.Icon name="arrowRight" size={15} stroke={2.2}/>
+          </button>
+        </div>
+
+        {/* Compartir (repetido al final, conveniencia) */}
+        <div style={{ marginTop: 40, paddingTop: 26, borderTop: '1px solid rgba(10,10,10,0.08)' }}>
+          <ShareBar lang={lang} titleText={post.t}/>
+        </div>
+
+        {/* Taxonomías / etiquetas — al final de la página */}
         {post.tags && post.tags.length > 0 && (
-          <div style={{ marginTop: 40 }}>
+          <div style={{ marginTop: 36 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: 'rgba(10,10,10,0.45)', textTransform: 'uppercase', marginBottom: 14 }}>
               {lang === 'es' ? 'Etiquetas' : 'Tags'}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {post.tags.map((tag, idx) => (
-                <a key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'rgba(10,10,10,0.7)', background: '#fff', border: '1px solid rgba(10,10,10,0.1)', padding: '7px 13px', borderRadius: 999, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' }}
+              {post.tags.map((tag, i) => (
+                <a key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'rgba(10,10,10,0.7)', background: '#fff', border: '1px solid rgba(10,10,10,0.1)', padding: '7px 13px', borderRadius: 999, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.color = '#0F6B2E'; e.currentTarget.style.background = 'rgba(31,168,74,0.06)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(10,10,10,0.1)'; e.currentTarget.style.color = 'rgba(10,10,10,0.7)'; e.currentTarget.style.background = '#fff'; }}>
                   <span style={{ color: accent, fontWeight: 700 }}>#</span>{tag}
@@ -520,14 +547,6 @@ const BlogPostPage = ({ lang, setPage }) => {
             </div>
           </div>
         )}
-
-        <div className="resp-stack-col" style={{ marginTop: 60, padding: 32, background: '#0a1f12', color: '#fff', borderRadius: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
-          <div>
-            <div style={{ fontSize: 11, color: '#7dd87e', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>{lang === 'es' ? '¿Quieres el traslado privado?' : 'Want a private transfer?'}</div>
-            <div style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Archivo, sans-serif', marginTop: 6, letterSpacing: -0.4 }}>{lang === 'es' ? 'CUN → Tu destino. Tarifa fija.' : 'CUN → Your destination. Flat rate.'}</div>
-          </div>
-          <button onClick={() => setPage('contact')} style={{ padding: '14px 24px', borderRadius: 8, border: 'none', background: accent, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>{lang === 'es' ? 'Cotizar' : 'Quote'}</button>
-        </div>
       </article>
     </>
   );
