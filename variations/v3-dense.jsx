@@ -354,7 +354,7 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
       {/* BLOG + FAQ */}
       <section data-sec="blog" className="section-pad" style={{ padding: '40px 40px' }}>
         <div className="resp-split" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20 }}>
-          <div>
+          <div style={{ minWidth: 0 }}>
             <div style={kicker3(accent)}>{lang === 'es' ? 'Del blog' : 'From the blog'}</div>
             <h2 style={sectionTitle3}>{lang === 'es' ? 'Guías para viajar mejor' : 'Guides to travel better'}</h2>
             <div className="resp-scroll-cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
