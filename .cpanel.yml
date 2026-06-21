@@ -2,6 +2,7 @@
 deployment:
   tasks:
     - export DEPLOYPATH=../../public_html
+    - /bin/cp index.html $DEPLOYPATH
     - /bin/cp holybakery_api_confirm.php $DEPLOYPATH/wp-content/plugins/holybakery_api_confirm.php
     - /bin/cp -R assets $DEPLOYPATH
     - /bin/cp -R shared $DEPLOYPATH
