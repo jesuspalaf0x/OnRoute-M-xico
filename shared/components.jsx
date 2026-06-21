@@ -18,8 +18,8 @@ const ImagePlaceholder = ({ paletteKey, label, aspect = '4/3', rounded = 8, styl
   const [a, b, c] = window.paletteFor(paletteKey);
   const id = `g-${paletteKey}-${Math.random().toString(36).slice(2, 7)}`;
   
-  if (isURL && (paletteKey.startsWith('http') || paletteKey?.includes('uploads/'))) {
-    const src = paletteKey.startsWith('uploads/') ? '/' + paletteKey : paletteKey;
+  if ((isURL && paletteKey.startsWith('http')) || paletteKey?.includes('uploads/')) {
+    const src = (paletteKey.includes('uploads/') && !paletteKey.startsWith('/')) ? '/' + paletteKey : paletteKey;
     return (
       <div style={{ position: 'relative', aspectRatio: aspect, width: '100%', borderRadius: rounded, overflow: 'hidden', ...style }}>
         <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
