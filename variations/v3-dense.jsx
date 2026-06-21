@@ -366,19 +366,19 @@ const V3Dense = ({ lang, setLang, onNavigate }) => {
               )}
               {!postsLoading && wpPosts.map((p, i) => (
                 <a key={p.id || i} href={p.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ background: '#fff', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <div className="blog-card" style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(10,10,10,0.06)', cursor: 'pointer', height: '100%', display: 'flex', flexDirection: 'column' }}>
                     {p.isURL && p.img ? (
-                      <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
-                        <img src={p.img} alt={p.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.3s' }} />
+                      <div style={{ aspectRatio: '16/10', overflow: 'hidden' }}>
+                        <img src={p.img} alt={p.t} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                       </div>
                     ) : (
-                      <window.ImagePlaceholder paletteKey="tulum" label="" aspect="4/3" rounded={0} showLabel={false}/>
+                      <window.ImagePlaceholder paletteKey="tulum" label="" aspect="16/10" rounded={0} showLabel={false}/>
                     )}
-                    <div style={{ padding: 12, flex: 1, display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ fontSize: 9, color: accent, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 4 }}>{p.cat} · {p.readMin}</div>
-                      <h4 style={{ fontSize: 12, fontWeight: 700, margin: '0 0 6px', letterSpacing: -0.2, lineHeight: 1.3, fontFamily: 'Archivo, sans-serif' }}>{p.t}</h4>
-                      <p style={{ fontSize: 10, color: 'rgba(10,10,10,0.55)', margin: 0, lineHeight: 1.4, flex: 1 }}>{p.excerpt.length > 80 ? p.excerpt.slice(0, 80) + '…' : p.excerpt}</p>
-                      <div style={{ fontSize: 9, color: 'rgba(10,10,10,0.35)', marginTop: 8 }}>{p.date}</div>
+                    <div style={{ padding: '18px 20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ fontSize: 10, color: accent, fontWeight: 800, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 8 }}>{p.cat} · {p.readMin}</div>
+                      <h4 style={{ fontSize: 16, fontWeight: 800, margin: '0 0 10px', letterSpacing: -0.4, lineHeight: 1.35, fontFamily: 'Archivo, sans-serif', color: '#0a0a0a', textWrap: 'balance' }}>{p.t}</h4>
+                      <p style={{ fontSize: 13, color: 'rgba(10,10,10,0.6)', margin: 0, lineHeight: 1.55, flex: 1, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.excerpt}</p>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(10,10,10,0.4)', marginTop: 14 }}>{p.date}</div>
                     </div>
                   </div>
                 </a>
