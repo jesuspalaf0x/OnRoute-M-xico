@@ -206,10 +206,169 @@ const BlogPage = ({ lang, setPage }) => {
   );
 };
 
+// Iconos de marca para compartir (SVG inline, brand-correct)
+const ShareIcon = ({ name, size = 17 }) => {
+  const paths = {
+    facebook: <path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.300000000000001c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z" fill="currentColor" stroke="none"/>,
+    whatsapp: <path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20zm4.5-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-1.4-.7-2.3-1.3-3.2-2.9-.2-.4.2-.4.6-1.2.1-.1 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.8.8-1 1.9-.5 3.2.6 1.5 1.6 2.9 3 4 2 1.7 3.5 1.9 4.3 1.8.6-.1 1.4-.6 1.6-1.2.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z" fill="currentColor" stroke="none"/>,
+    x: <path d="M18.2 2.5h3.3l-7.2 8.2 8.5 11.3h-6.7l-5.2-6.9-6 6.9H1.6l7.7-8.8L1.1 2.5h6.8l4.7 6.3 5.6-6.3zm-1.2 17.8h1.8L7.1 4.3H5.2L17 20.3z" fill="currentColor" stroke="none"/>,
+    linkedin: <path d="M20.4 3H3.6C3.3 3 3 3.3 3 3.6v16.8c0 .3.3.6.6.6h16.8c.3 0 .6-.3.6-.6V3.6c0-.3-.3-.6-.6-.6zM8.3 18.3H5.6V9.7h2.7v8.6zM7 8.5a1.5 1.5 0 110-3.1 1.5 1.5 0 010 3.1zm11.3 9.8h-2.7v-4.2c0-1 0-2.3-1.4-2.3s-1.6 1.1-1.6 2.2v4.3h-2.7V9.7h2.6v1.2h.1c.4-.7 1.2-1.4 2.5-1.4 2.7 0 3.2 1.8 3.2 4.1v4.7z" fill="currentColor" stroke="none"/>,
+    telegram: <path d="M22 3.4l-3.3 15.6c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.3 13.2l-4.8-1.5c-1-.3-1-1 .2-1.5l18.7-7.2c.9-.3 1.7.2 1.4 1.4z" fill="currentColor" stroke="none"/>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24">{paths[name]}</svg>;
+};
+
+const SHARE_NETWORKS = [
+  { id: 'facebook', label: 'Facebook', color: '#1877F2' },
+  { id: 'whatsapp', label: 'WhatsApp', color: '#25D366' },
+  { id: 'x', label: 'X', color: '#0a0a0a' },
+  { id: 'linkedin', label: 'LinkedIn', color: '#0A66C2' },
+  { id: 'telegram', label: 'Telegram', color: '#26A5E4' },
+];
+
+const ShareBar = ({ lang, titleText }) => {
+  const [copied, setCopied] = React.useState(false);
+  const share = (id) => {
+    const url = typeof window !== 'undefined' ? window.location.href : 'https://onroutemx.com';
+    const title = titleText || (lang === 'es' ? 'Artículo de OnRoute' : 'OnRoute Article');
+    const u = encodeURIComponent(url), x = encodeURIComponent(title);
+    const links = {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${u}`,
+      whatsapp: `https://wa.me/?text=${x}%20${u}`,
+      x: `https://twitter.com/intent/tweet?text=${x}&url=${u}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
+      telegram: `https://t.me/share/url?url=${u}&text=${x}`,
+    };
+    try { window.open(links[id], '_blank', 'noopener,width=600,height=540'); } catch (e) {}
+  };
+  const copyLink = () => {
+    try { navigator.clipboard.writeText(window.location.href); } catch (e) {}
+    setCopied(true); setTimeout(() => setCopied(false), 1600);
+  };
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {SHARE_NETWORKS.map(n => (
+          <button key={n.id} onClick={() => share(n.id)} title={n.label} aria-label={n.label}
+            style={{ width: 38, height: 38, borderRadius: '50%', border: '1px solid rgba(10,10,10,0.1)', background: '#fff', color: 'rgba(10,10,10,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .16s', padding: 0 }}
+            onMouseEnter={e => { e.currentTarget.style.background = n.color; e.currentTarget.style.borderColor = n.color; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'rgba(10,10,10,0.1)'; e.currentTarget.style.color = 'rgba(10,10,10,0.55)'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+            <ShareIcon name={n.id}/>
+          </button>
+        ))}
+        <button onClick={copyLink} title={lang === 'es' ? 'Copiar enlace' : 'Copy link'} aria-label="Copy link"
+          style={{ width: 38, height: 38, borderRadius: '50%', border: '1px solid rgba(10,10,10,0.1)', background: copied ? '#1FA84A' : '#fff', color: copied ? '#fff' : 'rgba(10,10,10,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .16s', padding: 0 }}
+          onMouseEnter={e => { if(!copied) { e.currentTarget.style.background = '#1FA84A'; e.currentTarget.style.borderColor = '#1FA84A'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; } }}
+          onMouseLeave={e => { if(!copied) { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'rgba(10,10,10,0.1)'; e.currentTarget.style.color = 'rgba(10,10,10,0.55)'; e.currentTarget.style.transform = 'translateY(0)'; } }}>
+          {copied
+            ? <window.Icon name="check" size={16} stroke={3}/>
+            : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg>}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Reproductor de audio del artículo — usa speechSynthesis para leer en voz alta
+const ArticleAudioPlayer = ({ lang, text, minutes }) => {
+  const accent = '#1FA84A';
+  const [state, setState] = React.useState('idle'); // idle | playing | paused
+  const [progress, setProgress] = React.useState(0);
+  const totalSec = Math.max(30, Math.round((text.split(/\s+/).length / (lang === 'es' ? 150 : 170)) * 60));
+  const rafRef = React.useRef(null);
+  const startRef = React.useRef(0);
+  const elapsedRef = React.useRef(0);
+
+  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+  const tick = () => {
+    const elapsed = elapsedRef.current + (Date.now() - startRef.current) / 1000;
+    setProgress(Math.min(1, elapsed / totalSec));
+    if (elapsed < totalSec && window.speechSynthesis.speaking) {
+      rafRef.current = requestAnimationFrame(tick);
+    }
+  };
+
+  const stopAll = () => {
+    if (supported) window.speechSynthesis.cancel();
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    elapsedRef.current = 0;
+    setProgress(0);
+    setState('idle');
+  };
+
+  React.useEffect(() => () => { if (supported) window.speechSynthesis.cancel(); if (rafRef.current) cancelAnimationFrame(rafRef.current); }, []);
+  // Reinicia si cambia el idioma
+  React.useEffect(() => { stopAll(); }, [lang]);
+
+  const play = () => {
+    if (!supported) return;
+    if (state === 'paused') {
+      window.speechSynthesis.resume();
+      startRef.current = Date.now();
+      setState('playing');
+      rafRef.current = requestAnimationFrame(tick);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang === 'es' ? 'es-MX' : 'en-US';
+    u.rate = 1; u.pitch = 1;
+    u.onend = () => { setState('idle'); setProgress(1); elapsedRef.current = 0; if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    elapsedRef.current = 0;
+    startRef.current = Date.now();
+    window.speechSynthesis.speak(u);
+    setState('playing');
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const pause = () => {
+    if (!supported) return;
+    window.speechSynthesis.pause();
+    elapsedRef.current += (Date.now() - startRef.current) / 1000;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    setState('paused');
+  };
+
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+  const curSec = progress * totalSec;
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'rgba(10,10,10,0.03)', borderRadius: 12, padding: '16px 20px', width: '100%' }}>
+      <button onClick={state === 'playing' ? pause : play} disabled={!supported}
+        aria-label={state === 'playing' ? 'Pause' : 'Play'}
+        style={{ width: 42, height: 42, borderRadius: '50%', border: 'none', flexShrink: 0, background: supported ? accent : 'rgba(10,10,10,0.2)', color: '#fff', cursor: supported ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {state === 'playing'
+          ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 2 }}><path d="M7 5.3v13.4c0 .8.9 1.3 1.6.8l10.2-6.7a1 1 0 000-1.6L8.6 4.5C7.9 4 7 4.5 7 5.3z"/></svg>}
+      </button>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+            {state === 'idle' ? (lang === 'es' ? 'Escuchar el artículo' : 'Listen to article') : (state === 'paused' ? (lang === 'es' ? 'En pausa' : 'Paused') : (lang === 'es' ? 'Reproduciendo…' : 'Playing…'))}
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {state !== 'idle' && (
+              <button onClick={stopAll} style={{ fontSize: 10, color: 'rgba(10,10,10,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>{lang === 'es' ? 'Detener' : 'Stop'}</button>
+            )}
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#0a0a0a', letterSpacing: 0.5, textTransform: 'uppercase' }}>{minutes}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'rgba(10,10,10,0.1)', overflow: 'hidden' }}>
+            <div style={{ width: `${progress * 100}%`, height: '100%', background: accent, borderRadius: 2, transition: 'width .2s linear' }}/>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // BLOG POST — lee el artículo seleccionado de window._selectedPost
 const BlogPostPage = ({ lang, setPage }) => {
   const accent = '#1FA84A';
   const post = window._selectedPost || null;
+  const CONTENT_W = 720;
 
   if (!post) {
     return (
@@ -222,132 +381,68 @@ const BlogPostPage = ({ lang, setPage }) => {
     );
   }
 
-  // Audio player state
-  const [isPlaying, setIsPlaying] = React.useState(false);
-  const [progress, setProgress] = React.useState(0);
-
-  React.useEffect(() => {
-    let interval;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setProgress(p => {
-          if (p >= 100) { setIsPlaying(false); return 0; }
-          return p + 0.5;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
   const authorName = post.author?.name || 'Equipo OnRoute';
   const authorRole = post.author?.role || (lang === 'es' ? 'Redactor' : 'Writer');
   const authorAvatar = post.author?.avatar || 'https://ui-avatars.com/api/?name=On+Route&background=1FA84A&color=fff';
-  const postUrl = window.location.href;
-
-  const handleShare = (network) => {
-    const text = encodeURIComponent(post.t);
-    const url = encodeURIComponent(postUrl);
-    switch(network) {
-      case 'fb': window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank'); break;
-      case 'wa': window.open(`https://wa.me/?text=${text}%20${url}`, '_blank'); break;
-      case 'x': window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank'); break;
-      case 'in': window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank'); break;
-      case 'tg': window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank'); break;
-      case 'copy': 
-        navigator.clipboard.writeText(postUrl); 
-        alert(lang === 'es' ? 'Enlace copiado' : 'Link copied'); 
-        break;
-    }
-  };
-
-  const shareBtnStyle = {
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    width: 36, height: 36, borderRadius: '50%', background: '#fff',
-    border: '1px solid rgba(10,10,10,0.1)', cursor: 'pointer', color: '#0a0a0a',
-    transition: 'all 0.2s'
-  };
+  const rawText = post.content.replace(/<[^>]+>/g, '').trim();
 
   return (
     <>
-      <section style={{ padding: '32px 40px 0' }}>
-        <div style={{ maxWidth: 820, margin: '0 auto', width: '100%' }}>
+      <article style={{ padding: '32px 40px 70px', maxWidth: CONTENT_W, margin: '0 auto' }}>
+        <div style={{ marginBottom: 24 }}>
           <a onClick={() => setPage('blog')} style={{ fontSize: 12, color: 'rgba(10,10,10,0.6)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M11 18l-6-6 6-6" /></svg>
             {lang === 'es' ? 'Volver al blog' : 'Back to blog'}
           </a>
         </div>
-      </section>
-      <article className="section-pad" style={{ padding: '24px 40px 60px', maxWidth: 820, margin: '0 auto' }}>
-        <div style={{ fontSize: 11, color: accent, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>
+
+        {/* Categoría principal */}
+        <div style={{ fontSize: 11, fontWeight: 800, color: accent, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>
           {post.cat}
         </div>
-        <h1 style={{ fontSize: 48, fontWeight: 800, margin: 0, letterSpacing: -1.6, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance' }}>
+
+        {/* Título */}
+        <h1 style={{ fontSize: 48, fontWeight: 800, margin: '0', letterSpacing: -1.6, fontFamily: 'Archivo, sans-serif', lineHeight: 1.1, textWrap: 'balance', color: '#0a0a0a' }}>
           {post.t}
         </h1>
-        <h2 style={{ fontSize: 20, color: 'rgba(10,10,10,0.5)', fontWeight: 400, marginTop: 16, lineHeight: 1.5, fontFamily: 'Inter, sans-serif', textWrap: 'pretty' }}>
-          {post.excerpt}
-        </h2>
 
-        {/* Fila del autor e información */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '32px 0', padding: '24px 0', borderTop: '1px solid rgba(10,10,10,0.08)', borderBottom: '1px solid rgba(10,10,10,0.08)', flexWrap: 'wrap', gap: 20 }}>
+        {/* Subtítulo / Extracto */}
+        <p style={{ fontSize: 20, color: 'rgba(10,10,10,0.6)', lineHeight: 1.5, marginTop: 16, marginBottom: 0, fontWeight: 500, textWrap: 'pretty' }}>
+          {post.excerpt}
+        </p>
+
+        {/* Autor + Compartir */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 32, padding: '24px 0', borderTop: '1px solid rgba(10,10,10,0.06)', borderBottom: '1px solid rgba(10,10,10,0.06)', flexWrap: 'wrap', gap: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <img src={authorAvatar} alt={authorName} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
+            <img src={authorAvatar} alt={authorName} style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#0a0a0a' }}>{authorName}</div>
-              <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.5)', marginTop: 2 }}>{authorRole}</div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: '#0a0a0a', fontFamily: 'Inter, sans-serif' }}>{authorName}</div>
+              <div style={{ fontSize: 13, color: 'rgba(10,10,10,0.55)' }}>{authorRole}</div>
             </div>
-            <div style={{ width: 1, height: 32, background: 'rgba(10,10,10,0.1)', margin: '0 8px' }} />
-            <div style={{ fontSize: 12, color: 'rgba(10,10,10,0.5)' }}>
+            <div style={{ width: 1, height: 36, background: 'rgba(10,10,10,0.1)', margin: '0 8px' }} />
+            <div style={{ fontSize: 13, color: 'rgba(10,10,10,0.55)' }}>
               <div>{post.readMin} · {post.wordCount || 0} {lang === 'es' ? 'palabras' : 'words'}</div>
-              <div style={{ marginTop: 2 }}>{post.date}</div>
+              <div>{post.date}</div>
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button style={shareBtnStyle} onClick={() => handleShare('fb')} title="Facebook" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-            </button>
-            <button style={shareBtnStyle} onClick={() => handleShare('wa')} title="WhatsApp" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-            </button>
-            <button style={shareBtnStyle} onClick={() => handleShare('x')} title="X (Twitter)" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </button>
-            <button style={shareBtnStyle} onClick={() => handleShare('in')} title="LinkedIn" onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-            </button>
-            <button style={shareBtnStyle} onClick={() => handleShare('copy')} title={lang === 'es' ? 'Copiar enlace' : 'Copy link'} onMouseEnter={(e) => e.currentTarget.style.background = '#f0f2ef'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-            </button>
-          </div>
+          <ShareBar lang={lang} titleText={post.t} />
         </div>
 
-        {/* Reproductor de Audio Simulado */}
-        <div style={{ background: '#f0f2ef', borderRadius: 12, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-          <button onClick={() => setIsPlaying(!isPlaying)} style={{ width: 44, height: 44, borderRadius: '50%', background: accent, border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, transition: 'transform 0.1s' }} onMouseDown={(e) => e.currentTarget.style.transform='scale(0.95)'} onMouseUp={(e) => e.currentTarget.style.transform='scale(1)'}>
-            {isPlaying 
-              ? <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-              : <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
-            }
-          </button>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'rgba(10,10,10,0.6)', fontWeight: 600, marginBottom: 8, letterSpacing: 0.5, textTransform: 'uppercase' }}>
-              <span>{lang === 'es' ? 'Escuchar el artículo' : 'Listen to article'}</span>
-              <span>{post.readMin}</span>
-            </div>
-            <div style={{ width: '100%', height: 4, background: 'rgba(10,10,10,0.1)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${progress}%`, height: '100%', background: accent, transition: 'width 1s linear' }} />
-            </div>
-          </div>
+        {/* Reproductor de Audio */}
+        <div style={{ margin: '32px 0' }}>
+          <ArticleAudioPlayer lang={lang} text={rawText} minutes={post.readMin} />
         </div>
 
+        {/* Imagen principal */}
         {post.img && (
-          <div style={{ margin: '0 0 40px 0', borderRadius: 16, overflow: 'hidden' }}>
-            <img src={post.img} alt={post.t} style={{ width: '100%', maxHeight: 520, objectFit: 'cover', display: 'block' }} />
+          <div style={{ margin: '32px 0', borderRadius: 16, overflow: 'hidden' }}>
+            <img src={post.img} alt={post.t} style={{ width: '100%', maxHeight: 500, objectFit: 'cover', display: 'block' }} />
           </div>
         )}
 
-        <div className="wp-content" style={{ fontSize: 18, color: 'rgba(10,10,10,0.85)', lineHeight: 1.8, fontFamily: 'Inter, sans-serif' }}>
+        {/* Cuerpo del post renderizado desde WordPress */}
+        <div className="wp-content" style={{ fontSize: 18, color: '#0a0a0a', lineHeight: 1.75, fontFamily: 'Inter, sans-serif' }}>
           <style>{`
             .wp-content h1, .wp-content h2, .wp-content h3, .wp-content h4 {
               color: #0a0a0a;
@@ -355,7 +450,7 @@ const BlogPostPage = ({ lang, setPage }) => {
               margin-bottom: 0.8em;
               font-family: Archivo, sans-serif;
               font-weight: 800;
-              letter-spacing: -0.03em;
+              letter-spacing: -0.5px;
               line-height: 1.2;
             }
             .wp-content h2 { font-size: 28px; }
@@ -365,16 +460,14 @@ const BlogPostPage = ({ lang, setPage }) => {
             .wp-content img {
               max-width: 100%;
               height: auto;
-              border-radius: 12px;
+              border-radius: 14px;
               margin: 2em 0;
             }
             .wp-content a {
               color: #1FA84A;
               text-decoration: none;
-              border-bottom: 1px solid rgba(31,168,74,0.3);
-              padding-bottom: 1px;
             }
-            .wp-content a:hover { border-bottom-color: #1FA84A; }
+            .wp-content a:hover { border-bottom: 1px solid #1FA84A; }
             .wp-content ul, .wp-content ol {
               margin-bottom: 1.6em;
               padding-left: 1.5em;
@@ -412,12 +505,19 @@ const BlogPostPage = ({ lang, setPage }) => {
 
         {/* Etiquetas (Tags) */}
         {post.tags && post.tags.length > 0 && (
-          <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid rgba(10,10,10,0.08)', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {post.tags.map((tag, idx) => (
-              <span key={idx} style={{ background: 'rgba(10,10,10,0.04)', color: 'rgba(10,10,10,0.7)', fontSize: 12, padding: '6px 12px', borderRadius: 999, fontWeight: 600 }}>
-                {tag}
-              </span>
-            ))}
+          <div style={{ marginTop: 40 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1, color: 'rgba(10,10,10,0.45)', textTransform: 'uppercase', marginBottom: 14 }}>
+              {lang === 'es' ? 'Etiquetas' : 'Tags'}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {post.tags.map((tag, idx) => (
+                <a key={idx} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'rgba(10,10,10,0.7)', background: '#fff', border: '1px solid rgba(10,10,10,0.1)', padding: '7px 13px', borderRadius: 999, cursor: 'pointer', transition: 'all .15s', whiteSpace: 'nowrap' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.color = '#0F6B2E'; e.currentTarget.style.background = 'rgba(31,168,74,0.06)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(10,10,10,0.1)'; e.currentTarget.style.color = 'rgba(10,10,10,0.7)'; e.currentTarget.style.background = '#fff'; }}>
+                  <span style={{ color: accent, fontWeight: 700 }}>#</span>{tag}
+                </a>
+              ))}
+            </div>
           </div>
         )}
 
