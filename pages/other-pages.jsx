@@ -277,83 +277,134 @@ const ShareBar = ({ lang, titleText }) => {
   );
 };
 
-// Reproductor de audio del artículo — usa speechSynthesis para leer en voz alta
-const ArticleAudioPlayer = ({ lang, text, minutes }) => {
+const GC_TTS_KEY = 'AIzaSyBhl8m-aQoDsDwBMJHC4DL0jn5nT_WHWQs';
+const audioCache = {};
+
+// Reproductor de audio del artículo — usa Google Cloud TTS para voces ultra realistas
+const ArticleAudioPlayer = ({ lang, text }) => {
   const accent = '#1FA84A';
-  const [state, setState] = React.useState('idle'); // idle | playing | paused
+  const [state, setState] = React.useState('idle'); // idle | loading | playing | paused
   const [progress, setProgress] = React.useState(0);
+  
+  const chunks = React.useMemo(() => text.match(/.{1,4000}(?=\s|$)/g) || [text], [text]);
+  const audioRef = React.useRef(null);
+  const currentChunkRef = React.useRef(0);
+  const isPlayingRef = React.useRef(false);
+
   const totalSec = Math.max(30, Math.round((text.split(/\s+/).length / (lang === 'es' ? 150 : 170)) * 60));
   const rafRef = React.useRef(null);
-  const startRef = React.useRef(0);
-  const elapsedRef = React.useRef(0);
-
-  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
   const tick = () => {
-    const elapsed = elapsedRef.current + (Date.now() - startRef.current) / 1000;
-    setProgress(Math.min(1, elapsed / totalSec));
-    if (elapsed < totalSec && window.speechSynthesis.speaking) {
+    if (audioRef.current && !audioRef.current.paused) {
+      const chunkContrib = 1 / chunks.length;
+      const baseProg = currentChunkRef.current * chunkContrib;
+      const audioProg = (audioRef.current.currentTime / (audioRef.current.duration || 1)) * chunkContrib;
+      setProgress(Math.min(1, baseProg + audioProg));
+    }
+    if (isPlayingRef.current) {
       rafRef.current = requestAnimationFrame(tick);
     }
   };
 
-  const stopAll = () => {
-    if (supported) window.speechSynthesis.cancel();
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    elapsedRef.current = 0;
-    setProgress(0);
-    setState('idle');
-  };
-
-  React.useEffect(() => () => { if (supported) window.speechSynthesis.cancel(); if (rafRef.current) cancelAnimationFrame(rafRef.current); }, []);
-  // Reinicia si cambia el idioma
-  React.useEffect(() => { stopAll(); }, [lang]);
-
-  const play = () => {
-    if (!supported) return;
-    if (state === 'paused') {
-      window.speechSynthesis.resume();
-      startRef.current = Date.now();
-      setState('playing');
-      rafRef.current = requestAnimationFrame(tick);
+  const playChunk = async (index) => {
+    if (index >= chunks.length) {
+      setState('idle');
+      isPlayingRef.current = false;
+      setProgress(1);
       return;
     }
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = lang === 'es' ? 'es-MX' : 'en-US';
-    u.rate = 1; u.pitch = 1;
-    u.onend = () => { setState('idle'); setProgress(1); elapsedRef.current = 0; if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-    elapsedRef.current = 0;
-    startRef.current = Date.now();
-    window.speechSynthesis.speak(u);
+    currentChunkRef.current = index;
+    const chunkText = chunks[index];
+    const cacheKey = lang + '_' + chunkText.slice(0, 50);
+    
+    let src = audioCache[cacheKey];
+    if (!src) {
+      setState('loading');
+      try {
+        const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${GC_TTS_KEY}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            input: { text: chunkText },
+            voice: { languageCode: lang === 'es' ? 'es-MX' : 'en-US', name: lang === 'es' ? 'es-MX-Neural2-F' : 'en-US-Neural2-F' },
+            audioConfig: { audioEncoding: 'MP3', speakingRate: 1.05 }
+          })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message);
+        src = `data:audio/mp3;base64,${data.audioContent}`;
+        audioCache[cacheKey] = src;
+      } catch (err) {
+        console.error('TTS Error:', err);
+        setState('idle');
+        isPlayingRef.current = false;
+        return;
+      }
+    }
+    
+    if (audioRef.current) audioRef.current.pause();
+    
+    const audio = new Audio(src);
+    audioRef.current = audio;
+    audio.onended = () => playChunk(index + 1);
+    audio.play();
     setState('playing');
-    rafRef.current = requestAnimationFrame(tick);
+    isPlayingRef.current = true;
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const play = () => {
+    if (state === 'paused' && audioRef.current) {
+      audioRef.current.play();
+      setState('playing');
+      isPlayingRef.current = true;
+      if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
+      return;
+    }
+    if (state === 'idle' || state === 'paused') {
+      if (progress >= 1) { setProgress(0); currentChunkRef.current = 0; }
+      playChunk(currentChunkRef.current);
+    }
   };
 
   const pause = () => {
-    if (!supported) return;
-    window.speechSynthesis.pause();
-    elapsedRef.current += (Date.now() - startRef.current) / 1000;
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (audioRef.current) audioRef.current.pause();
     setState('paused');
+    isPlayingRef.current = false;
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
   };
+
+  const stopAll = () => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+    setState('idle');
+    isPlayingRef.current = false;
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    currentChunkRef.current = 0;
+    setProgress(0);
+  };
+
+  React.useEffect(() => stopAll, [text, lang]);
 
   const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
   const curSec = progress * totalSec;
+  const isLoading = state === 'loading';
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: '#fff', border: '1px solid rgba(10,10,10,0.08)', borderRadius: 999, padding: '8px 16px 8px 8px', minWidth: 280 }}>
-      <button onClick={state === 'playing' ? pause : play} disabled={!supported}
+      <button onClick={state === 'playing' ? pause : play} disabled={isLoading}
         aria-label={state === 'playing' ? 'Pause' : 'Play'}
-        style={{ width: 42, height: 42, borderRadius: '50%', border: 'none', flexShrink: 0, background: supported ? accent : 'rgba(10,10,10,0.2)', color: '#fff', cursor: supported ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {state === 'playing'
-          ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
-          : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 2 }}><path d="M7 5.3v13.4c0 .8.9 1.3 1.6.8l10.2-6.7a1 1 0 000-1.6L8.6 4.5C7.9 4 7 4.5 7 5.3z"/></svg>}
+        style={{ width: 42, height: 42, borderRadius: '50%', border: 'none', flexShrink: 0, background: accent, color: '#fff', cursor: isLoading ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        {isLoading ? (
+          <div style={{ width: 16, height: 16, border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin .8s linear infinite' }}></div>
+        ) : state === 'playing' ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: 2 }}><path d="M7 5.3v13.4c0 .8.9 1.3 1.6.8l10.2-6.7a1 1 0 000-1.6L8.6 4.5C7.9 4 7 4.5 7 5.3z"/></svg>
+        )}
       </button>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: '#0a0a0a', letterSpacing: -0.1 }}>
-            {state === 'idle' ? (lang === 'es' ? 'Escuchar artículo' : 'Listen to article') : (state === 'paused' ? (lang === 'es' ? 'En pausa' : 'Paused') : (lang === 'es' ? 'Reproduciendo…' : 'Playing…'))}
+            {state === 'idle' ? (lang === 'es' ? 'Escuchar artículo' : 'Listen to article') : isLoading ? (lang === 'es' ? 'Generando voz HD…' : 'Loading HD voice…') : state === 'paused' ? (lang === 'es' ? 'En pausa' : 'Paused') : (lang === 'es' ? 'Reproduciendo…' : 'Playing…')}
           </span>
           {state !== 'idle' && (
             <button onClick={stopAll} style={{ fontSize: 10, color: 'rgba(10,10,10,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>{lang === 'es' ? 'Detener' : 'Stop'}</button>
@@ -368,6 +419,7 @@ const ArticleAudioPlayer = ({ lang, text, minutes }) => {
           </span>
         </div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 };
