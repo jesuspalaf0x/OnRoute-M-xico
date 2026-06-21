@@ -366,7 +366,7 @@ const SmartQuoter = ({ lang }) => {
         </div>
 
         {/* FECHA + PASAJEROS */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+        <div className="resp-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
           <div>
             <label style={labelStyle}>{t.date}</label>
             <div style={{ position: 'relative' }}>
@@ -386,13 +386,23 @@ const SmartQuoter = ({ lang }) => {
           </div>
         </div>
 
-        {/* Ida y vuelta */}
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, marginBottom: 16, userSelect: 'none' }}>
-          <input type="checkbox" checked={roundTrip}
-            onChange={e => { setRoundTrip(e.target.checked); setResult(null); }}
-            style={{ width: 16, height: 16, accentColor: accent }} />
-          {t.round}
-        </label>
+        {/* Ida y vuelta (Custom Checkbox) */}
+        <div 
+          onClick={() => { setRoundTrip(!roundTrip); setResult(null); }}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', fontSize: 13, marginBottom: 16, userSelect: 'none' }}
+        >
+          <div style={{ 
+            width: 20, height: 20, borderRadius: 6, 
+            border: `2px solid ${roundTrip ? accent : 'rgba(10,10,10,0.25)'}`, 
+            background: roundTrip ? accent : '#fff', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            transition: 'all 0.2s',
+            boxShadow: roundTrip ? `0 2px 8px ${accent}40` : 'none'
+          }}>
+            {roundTrip && <window.Icon name="check" size={12} color="#fff" stroke={3} />}
+          </div>
+          <span style={{ fontWeight: 600, color: '#0a0a0a' }}>{t.round}</span>
+        </div>
 
         {/* Alerta error */}
         {result?.error && (
