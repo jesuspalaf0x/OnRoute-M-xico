@@ -111,7 +111,7 @@ const SmartQuoter = ({ lang }) => {
 
   // Carga el GeoJSON
   React.useEffect(() => {
-    fetch('uploads/Mapa de precios/map.geojson')
+    fetch('/uploads/Mapa de precios/map.geojson')
       .then(r => r.json())
       .then(setGeojson)
       .catch(console.error);

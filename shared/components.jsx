@@ -3,8 +3,8 @@
 const OnrouteLogo = ({ size = 28, color = '#0a0a0a' }) => {
   const isWhite = color === '#fff';
   const src = isWhite 
-    ? 'uploads/Marca OnRoute/marca_onroute_en_blanco.png'
-    : 'uploads/Marca OnRoute/marca_onroute_a_color.png';
+    ? '/uploads/Marca OnRoute/marca_onroute_en_blanco.png'
+    : '/uploads/Marca OnRoute/marca_onroute_a_color.png';
   
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -18,10 +18,11 @@ const ImagePlaceholder = ({ paletteKey, label, aspect = '4/3', rounded = 8, styl
   const [a, b, c] = window.paletteFor(paletteKey);
   const id = `g-${paletteKey}-${Math.random().toString(36).slice(2, 7)}`;
   
-  if (isURL && paletteKey.startsWith('http') || paletteKey?.startsWith('uploads/')) {
+  if (isURL && (paletteKey.startsWith('http') || paletteKey?.includes('uploads/'))) {
+    const src = paletteKey.startsWith('uploads/') ? '/' + paletteKey : paletteKey;
     return (
       <div style={{ position: 'relative', aspectRatio: aspect, width: '100%', borderRadius: rounded, overflow: 'hidden', ...style }}>
-        <img src={paletteKey} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {showLabel && label && (
           <div style={{ position: 'absolute', bottom: 10, left: 12, fontFamily: 'ui-monospace, monospace', fontSize: 10, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 2px rgba(0,0,0,0.3)', letterSpacing: 0.4 }}>
             [ {label} ]
