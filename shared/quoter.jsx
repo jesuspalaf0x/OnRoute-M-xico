@@ -255,10 +255,12 @@ const SmartQuoter = ({ lang }) => {
   const t = L[lang] || L.es;
 
   const inputStyle = {
-    width: '100%', padding: '11px 14px 11px 40px',
+    display: 'block', width: '100%', maxWidth: '100%', minWidth: 0, 
+    padding: '11px 14px 11px 40px',
     borderRadius: 10, border: '1.5px solid rgba(10,10,10,0.1)',
     fontSize: 14, fontFamily: 'Inter, sans-serif',
-    background: '#fff', outline: 'none', boxSizing: 'border-box',
+    background: '#fff', outline: 'none', 
+    boxSizing: 'border-box', WebkitBoxSizing: 'border-box',
     transition: 'border-color .15s', color: '#0a0a0a',
   };
   const labelStyle = {
