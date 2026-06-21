@@ -436,4 +436,3 @@ function hb_approve_tariff(WP_REST_Request $request) {
     }
     return rest_ensure_response(['success' => true]);
 }
-}
