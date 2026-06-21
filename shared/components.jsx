@@ -18,11 +18,14 @@ const ImagePlaceholder = ({ paletteKey, label, aspect = '4/3', rounded = 8, styl
   const [a, b, c] = window.paletteFor(paletteKey);
   const id = `g-${paletteKey}-${Math.random().toString(36).slice(2, 7)}`;
   
-  if ((isURL && paletteKey.startsWith('http')) || paletteKey?.includes('uploads/')) {
-    const src = (paletteKey.includes('uploads/') && !paletteKey.startsWith('/')) ? '/' + paletteKey : paletteKey;
+  const isAbsoluteHTTP = paletteKey?.startsWith('http');
+  const isLocalUpload = paletteKey?.includes('uploads/') && !isAbsoluteHTTP;
+
+  if ((isURL && isAbsoluteHTTP) || isLocalUpload) {
+    const src = (isLocalUpload && !paletteKey.startsWith('/')) ? '/' + paletteKey : paletteKey;
     return (
       <div style={{ position: 'relative', aspectRatio: aspect, width: '100%', borderRadius: rounded, overflow: 'hidden', ...style }}>
-        <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <img src={encodeURI(src)} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {showLabel && label && (
           <div style={{ position: 'absolute', bottom: 10, left: 12, fontFamily: 'ui-monospace, monospace', fontSize: 10, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 2px rgba(0,0,0,0.3)', letterSpacing: 0.4 }}>
             [ {label} ]

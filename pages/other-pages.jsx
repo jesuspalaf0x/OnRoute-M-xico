@@ -10,7 +10,7 @@ const AboutPage = ({ lang }) => {
         title={lang === 'es' ? 'Somos gente local trabajando en rutas caribeñas desde 2018' : 'We are local people working on Caribbean routes since 2018'}
         sub={lang === 'es' ? 'Somos un equipo de conductores, guías y operadores de la Riviera Maya que conocemos cada curva del camino.' : "We're drivers, guides and operators from the Riviera Maya who know every bend of the road."}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Nosotros' : 'About']}
-        imgKey="uploads/Imagenes para sitio/tour-cenote-zemway-nadar-riviera-maya.jpg"
+        imgKey="/uploads/Imagenes para sitio/tour-cenote-zemway-nadar-riviera-maya.jpg"
       />
       <section className="section-pad" style={{ padding: '60px 40px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
@@ -74,7 +74,7 @@ const ContactPage = ({ lang }) => {
         title={lang === 'es' ? '¿Hablamos?' : "Let's talk"}
         sub={lang === 'es' ? 'Por WhatsApp contestamos en menos de 10 minutos. Por email, el mismo día.' : 'We reply on WhatsApp in under 10 minutes. Email, same day.'}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', lang === 'es' ? 'Contacto' : 'Contact']}
-        imgKey="uploads/Imagenes para sitio/turista-reservacion-tour-tulum-riviera-maya.png"
+        imgKey="/uploads/Imagenes para sitio/turista-reservacion-tour-tulum-riviera-maya.png"
       />
       <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
@@ -151,7 +151,7 @@ const BlogPage = ({ lang, setPage }) => {
         title={lang === 'es' ? 'Historias, guías y consejos del camino' : 'Stories, guides and tips from the road'}
         sub={lang === 'es' ? 'Lo que hemos aprendido llevando miles de viajeros por la Riviera Maya.' : "What we've learned moving thousands of travelers across the Riviera Maya."}
         crumbs={[lang === 'es' ? 'Inicio' : 'Home', 'Blog']}
-        imgKey="uploads/Imagenes para sitio/descanso-playa-caribe-vacaciones-riviera-maya.jpg"
+        imgKey="/uploads/Imagenes para sitio/descanso-playa-caribe-vacaciones-riviera-maya.jpg"
       />
       <section className="section-pad" style={{ padding: '40px 40px 60px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%' }}>
@@ -906,7 +906,7 @@ const PrivacyPage = ({ lang }) => {
         title={lang === 'es' ? 'Aviso de Privacidad Integral' : 'Comprehensive Privacy Policy'}
         sub={lang === 'es' ? 'Última actualización: 23 de abril de 2026' : 'Last updated: April 23, 2026'}
         crumbs={[t.nav.inicio, lang === 'es' ? 'Privacidad' : 'Privacy']}
-        imgKey="uploads/Imagenes para sitio/Playas-de-tulum-playa-paraiso.png"
+        imgKey="/uploads/Imagenes para sitio/Playas-de-tulum-playa-paraiso.png"
       />
       <section className="section-pad" style={{ padding: '60px 40px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', width: '100%', lineHeight: 1.7, fontSize: 14, color: 'rgba(10,10,10,0.8)' }}>
