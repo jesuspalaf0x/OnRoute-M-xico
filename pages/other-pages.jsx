@@ -325,7 +325,7 @@ const ArticleAudioPlayer = ({ lang, text }) => {
           method: 'POST',
           body: JSON.stringify({
             input: { text: chunkText },
-            voice: { languageCode: lang === 'es' ? 'es-MX' : 'en-US', name: lang === 'es' ? 'es-MX-Neural2-F' : 'en-US-Neural2-F' },
+            voice: { languageCode: lang === 'es' ? 'es-US' : 'en-US', name: lang === 'es' ? 'es-US-Neural2-A' : 'en-US-Neural2-F' },
             audioConfig: { audioEncoding: 'MP3', speakingRate: 1.05 }
           })
         });
